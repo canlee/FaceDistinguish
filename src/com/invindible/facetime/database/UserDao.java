@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +16,10 @@ import java.sql.Statement;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageInputStreamImpl;
 
+
+import oracle.sql.BLOB;
+
+import com.invindible.facetime.model.Imageinfo;
 import com.invindible.facetime.model.User;
 
 
@@ -31,21 +36,31 @@ public class UserDao {
 	 * @throws IOException
 	 */
 	
-	public  void doInsert(User u,Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
+	public  void doInsert(User u,Connection conn,Imageinfo im) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
 		// TODO Auto-generated method stub
-		PreparedStatement pst=conn.prepareStatement("insert into user_info values(?,?,?)");
-		InputStream is=u.getB();
-		int pin=is.read();
-		int length=0;
-		while(pin!=-1)
-		{
-			length++;
-		}
+		PreparedStatement pst=conn.prepareStatement("insert into userinfo values(userid.nextval,?,?)");
 		pst.setString(1, u.getUsername());
 		pst.setString(2, u.getPassword());
-		pst.setBinaryStream(3, is,length);
 		pst.executeUpdate();
-		pst.close();
+		pst=conn.prepareStatement("select id from userinfo where username=? and password=?");
+		pst.setString(1, u.getUsername());
+		pst.setString(2, u.getPassword());
+		ResultSet rs=pst.executeQuery();
+		int id=rs.getInt("id");
+		InputStream[] is=im.getInputstream();
+		int pin,length;
+		for(int i=0;i<is.length;i++){
+			pin=is[i].read();
+			length=0;
+			while(pin!=-1)
+			{
+				length++;
+			}
+			pst=conn.prepareStatement("insert into imageinfo values("+id+",?)");
+			pst.setBinaryStream(2, is[i],length);
+			pst.executeUpdate();
+			pst.close();
+		}
 	}
 	
 	/**
@@ -73,6 +88,17 @@ public class UserDao {
 		
 	}
 	
+	public boolean registerable(Connection conn,User u) throws SQLException{
+		String username=u.getUsername();
+		PreparedStatement pst=conn.prepareStatement("select username from userinfo");
+		ResultSet rs=pst.executeQuery();
+		while(rs.next()){
+			if(rs.getString("username").equals(username))
+				return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * 一般的输入账户密码登陆
 	 * @param u
@@ -85,7 +111,7 @@ public class UserDao {
 	 */
 	public boolean doLogin(User u,Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 		boolean flag;
-		PreparedStatement pst=conn.prepareStatement("select username,password from user_info where username=? and password=?");
+		PreparedStatement pst=conn.prepareStatement("select username,password from userinfo where username=? and password=?");
 		pst.setString(1, u.getUsername());
 		pst.setString(2, u.getPassword());
 		ResultSet rs=pst.executeQuery();

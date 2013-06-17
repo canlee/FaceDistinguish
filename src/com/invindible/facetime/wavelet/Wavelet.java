@@ -12,6 +12,11 @@ import com.invindible.facetime.util.image.ImagePreProcessUtil;
 public class Wavelet {
 	private Wavelet(){};
 	
+	/**
+	 * 提取单数行、列
+	 * @param tmpP 像素
+	 * @return
+	 */
 	private static int[][][] Rowreduce(int[][][] tmpP){
 		int height=tmpP[0].length;
 		int width=tmpP[0][0].length;
@@ -28,6 +33,11 @@ public class Wavelet {
 		return result;
 	}
 	
+	/**
+	 * 三维矩阵转置
+	 * @param tmpP 像素
+	 * @return
+	 */
 	private static int[][][] transposition(int[][][] tmpP){
 		int height=tmpP[0].length;
 		int width=tmpP[0][0].length;
