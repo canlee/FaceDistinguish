@@ -35,32 +35,15 @@ public class FrameRegist extends JFrame implements Context{
 	static FrameRegist frameRegist;
 	private JPanel contentPane;
 	private JPanel panelCamera;
-	private JTextField txtUserId;
-	private JTextField txtPassWd;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					frameRegist = new FrameRegist();
-					frameRegist.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
 
 	/**
 	 * Create the frame.
 	 */
-	public FrameRegist() {
+	public FrameRegist(final String userId, final String passWord) {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//setBounds(100, 100, 707, 443);
-		setBounds(100, 100, 695, 443);
+		setBounds(100, 100, 888, 495);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -71,6 +54,7 @@ public class FrameRegist extends JFrame implements Context{
 		contentPane.add(panelCamera);
 		panelCamera.setLayout(null);
 		
+
 		//开启摄像头
 		
 		final CameraInterfaceImpl camera = new  CameraInterfaceImpl(this);
@@ -87,7 +71,7 @@ public class FrameRegist extends JFrame implements Context{
 		
 		
 		JPanel panelButton = new JPanel();
-		panelButton.setBounds(86, 316, 406, 55);
+		panelButton.setBounds(19, 362, 406, 55);
 		contentPane.add(panelButton);
 		panelButton.setLayout(null);
 		
@@ -96,8 +80,6 @@ public class FrameRegist extends JFrame implements Context{
 			public void actionPerformed(ActionEvent e) {
 				//此处加入注册处理，例如将注册者的图片保存进数据库之类的操作
 				
-				String userId = txtUserId.getText();
-				String passWd = txtPassWd.getText();
 				
 				//设置User的用户名、密码和照片。
 				//获取当前摄像头中的显示的图片，作为user的照片
@@ -110,7 +92,7 @@ public class FrameRegist extends JFrame implements Context{
 				
 				User user = new User();
 				user.setUsername(userId);
-				user.setPassword(passWd);
+				user.setPassword(passWord);
 				user.setB(inputPic);
 				
 				//将user信息保存进数据库
@@ -144,7 +126,7 @@ public class FrameRegist extends JFrame implements Context{
 		btnRegist.setBounds(71, 10, 110, 35);
 		panelButton.add(btnRegist);
 		
-		JButton btnReturn = new JButton("返回");
+		JButton btnReturn = new JButton("返回主界面");
 		btnReturn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frameRegist.setVisible(false);
@@ -157,31 +139,45 @@ public class FrameRegist extends JFrame implements Context{
 		
 		JPanel panelInstructions = new JPanel();
 		//panelInstructions.setBounds(437, 41, 244, 259);
-		panelInstructions.setBounds(437, 41, 232, 259);
+		panelInstructions.setBounds(437, 41, 412, 259);
 		contentPane.add(panelInstructions);
 		panelInstructions.setLayout(null);
 		
+		JPanel panel = new JPanel();
+		panel.setBounds(0, 0, 128, 128);
+		panelInstructions.add(panel);
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBounds(138, 0, 128, 128);
+		panelInstructions.add(panel_1);
+		
+		JPanel panel_2 = new JPanel();
+		panel_2.setBounds(276, 0, 128, 128);
+		panelInstructions.add(panel_2);
+		
+		JPanel panel_3 = new JPanel();
+		panel_3.setBounds(0, 131, 128, 128);
+		panelInstructions.add(panel_3);
+		
+		JPanel panel_4 = new JPanel();
+		panel_4.setBounds(138, 131, 128, 128);
+		panelInstructions.add(panel_4);
+		JLabel lblUserID = new JLabel("你的用户名：");
+		lblUserID.setBounds(42, 16, 89, 15);
+		contentPane.add(lblUserID);
+		
 		JLabel lblInstructions = new JLabel("文字说明区");
-		//lblInstructions.setBounds(0, 0, 239, 101);
-		lblInstructions.setBounds(0, 0, 232, 113);
-		panelInstructions.add(lblInstructions);
-		JLabel lblUserID = new JLabel("用户名：");
-		lblUserID.setBounds(22, 135, 54, 15);
-		panelInstructions.add(lblUserID);
+		lblInstructions.setBounds(437, 323, 232, 85);
+		contentPane.add(lblInstructions);
 		
-		JLabel lblPassWD = new JLabel("密码：");
-		lblPassWD.setBounds(22, 178, 54, 15);
-		panelInstructions.add(lblPassWD);
+		JButton btnTakeNewPhoto = new JButton("点击更换照片");
+		btnTakeNewPhoto.setBounds(698, 347, 116, 36);
+		contentPane.add(btnTakeNewPhoto);
 		
-		txtUserId = new JTextField();
-		txtUserId.setBounds(86, 132, 102, 21);
-		panelInstructions.add(txtUserId);
-		txtUserId.setColumns(10);
-		
-		txtPassWd = new JTextField();
-		txtPassWd.setColumns(10);
-		txtPassWd.setBounds(86, 175, 102, 21);
-		panelInstructions.add(txtPassWd);
+		JLabel lblUserName = new JLabel("New label");
+		lblUserName.setBounds(129, 16, 54, 15);
+		contentPane.add(lblUserName);
+		lblUserName.setText(userId);
 	}
 	
 	//图片等比例处理方法,width和height为宽度和高度

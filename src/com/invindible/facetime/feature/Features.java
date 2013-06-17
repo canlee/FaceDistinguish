@@ -10,6 +10,7 @@ public class Features {
 	private double[][] aveDev;//每幅图的均差
 	private double[][] resultFeatureVector;//特征向量（真正的结果，即:X * X'T。其中X是一个矩阵，X'T是X的转置矩阵）
 	private double[] aveVector;//平均人脸图像(Xave)
+	private double[][] covarianceMatrix;//协方差矩阵
 	
 	private Features() {}
 	
@@ -62,6 +63,15 @@ public class Features {
 
 	public void setAveVector(double[] aveVector) {
 		this.aveVector = aveVector;
+	}
+
+	
+	public double[][] getCovarianceMatrix() {
+		return covarianceMatrix;
+	}
+
+	public void setCovarianceMatrix(double[][] covarianceMatrix) {
+		this.covarianceMatrix = covarianceMatrix;
 	}
 
 	/**

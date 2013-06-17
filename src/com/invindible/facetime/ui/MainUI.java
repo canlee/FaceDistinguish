@@ -78,7 +78,7 @@ public class MainUI extends JFrame{
 		panelMessage.add(label);
 		
 		JPanel panelButton = new JPanel();
-		panelButton.setBounds(79, 238, 400, 62);
+		panelButton.setBounds(39, 238, 476, 62);
 		panelButton.setOpaque(false);
 		panelPic.add(panelButton);
 		panelButton.setLayout(null);
@@ -92,8 +92,8 @@ public class MainUI extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				frameMainUI.setVisible(false);
 				try{
-				FrameRegist.frameRegist = new FrameRegist();
-				FrameRegist.frameRegist.setVisible(true);
+				FrameIdPwd.frameIdPwd = new FrameIdPwd();
+				FrameIdPwd.frameIdPwd.setVisible(true);
 				}
 				catch (Exception e2) {
 					e2.printStackTrace();
@@ -103,7 +103,7 @@ public class MainUI extends JFrame{
 		btnRegist.setBounds(56, 15, 115, 32);
 		panelButton.add(btnRegist);
 		
-		final JButton btnEnter = new JButton("\u8FDB\u5165");
+		final JButton btnEnter = new JButton("登陆签到");
 		btnEnter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frameMainUI.setVisible(false);
@@ -117,8 +117,18 @@ public class MainUI extends JFrame{
 				}
 			}
 		});
-		btnEnter.setBounds(224, 15, 115, 32);
+		btnEnter.setBounds(193, 15, 115, 32);
 		panelButton.add(btnEnter);
+		
+		JButton btnVideo = new JButton("视频监视");
+		btnVideo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				
+			}
+		});
+		btnVideo.setBounds(325, 15, 115, 32);
+		panelButton.add(btnVideo);
 		
 		JLabel lblWallPaper = new JLabel("New label");
 		lblWallPaper.setBounds(0, 0, 564, 345);

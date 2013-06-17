@@ -193,6 +193,7 @@ public class GetFeatureMatrix {
 	/**
 	 * 计算协方差矩阵
 	 * 	传入形参为 <方法：计算每张图片的均差> 的返回值
+	 * (其实这并不是协方差矩阵，若需要协方差矩阵，再用该矩阵除以N即可)
 	 */
 	public static double[][] calCovarianceMatrix(double[][] vec) {
 		int length = vec.length;//length指向量的维数，X={1,2,3,...,length}
@@ -218,6 +219,7 @@ public class GetFeatureMatrix {
 		
 		covArr = cov.getArray();
 		
+		//由于最终计算并不需要协方差矩阵，仅仅要的是一部分，所以不用除以N
 		//除以N
 //		for(int i=0; i<n; i++)
 //		{
@@ -226,6 +228,8 @@ public class GetFeatureMatrix {
 //				covArr[i][j] = covArr[i][j] / n;
 //			}
 //		}
+		
+		Features.getInstance().setCovarianceMatrix(covArr);
 		
 		return covArr;
 	}
@@ -240,7 +244,9 @@ public class GetFeatureMatrix {
 		SingularValueDecomposition s = vecMat.svd();
 		Matrix svalues = new Matrix(s.getSingularValues(), 1);
 		
-		return svalues.getRowPackedCopy();
+		double[] result = svalues.getRowPackedCopy();
+		Features.getInstance().setEigenValue(result);
+		return result;
 	}
 	
 	/**
@@ -250,7 +256,10 @@ public class GetFeatureMatrix {
 	public static double[][] calFeatureVector(double[][] vec) {
 		Matrix vecMat = new Matrix(vec);
 		SingularValueDecomposition s = vecMat.svd();
-		return s.getV().getArray();
+		
+		double[][] featureVector = s.getV().getArray();
+		Features.getInstance().setFeatureVector(featureVector);
+		return featureVector;
 	}
 	
 	/**
@@ -364,11 +373,11 @@ public class GetFeatureMatrix {
 		
 		//通过SVD定理，计算矩阵的特征值  
 		double[] eigenValue = calEigenValue(covMat);
-		Features.getInstance().setEigenValue(eigenValue);
+//		Features.getInstance().setEigenValue(eigenValue);
 		
 		//通过SVD定理，计算矩阵的特征向量
 		double[][] featureVector = calFeatureVector(covMat);
-		Features.getInstance().setFeatureVector(featureVector);
+//		Features.getInstance().setFeatureVector(featureVector);
 	
 		//通过公式变换，求取真正的特征向量
 		changeFeatureVector();
