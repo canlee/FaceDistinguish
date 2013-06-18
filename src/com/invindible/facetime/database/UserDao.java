@@ -124,4 +124,47 @@ public class UserDao {
 		pst.close();
 		return flag;
 	}
+	
+	/**
+	 * 找出相应的人
+	 * @param result 判别结果
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
+	public static User doLoginByImage(int result,Connection conn) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("select username,password from userinfo");
+		ResultSet rs=pst.executeQuery();
+		for(int i=0;i<result;i++)
+			rs.next();
+		User u=new User();
+		u.setUsername(rs.getString("username"));
+		u.setPassword(rs.getString("password"));
+		return u;		
+	}
+	
+	public static BufferedImage[] selectImageByUser(User u,Connection conn) throws SQLException, IOException{
+		PreparedStatement pst=conn.prepareStatement("select id from userinfo where username=? and password=?");
+		pst.setString(1, u.getUsername());
+		pst.setString(2, u.getPassword());
+		ResultSet rs=pst.executeQuery();
+		rs.next();
+		int id=rs.getInt("id");
+		pst=conn.prepareStatement("select image from imageinfo where id=?");
+		pst.setInt(1, id);
+		rs=pst.executeQuery();
+		InputStream[] fos=new FileInputStream[5];
+		BufferedImage[] bf=new BufferedImage[5];
+		int index=0;
+		while(rs.next()){
+//			this.setUsername(rs.getString("username"));
+			fos[index]=rs.getBinaryStream("image");
+			bf[index]= ImageIO.read(fos[index++]);
+			//im=javax.imageio.ImageIO.read(fos);	
+//			System.out.println("finish"+rs.getString("username"));
+		}
+		pst.close();
+		rs.close();
+		return bf;
+	}
 }
