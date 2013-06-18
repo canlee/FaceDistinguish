@@ -202,6 +202,15 @@ public class FrameSignIn extends JFrame implements Context{
 		labelResult.setFont(new Font("华文细黑", Font.PLAIN, 16));
 		
 		btnSignIn = new JButton("签到");
+		btnSignIn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frameSignIn.setVisible(false);
+				
+				FrameSignInConfirm.frameSignInConfirm = new FrameSignInConfirm();
+				FrameSignInConfirm.frameSignInConfirm.setVisible(true);
+				
+			}
+		});
 		btnSignIn.setBounds(175, 78, 105, 27);
 		panelResultBox.add(btnSignIn);
 		btnSignIn.setFont(new Font("宋体", Font.PLAIN, 16));
