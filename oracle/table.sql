@@ -22,7 +22,7 @@ foreign key(id) references userinfo(id)
 
 create table sign(
 id number,
-signdate timestamp,
+signdate varchar2(20),
 foreign key(id) references userinfo(id)
 );
 
