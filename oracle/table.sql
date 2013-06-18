@@ -11,12 +11,18 @@ foreign key(id) references userinfo(id)
 );
 
 create table wopt(
-array long raw
+array clob
 );
 
 create table project(
 id number,
-project long raw,
+pro clob,
+foreign key(id) references userinfo(id)
+);
+
+create table sign(
+id number,
+signdate timestamp,
 foreign key(id) references userinfo(id)
 );
 
