@@ -117,14 +117,32 @@ public class FrameRegist extends JFrame implements Context{
 				
 				
 				//设置User的用户名、密码和5张照片。
+				//用户名 userId
+				//密码 passWord
+				//5张照片 imageIcons
 				
-				//读取所有样本
 				
-				//训练
+				//读取所有数据库中的样本
 				
-				//验证
+				//训练（将 本人的照片 和 数据库中的所有照片 投影到WoptT上
 				
+				//验证（尝试识别，是被失败则需要重新获取图片）
+//				if( 识别 == false)
+//				{
+//					//将数据初始化，以开始重新获取图片
+//					requestNum = 5;
+//					for(int i=0; i<5;i++)
+//					{
+//						isImageIconSelected[i] = true;
+//					}
+//					startChangeSelectedIcon = true;
+//				}
 				//若可以，则注册成功，将用户名、密码、5张照片存入数据库
+//				else{
+//					
+//				}
+				
+				
 				
 				//----------------------------------------------
 					//摄像头启动成功的话，将img保存至本地，然后再传递过去
@@ -179,8 +197,8 @@ public class FrameRegist extends JFrame implements Context{
 						JOptionPane.showConfirmDialog(null, "放弃本次注册？", "提示", JOptionPane.YES_NO_CANCEL_OPTION))
 				{
 					
-					frameRegist.setVisible(false);
 					frameRegist.dispose();
+					MainUI.frameMainUI = new MainUI();
 					MainUI.frameMainUI.setVisible(true);
 					
 					//点击返回后，将寻找人脸的方法暂停

@@ -3,6 +3,7 @@ package com.invindible.facetime.ui;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.awt.Frame;
+import java.awt.HeadlessException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -11,9 +12,16 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+
+import com.invindible.facetime.database.Oracle_Connect;
+import com.invindible.facetime.database.UserDao;
+import com.invindible.facetime.model.User;
+
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class FrameIdPwd extends JFrame {
 
@@ -78,18 +86,30 @@ public class FrameIdPwd extends JFrame {
 				
 				//数据库验证用户名是否存在
 				//若用户已被注册（存在数据库中），则给提示已存在
-				if ( false)
-				{
-					JOptionPane.showMessageDialog(null, "该用户名已被注册！","警告", JOptionPane.WARNING_MESSAGE);
-					return;
-				}
-				//若尚未被注册，则打开FrameRegist窗口，进入下个注册阶段
-				else
-				{
-					frameIdPwd.setVisible(false);
-					//将用户名和密码作为参数，传给下个窗体的构造函数
-					FrameRegist.frameRegist = new FrameRegist(userId, passWord);
-					FrameRegist.frameRegist.setVisible(true);
+				User user = new User();
+				user.setUsername(userId);
+				user.setPassword(passWord);
+				
+				Connection conn = null;
+				try {
+					conn = Oracle_Connect.getInstance().getConn();
+					if ( UserDao.registerable( conn, user))
+					{
+						JOptionPane.showMessageDialog(null, "该用户名已被注册！","警告", JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+					//若尚未被注册，则打开FrameRegist窗口，进入下个注册阶段
+					else
+					{
+						frameIdPwd.dispose();
+//						frameIdPwd.setVisible(false);
+						//将用户名和密码作为参数，传给下个窗体的构造函数
+						FrameRegist.frameRegist = new FrameRegist(userId, passWord);
+						FrameRegist.frameRegist.setVisible(true);
+					}
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 				
 			}
@@ -98,6 +118,13 @@ public class FrameIdPwd extends JFrame {
 		panel.add(buttonEnter);
 		
 		JButton buttonReturn = new JButton("返回");
+		buttonReturn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frameIdPwd.dispose();
+				MainUI.frameMainUI = new MainUI();
+				MainUI.frameMainUI.setVisible(true);
+			}
+		});
 		buttonReturn.setBounds(170, 25, 110, 35);
 		panel.add(buttonReturn);
 		

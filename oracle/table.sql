@@ -4,25 +4,33 @@ password varchar(20),
 id number primary key
 );
 
+
+
 create table imageinfo(
 id number,
 image long raw,
 foreign key(id) references userinfo(id)
 );
 
+
+
 create table wopt(
-array long raw
+array clob
 );
+
+
 
 create table project(
 id number,
-project long raw,
-foreign key(id) references userinfo(id)
+project clob,
+foreign key(id) references userinfo(id) 
 );
 
-create sequence userid
-increment by 1
+
+
+create sequence userid 
+increment by 1 
 start with 1
-nomaxvalue
-nocycle
+ nomaxvalue
+ nocycle 
 nocache;

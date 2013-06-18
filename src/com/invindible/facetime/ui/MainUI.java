@@ -90,7 +90,8 @@ public class MainUI extends JFrame{
 		JButton btnRegist = new JButton("注册");
 		btnRegist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameMainUI.setVisible(false);
+				frameMainUI.dispose();
+//				frameMainUI.setVisible(false);
 				try{
 				FrameIdPwd.frameIdPwd = new FrameIdPwd();
 				FrameIdPwd.frameIdPwd.setVisible(true);
@@ -106,7 +107,8 @@ public class MainUI extends JFrame{
 		final JButton btnEnter = new JButton("登陆签到");
 		btnEnter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameMainUI.setVisible(false);
+				frameMainUI.dispose();
+//				frameMainUI.setVisible(false);
 				try {
 					FrameWindow.frame = new FrameWindow();
 					FrameWindow.frame.setVisible(true);
@@ -123,7 +125,7 @@ public class MainUI extends JFrame{
 		JButton btnVideo = new JButton("视频监视");
 		btnVideo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				frameMainUI.dispose();
 				
 			}
 		});

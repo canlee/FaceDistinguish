@@ -88,7 +88,7 @@ public class UserDao {
 		
 	}
 	
-	public boolean registerable(Connection conn,User u) throws SQLException{
+	public static boolean registerable(Connection conn,User u) throws SQLException{
 		String username=u.getUsername();
 		PreparedStatement pst=conn.prepareStatement("select username from userinfo");
 		ResultSet rs=pst.executeQuery();
