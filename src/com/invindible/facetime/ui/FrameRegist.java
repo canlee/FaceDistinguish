@@ -16,8 +16,10 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 
 import com.invindible.facetime.database.Oracle_Connect;
+import com.invindible.facetime.database.ProjectDao;
 import com.invindible.facetime.database.UserDao;
 import com.invindible.facetime.model.FaceImage;
+import com.invindible.facetime.model.Project;
 import com.invindible.facetime.model.User;
 import com.invindible.facetime.service.implement.CameraInterfaceImpl;
 import com.invindible.facetime.service.implement.FindFaceForCameraInterfaceImpl;
@@ -34,6 +36,7 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Calendar;
 
@@ -124,8 +127,49 @@ public class FrameRegist extends JFrame implements Context{
 				//密码 passWord
 				//5张照片 imageIcons
 				
+				//WoptT矩阵
+				double[][] WoptT;
+				//Project数据
+				Project pr;
 				
-				//读取所有数据库中的样本
+				
+				//首先判断数据库中是否已有WoptT矩阵的数据（即看是否已经有样本数据）
+				Connection conn = null;
+				try
+				{
+					conn = Oracle_Connect.getInstance().getConn();
+					//若存在WoptT
+					if( ProjectDao.firstORnot(conn) == false)
+					{
+						//读取所有样本数据，以便对所有样本和自己进行训练
+						
+						//读取WoptT矩阵
+						WoptT = ProjectDao.doselectWopt(conn);
+						
+						//读取所有样本的投影Z 和 id
+						pr = ProjectDao.doselectProject(conn);
+						
+					}
+					//若不存在，则直接对自己的数据进行训练
+					else
+					{
+						//读取Pictures文件夹里面的"酱油"的图片
+						String source = "Pictures/monkey-test/after-1.jpg";
+						
+						for(int i=0; i<5; i++)
+						{
+							String source2 = "after-" + i + ".jpg";
+							
+							
+						}
+					}
+					
+				}
+				catch(Exception e1)
+				{
+					e1.printStackTrace();
+				}
+				
 				
 				//训练（将 本人的照片 和 数据库中的所有照片 投影到WoptT上
 				
