@@ -592,6 +592,7 @@ public class LDA {
 		//将转置矩阵存进
 		LdaFeatures.getInstance().setLastProjectionT(resultT);
 		
+		
 		return result;
 	}
 	

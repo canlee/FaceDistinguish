@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -57,17 +58,39 @@ public class FrameIdPwd extends JFrame {
 		buttonEnter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				frameIdPwd.setVisible(false);
+				//判断用户名是否为空
+				if(txtUserId.getText().equals(""))
+				{
+					JOptionPane.showMessageDialog(null, "用户名不能为空！","警告", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
+				//判断密码是否为空
+				if(txtPassWd.getText().equals(""))
+				{
+					JOptionPane.showMessageDialog(null, "密码不能为空！", "警告", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
 				//获取用户名和密码
 				String userId = txtUserId.getText();
 				String passWord = txtPassWd.getText();
 				
 				//数据库验证用户名是否存在
-				
-				//将用户名和密码作为参数，传给下个窗体的构造函数
-				FrameRegist.frameRegist = new FrameRegist(userId, passWord);
-				FrameRegist.frameRegist.setVisible(true);
-				
+				//若用户已被注册（存在数据库中），则给提示已存在
+				if ( false)
+				{
+					JOptionPane.showMessageDialog(null, "该用户名已被注册！","警告", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				//若尚未被注册，则打开FrameRegist窗口，进入下个注册阶段
+				else
+				{
+					frameIdPwd.setVisible(false);
+					//将用户名和密码作为参数，传给下个窗体的构造函数
+					FrameRegist.frameRegist = new FrameRegist(userId, passWord);
+					FrameRegist.frameRegist.setVisible(true);
+				}
 				
 			}
 		});

@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import java.awt.Image;
 
 import javax.imageio.ImageIO;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -16,10 +17,17 @@ import javax.swing.JLabel;
 
 import com.invindible.facetime.database.Oracle_Connect;
 import com.invindible.facetime.database.UserDao;
+import com.invindible.facetime.model.FaceImage;
 import com.invindible.facetime.model.User;
 import com.invindible.facetime.service.implement.CameraInterfaceImpl;
+import com.invindible.facetime.service.implement.FindFaceForCameraInterfaceImpl;
+import com.invindible.facetime.service.interfaces.CameraInterface;
+import com.invindible.facetime.service.interfaces.FindFaceInterface;
+import com.invindible.facetime.task.init.HarrCascadeParserTask;
 import com.invindible.facetime.task.interfaces.Context;
 import com.invindible.facetime.task.video.VideoStreamTask;
+import com.invindible.facetime.util.Debug;
+import com.invindible.facetime.util.image.ImageUtil;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -27,6 +35,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
+import java.util.Calendar;
 
 import javax.swing.JTextField;
 
@@ -36,11 +45,36 @@ public class FrameRegist extends JFrame implements Context{
 	private JPanel contentPane;
 	private JPanel panelCamera;
 
+	private JButton btn1;
+	private JButton btn2;
+	private JButton btn3;
+	private JButton btn4;
+	private JButton btn5;
+	
+	private CameraInterface cif;
+	private FindFaceInterface findTask;
+	
+	private int photoIndex = 1;
+	private ImageIcon[] imageIcons;// = new ImageIcon[5];//5张照片
+	private boolean[] isImageIconSelected;// = new boolean[5];//第i个照片是否要更换的标志
+//	private int[] changeIndex = {1,2,3,4,5};
+	private boolean startChangeSelectedIcon;// = true;//是否要更换照片的标志
+	private int requestNum;// = 5;//剩余的需要更换的照片数量
 
 	/**
 	 * Create the frame.
 	 */
 	public FrameRegist(final String userId, final String passWord) {
+		imageIcons = new ImageIcon[5];
+		isImageIconSelected = new boolean[5];
+		startChangeSelectedIcon = true;
+		requestNum = 5;
+		
+		
+		for(int i=0; i<5; i++)
+		{
+			isImageIconSelected[i] = true;
+		}
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//setBounds(100, 100, 707, 443);
 		setBounds(100, 100, 888, 495);
@@ -56,10 +90,11 @@ public class FrameRegist extends JFrame implements Context{
 		
 
 		//开启摄像头
-		
-		final CameraInterfaceImpl camera = new  CameraInterfaceImpl(this);
-		camera.getCamera();
-		
+		new HarrCascadeParserTask(this).start();
+		cif = new  CameraInterfaceImpl(this);
+		cif.getCamera();
+		findTask = new FindFaceForCameraInterfaceImpl(this);
+		findTask.start();
 		
 		//new VideoStreamTask(this).start();
 		/*
@@ -81,46 +116,55 @@ public class FrameRegist extends JFrame implements Context{
 				//此处加入注册处理，例如将注册者的图片保存进数据库之类的操作
 				
 				
-				//设置User的用户名、密码和照片。
-				//获取当前摄像头中的显示的图片，作为user的照片
-				//--------------------暂时屏蔽--------------------
-				//Image img =camera.getHandledPictrue();
+				//设置User的用户名、密码和5张照片。
+				
+				//读取所有样本
+				
+				//训练
+				
+				//验证
+				
+				//若可以，则注册成功，将用户名、密码、5张照片存入数据库
+				
 				//----------------------------------------------
 					//摄像头启动成功的话，将img保存至本地，然后再传递过去
-				InputStream inputPic = this.getClass().getResourceAsStream("Pictures/facetime.jpg");
+				//InputStream inputPic = this.getClass().getResourceAsStream("Pictures/facetime.jpg");
 					//测试，将来将照片保存至本地，然后再传递给这个参数即可。
 				
-				User user = new User();
-				user.setUsername(userId);
-				user.setPassword(passWord);
-				user.setB(inputPic);
-				
-				//将user信息保存进数据库
-				UserDao ud = new UserDao();
-				try {
-					ud.doInsert(user, Oracle_Connect.getInstance().getConn());
-				} catch (InstantiationException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IllegalAccessException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (ClassNotFoundException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+//				User user = new User();
+//				user.setUsername(userId);
+//				user.setPassword(passWord);
+//				user.setB(inputPic);
+//				
+//				//将user信息保存进数据库
+//				UserDao ud = new UserDao();
+//				try {
+//					ud.doInsert(user, Oracle_Connect.getInstance().getConn());
+//				} catch (InstantiationException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				} catch (IllegalAccessException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				} catch (ClassNotFoundException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				} catch (SQLException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				} catch (IOException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
 				
 				JOptionPane.showMessageDialog(null, "注册成功！");
 
 				frameRegist.setVisible(false);
 				frameRegist.dispose();
 				MainUI.frameMainUI.setVisible(true);
+				
+				//最终注册成功后，将寻找人脸的方法暂停
+				findTask.stop();
 			}
 		});
 		btnRegist.setBounds(71, 10, 110, 35);
@@ -129,9 +173,26 @@ public class FrameRegist extends JFrame implements Context{
 		JButton btnReturn = new JButton("返回主界面");
 		btnReturn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				frameRegist.setVisible(false);
-				frameRegist.dispose();
-				MainUI.frameMainUI.setVisible(true);
+				
+				//询问是否确认放弃注册，并返回主界面
+				if(JOptionPane.YES_OPTION == 
+						JOptionPane.showConfirmDialog(null, "放弃本次注册？", "提示", JOptionPane.YES_NO_CANCEL_OPTION))
+				{
+					
+					frameRegist.setVisible(false);
+					frameRegist.dispose();
+					MainUI.frameMainUI.setVisible(true);
+					
+					//点击返回后，将寻找人脸的方法暂停
+					findTask.stop();
+				}
+				else
+				{
+					return;
+				}
+				
+				
+				
 			}
 		});
 		btnReturn.setBounds(231, 10, 110, 35);
@@ -146,22 +207,77 @@ public class FrameRegist extends JFrame implements Context{
 		JPanel panel = new JPanel();
 		panel.setBounds(0, 0, 128, 128);
 		panelInstructions.add(panel);
+		panel.setLayout(null);
+		
+		btn1 = new JButton("New button");
+		btn1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				drawNikeOnObject(btn1, 0);
+				
+			}
+		});
+		btn1.setBounds(0, 0, 128, 128);
+		panel.add(btn1);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setBounds(138, 0, 128, 128);
 		panelInstructions.add(panel_1);
+		panel_1.setLayout(null);
+		
+		btn2 = new JButton("New button");
+		btn2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				drawNikeOnObject(btn2, 1);
+				
+			}
+		});
+		btn2.setBounds(0, 0, 128, 128);
+		panel_1.add(btn2);
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBounds(276, 0, 128, 128);
 		panelInstructions.add(panel_2);
+		panel_2.setLayout(null);
+		
+		btn3 = new JButton("New button");
+		btn3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				drawNikeOnObject(btn3, 2);
+				
+			}
+		});
+		btn3.setBounds(0, 0, 128, 128);
+		panel_2.add(btn3);
 		
 		JPanel panel_3 = new JPanel();
 		panel_3.setBounds(0, 131, 128, 128);
 		panelInstructions.add(panel_3);
+		panel_3.setLayout(null);
+		
+		btn4 = new JButton("New button");
+		btn4.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				drawNikeOnObject(btn4, 3);
+				
+			}
+		});
+		btn4.setBounds(0, 0, 128, 128);
+		panel_3.add(btn4);
 		
 		JPanel panel_4 = new JPanel();
 		panel_4.setBounds(138, 131, 128, 128);
 		panelInstructions.add(panel_4);
+		panel_4.setLayout(null);
+		
+		btn5 = new JButton("New button");
+		btn5.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				drawNikeOnObject(btn5, 4);
+				
+			}
+		});
+		btn5.setBounds(0, 0, 128, 128);
+		panel_4.add(btn5);
 		JLabel lblUserID = new JLabel("你的用户名：");
 		lblUserID.setBounds(42, 16, 89, 15);
 		contentPane.add(lblUserID);
@@ -171,6 +287,19 @@ public class FrameRegist extends JFrame implements Context{
 		contentPane.add(lblInstructions);
 		
 		JButton btnTakeNewPhoto = new JButton("点击更换照片");
+		btnTakeNewPhoto.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				for(int i=0; i<5; i++)
+				{
+					//若需要更换指定索引的照片
+					if(isImageIconSelected[i] == true)
+					{
+						startChangeSelectedIcon = true;
+					}
+				}
+				
+			}
+		});
 		btnTakeNewPhoto.setBounds(698, 347, 116, 36);
 		contentPane.add(btnTakeNewPhoto);
 		
@@ -197,12 +326,123 @@ public class FrameRegist extends JFrame implements Context{
 			Component component = (Component) objects[1];
 			component.setBounds(0, 0, 314, 229);
 			panelCamera.add(component);
+			while(true) {
+				Image image = cif.getHandledPictrue();
+				if(image != null) {
+					findTask.findFace(image);
+					break;
+				}
+			}
 			break;
 			
+		case FindFaceInterface.FIND_FACE_SUCCESS:
+			FaceImage fi = (FaceImage) objects[1];
+			if(fi.getFacesRgb().size() > 0) {
+				BufferedImage img = ImageUtil.getImgByRGB(fi.getFacesRgb().get(0).getRgbMat());
+//				Icon icon = (Icon) img;
+//				Image image = img;
+				ImageIcon imgIcon = new ImageIcon(img);
+				imgIcon = ImageHandle(imgIcon, 128, 128);
+				
+				if(startChangeSelectedIcon == true)
+				{
+					for(int i=0; i<5; i++)
+					{
+						if(isImageIconSelected[i] == true)
+						{
+							isImageIconSelected[i] = false;
+							switch(i)
+							{
+								case 0:
+									this.btn1.setIcon( imgIcon);
+									this.imageIcons[0] = imgIcon;
+									break;
+								case 1:
+									this.btn2.setIcon( imgIcon);
+									this.imageIcons[1] = imgIcon;
+									break;
+								case 2:
+									this.btn3.setIcon( imgIcon);
+									this.imageIcons[2] = imgIcon;
+									break;
+								case 3:
+									this.btn4.setIcon( imgIcon);
+									this.imageIcons[3] = imgIcon;
+									break;
+								case 4:
+									this.btn5.setIcon( imgIcon);
+									this.imageIcons[4] = imgIcon;
+									break;
+							}
+							
+							if( i == 4)
+							{
+								startChangeSelectedIcon = false;
+								System.out.println("修改了startChangesSelected");
+							}
+							
+							requestNum--;
+							if(requestNum == 0)
+							{
+								startChangeSelectedIcon = false;
+								System.out.println("修改了startChangesSelected");
+							}
+								
+							break;
+						}
+						
+					}
+				}
+
+//				//若拍照索引已经超过5，则停止截图
+//				if( photoIndex < 6)
+//				{
+//					photoIndex++;
+//				}
+//				
+////				imagePanel.setBufferImage(img);
+//				Debug.print(img.getWidth() + ", " + img.getHeight());
+//				Calendar c = Calendar.getInstance();
+//				ImageUtil.saveImage(img, "E:/" + c.getTimeInMillis() + ".jpg");
+			}
+//			imagePanel.setBounds(originPanel.getWidth() + 10, 0, img.getWidth(), img.getHeight());
+			findTask.findFace(cif.getHandledPictrue());
+			break;
+			
+		case HarrCascadeParserTask.PARSER_SUCCESS:
+			Debug.print("读取adaboost文件成功！");
+			break;
 			
 		default:
 			break;
-		}
-		
+		}	
 	}
+	
+	//为按钮打钩
+	public void drawNikeOnObject(JButton btn, int objectIndex)
+	{
+		//判断是否已经打钩
+		//若未打钩
+		try
+		{
+			if(isImageIconSelected[objectIndex] == false)
+			{
+				btn.setIcon(FrameWindow.drawNike(imageIcons[objectIndex]));
+				isImageIconSelected[objectIndex] = true;
+				requestNum++;
+			}
+			//若已打钩
+			else
+			{
+				btn.setIcon(imageIcons[objectIndex]);
+				isImageIconSelected[objectIndex] = false;
+				requestNum--;
+			}
+		}
+		catch(Exception ex)
+		{
+			;
+		}
+	}
+		
 }

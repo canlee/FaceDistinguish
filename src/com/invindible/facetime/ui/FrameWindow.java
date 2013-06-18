@@ -553,7 +553,7 @@ public class FrameWindow extends JFrame implements Context{
 	}
 	
 	//在JButtonObjects上打钩(在图片上画画的方法)
-	public ImageIcon drawNike(ImageIcon img) {
+	public static ImageIcon drawNike(ImageIcon img) {
 		int width = img.getIconWidth();
 		int height = img.getIconHeight();
 		BufferedImage buffima = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
