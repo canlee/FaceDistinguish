@@ -37,6 +37,7 @@ import com.invindible.facetime.service.implement.CameraInterfaceImpl;
 import com.invindible.facetime.task.interfaces.Context;
 import com.invindible.facetime.task.video.VideoStreamTask;
 import com.invindible.facetime.ui.widget.image.ImagePanel;
+import javax.swing.border.LineBorder;
 
 
 public class FrameWindow extends JFrame implements Context{
@@ -151,6 +152,7 @@ public class FrameWindow extends JFrame implements Context{
 		panelMain.setLayout(null);
 		
 		panelCamera = new JPanel();
+		panelCamera.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panelCamera.setBounds(0, 0, 314, 229);
 		panelMain.add(panelCamera);
 		

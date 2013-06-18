@@ -38,6 +38,8 @@ import java.sql.SQLException;
 import java.util.Calendar;
 
 import javax.swing.JTextField;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
 
 public class FrameRegist extends JFrame implements Context{
 
@@ -54,7 +56,7 @@ public class FrameRegist extends JFrame implements Context{
 	private CameraInterface cif;
 	private FindFaceInterface findTask;
 	
-	private int photoIndex = 1;
+//	private int photoIndex = 1;
 	private ImageIcon[] imageIcons;// = new ImageIcon[5];//5张照片
 	private boolean[] isImageIconSelected;// = new boolean[5];//第i个照片是否要更换的标志
 //	private int[] changeIndex = {1,2,3,4,5};
@@ -64,7 +66,7 @@ public class FrameRegist extends JFrame implements Context{
 	/**
 	 * Create the frame.
 	 */
-	public FrameRegist(final String userId, final String passWord) {
+	public FrameRegist(final String userId, final String passWord, User user) {
 		imageIcons = new ImageIcon[5];
 		isImageIconSelected = new boolean[5];
 		startChangeSelectedIcon = true;
@@ -84,6 +86,7 @@ public class FrameRegist extends JFrame implements Context{
 		contentPane.setLayout(null);
 		
 		panelCamera = new JPanel();
+		panelCamera.setBorder(new LineBorder(new Color(0, 0, 0)));
 		panelCamera.setBounds(19, 41, 399, 259);
 		contentPane.add(panelCamera);
 		panelCamera.setLayout(null);
@@ -177,8 +180,8 @@ public class FrameRegist extends JFrame implements Context{
 				
 				JOptionPane.showMessageDialog(null, "注册成功！");
 
-				frameRegist.setVisible(false);
 				frameRegist.dispose();
+				MainUI.frameMainUI = new MainUI();
 				MainUI.frameMainUI.setVisible(true);
 				
 				//最终注册成功后，将寻找人脸的方法暂停
@@ -227,7 +230,7 @@ public class FrameRegist extends JFrame implements Context{
 		panelInstructions.add(panel);
 		panel.setLayout(null);
 		
-		btn1 = new JButton("New button");
+		btn1 = new JButton("暂无捕获头像");
 		btn1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				drawNikeOnObject(btn1, 0);
@@ -242,7 +245,7 @@ public class FrameRegist extends JFrame implements Context{
 		panelInstructions.add(panel_1);
 		panel_1.setLayout(null);
 		
-		btn2 = new JButton("New button");
+		btn2 = new JButton("暂无捕获头像");
 		btn2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				drawNikeOnObject(btn2, 1);
@@ -257,7 +260,7 @@ public class FrameRegist extends JFrame implements Context{
 		panelInstructions.add(panel_2);
 		panel_2.setLayout(null);
 		
-		btn3 = new JButton("New button");
+		btn3 = new JButton("暂无捕获头像");
 		btn3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				drawNikeOnObject(btn3, 2);
@@ -272,7 +275,7 @@ public class FrameRegist extends JFrame implements Context{
 		panelInstructions.add(panel_3);
 		panel_3.setLayout(null);
 		
-		btn4 = new JButton("New button");
+		btn4 = new JButton("暂无捕获头像");
 		btn4.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				drawNikeOnObject(btn4, 3);
@@ -287,7 +290,7 @@ public class FrameRegist extends JFrame implements Context{
 		panelInstructions.add(panel_4);
 		panel_4.setLayout(null);
 		
-		btn5 = new JButton("New button");
+		btn5 = new JButton("暂无捕获头像");
 		btn5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				drawNikeOnObject(btn5, 4);
@@ -304,7 +307,7 @@ public class FrameRegist extends JFrame implements Context{
 		lblInstructions.setBounds(437, 323, 232, 85);
 		contentPane.add(lblInstructions);
 		
-		JButton btnTakeNewPhoto = new JButton("点击更换照片");
+		JButton btnTakeNewPhoto = new JButton("更换选中照片");
 		btnTakeNewPhoto.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				for(int i=0; i<5; i++)
@@ -313,6 +316,7 @@ public class FrameRegist extends JFrame implements Context{
 					if(isImageIconSelected[i] == true)
 					{
 						startChangeSelectedIcon = true;
+						break;
 					}
 				}
 				
@@ -328,7 +332,7 @@ public class FrameRegist extends JFrame implements Context{
 	}
 	
 	//图片等比例处理方法,width和height为宽度和高度
-	public ImageIcon ImageHandle(ImageIcon imageicon,int width,int height){
+	public static ImageIcon ImageHandle(ImageIcon imageicon,int width,int height){
 		Image image = imageicon.getImage();
 		Image smallimage = image.getScaledInstance(width, height, image.SCALE_FAST);
 		ImageIcon smallicon = new ImageIcon(smallimage);

@@ -109,14 +109,8 @@ public class MainUI extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				frameMainUI.dispose();
 //				frameMainUI.setVisible(false);
-				try {
-					FrameWindow.frame = new FrameWindow();
-					FrameWindow.frame.setVisible(true);
-					//FrameWindow.frame = new FrameWindow();
-					//FrameWindow.frame.setVisible(true);
-				} catch (Exception e1) {
-					e1.printStackTrace();
-				}
+				FrameSignIn.frameSignIn = new FrameSignIn();
+				FrameSignIn.frameSignIn.setVisible(true);
 			}
 		});
 		btnEnter.setBounds(193, 15, 115, 32);

@@ -93,19 +93,20 @@ public class FrameIdPwd extends JFrame {
 				Connection conn = null;
 				try {
 					conn = Oracle_Connect.getInstance().getConn();
+					//若能注册,则打开FrameRegist窗口，进入下个注册阶段
 					if ( UserDao.registerable( conn, user))
-					{
-						JOptionPane.showMessageDialog(null, "该用户名已被注册！","警告", JOptionPane.WARNING_MESSAGE);
-						return;
-					}
-					//若尚未被注册，则打开FrameRegist窗口，进入下个注册阶段
-					else
 					{
 						frameIdPwd.dispose();
 //						frameIdPwd.setVisible(false);
 						//将用户名和密码作为参数，传给下个窗体的构造函数
-						FrameRegist.frameRegist = new FrameRegist(userId, passWord);
+						FrameRegist.frameRegist = new FrameRegist(userId, passWord, user);
 						FrameRegist.frameRegist.setVisible(true);
+					}
+					//若不能注册，则
+					else
+					{
+						JOptionPane.showMessageDialog(null, "该用户名已被注册！","警告", JOptionPane.WARNING_MESSAGE);
+						return;
 					}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
