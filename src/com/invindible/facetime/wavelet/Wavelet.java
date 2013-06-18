@@ -56,7 +56,7 @@ public class Wavelet {
 	
 	
 	private static int[][][] rgb;
-	private static BufferedImage Wavelet(){
+	public static BufferedImage Wavelet(){
 		
 		int[][][]gray=ImageUtil.imgToGray(rgb); //trans to gray	
 		int[][][]mid=ImagePreProcessUtil.imgToMiddleFilter(gray);  //midfilter	
