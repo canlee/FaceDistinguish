@@ -1,6 +1,7 @@
 package com.invindible.facetime.database;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageInputStreamImpl;
 
@@ -36,7 +38,7 @@ public class UserDao {
 	 * @throws IOException
 	 */
 	
-	public  void doInsert(User u,Connection conn,Imageinfo im) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
+	public static void doInsert(User u,Connection conn,Imageinfo im) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
 		// TODO Auto-generated method stub
 		PreparedStatement pst=conn.prepareStatement("insert into userinfo values(userid.nextval,?,?)");
 		pst.setString(1, u.getUsername());
@@ -46,18 +48,12 @@ public class UserDao {
 		pst.setString(1, u.getUsername());
 		pst.setString(2, u.getPassword());
 		ResultSet rs=pst.executeQuery();
+		rs.next();
 		int id=rs.getInt("id");
 		InputStream[] is=im.getInputstream();
-		int pin,length;
-		for(int i=0;i<is.length;i++){
-			pin=is[i].read();
-			length=0;
-			while(pin!=-1)
-			{
-				length++;
-			}
+		for(int i=0;i<5;i++){		
 			pst=conn.prepareStatement("insert into imageinfo values("+id+",?)");
-			pst.setBinaryStream(2, is[i],length);
+			pst.setBinaryStream(1, is[i],is[i].available());
 			pst.executeUpdate();
 			pst.close();
 		}
@@ -67,17 +63,22 @@ public class UserDao {
 	 * 检验
 	 * @param conn
 	 */
-	public void doSelect (Connection conn) {
+	public static BufferedImage[] doSelectAll (Connection conn) {
 		// TODO Auto-generated method stub
+		BufferedImage[] bf=null;
 		try {
-			Image im=null;
-			PreparedStatement pst=conn.prepareStatement("select username,image from user_info");
-			ResultSet rs=pst.executeQuery();	
-			InputStream fos=null;
+			PreparedStatement pst=conn.prepareStatement("select image from imageinfo",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+			ResultSet rs=pst.executeQuery();
+			rs.last();
+			InputStream[] fos=new FileInputStream[rs.getRow()];
+			bf=new BufferedImage[rs.getRow()];
+			rs.beforeFirst();
+			int index=0;
 			while(rs.next()){
 //				this.setUsername(rs.getString("username"));
-				fos=rs.getBinaryStream("image");
-				im=javax.imageio.ImageIO.read(fos);	
+				fos[index]=rs.getBinaryStream("image");
+				bf[index]= ImageIO.read(fos[index++]);
+				//im=javax.imageio.ImageIO.read(fos);	
 //				System.out.println("finish"+rs.getString("username"));
 			}
 			pst.close();
@@ -85,6 +86,7 @@ public class UserDao {
 			}catch(Exception e){
 				e.printStackTrace();
 			}
+		return bf;
 		
 	}
 	
@@ -109,7 +111,7 @@ public class UserDao {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public boolean doLogin(User u,Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
+	public static boolean doLogin(User u,Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 		boolean flag;
 		PreparedStatement pst=conn.prepareStatement("select username,password from userinfo where username=? and password=?");
 		pst.setString(1, u.getUsername());
