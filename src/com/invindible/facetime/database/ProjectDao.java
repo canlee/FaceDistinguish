@@ -136,7 +136,7 @@ public class ProjectDao {
 		int[] id=new int[rs.getRow()];
 		double[][] modelProject=new double[rs.getRow()*5][rs.getString("pro").split(" ").length/5];
 		int tmp=0;
-		int projectTmp=0;
+		int projectTmp=0; 
 		rs.beforeFirst(); 
 		while(rs.next()){
 			String project=rs.getString("pro");		
