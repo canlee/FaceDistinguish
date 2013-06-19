@@ -203,7 +203,7 @@ public class ProjectDao {
 			tmp[0]=mean[i];
 			save=procedure(tmp);
 			pst.setString(1, save);
-			pst.setInt(2, i);
+			pst.setInt(2, id[i]);
 			pst.executeUpdate();
 			save="";
 			pst.clearParameters();
@@ -216,16 +216,22 @@ public class ProjectDao {
 		ResultSet rs=pst.executeQuery();
 		rs.last();
 		int row=rs.getRow();
+		System.out.println("row:" + row);
+		rs.beforeFirst();
+		rs.next();
+		System.out.println(rs.getString("mean"));
 		int column=rs.getString("mean").split(" ").length;
+//		System.out.println("row:" + row + "   column" + column);
 		double[][] mean=new double[row][column];
 		int index=0;
 		rs.beforeFirst();
 		while(rs.next()){
 			String[] value=rs.getString("mean").split(" ");
 			for(int i=0;i<value.length;i++){
+//				System.out.println("index:" + index + "  i:" + i );
 				mean[index][i]=Double.valueOf(value[i]);
-				index++;
 			}
+				index++;
 		}
 		pst.close();
 		rs.close();

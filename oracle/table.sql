@@ -33,8 +33,8 @@ foreign key(id) references userinfo(id)
 create table classmean(
 id number,
 mean clob,
-foreign key(id) references userinfo(id);
-)
+foreign key(id) references userinfo(id)
+);
 
 create sequence userid
 increment by 1
