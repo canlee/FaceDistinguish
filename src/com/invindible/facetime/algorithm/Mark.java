@@ -5,9 +5,19 @@ public class Mark {
 		int target=modelMean.length;
 		System.out.println("target "+target);
 		
-		double value=L2Form.value(modelMean,allMean);		//l2 domain 
-		double l1value=L1Form.l1value(modelMean,allMean);   //l1 domain
+		int[] record=mark(test,model,testMean,modelMean,allMean);
+		if(record[0]==target&&record[1]==target&&record[2]==target)
+			return true;
+		else if((record[0]==target||record[1]==target)&&record[2]==target)
+			return true;
+		else
+			return false;
 		
+	}
+	
+	public static int[] mark(double[][] test,double[][] model,double[] testMean,double[][] modelMean,double[] allMean){
+		double value=L2Form.value(modelMean,allMean);		//l2 domain 
+		double l1value=L1Form.l1value(modelMean,allMean);   //l1 domain			
 		double[] madis=MixedMahalnobisDistance.calMixedMahalnobisDistance(testMean,modelMean);	 //ma distance	
 		double[] mindis=MixedMahalnobisDistance.calMinDistance(testMean, modelMean);  //min distance
 		int matmp=Identify.mark(Double.MAX_VALUE,madis);	//ma domain
@@ -163,15 +173,20 @@ public class Mark {
 			 System.out.println("record "+i+" :"+record[i]);
 			
 		}
-		
-		if(record[0]==target&&record[1]==target&&record[2]==target)
-			return true;
-		else if((record[0]==target||record[1]==target)&&record[2]==target)
-			return true;
-		else
-			return false;
-		
+		return record;
 	}
+	
+	public static int identify(double[][] test,double[][] model,double[] testMean,double[][] modelMean,double[] allMean){	
+		
+		int[] record=mark(test,model,testMean,modelMean,allMean);	
+		if(record[0]==record[1]&&record[1]==record[2])
+				return record[1];
+			else if((record[0]==record[2]||record[1]==record[2]))
+				return record[2];
+			else
+				return -1;
+	}
+	
 		private static int second(int min,double[] dis){
 			double tmp=Double.MAX_VALUE;
 			//System.out.println(tmp);
