@@ -112,7 +112,7 @@ public class ProjectDao {
 		double[][] projectArray=project.getProject();
 		int[] id=project.getId();
 		int tmp=0;
-		PreparedStatement pst= conn.prepareStatement("update project set pro=? where id=?");
+		PreparedStatement pst= conn.prepareStatement("update pro set pro=? where id=?");
 		for(int i=0;i<id.length;i++){
 			String save="";
 			double[][] tmpProject=new double[5][projectArray[0].length];
