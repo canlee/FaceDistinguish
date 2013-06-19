@@ -97,12 +97,16 @@ public class ProjectDao {
 		rs=pst.executeQuery();
 		rs.last();
 		int peoplenum=rs.getRow();
-		int row=peoplenum-1;
-		int column=arr.length/4;
+		int row=-1;
+		if(peoplenum==1)
+			row=1;
+		else
+			row=peoplenum-1;
+		int column=arr.length/row;
 		double[][] array=new double[row][column];
 		for(int i=0;i<row;i++){
 			for(int j=0;j<column;j++)
-				array[i][j]=Double.valueOf(arr[i*5+j]);
+				array[i][j]=Double.valueOf(arr[i*column+j]);
 		}
 		return array;
 	}
