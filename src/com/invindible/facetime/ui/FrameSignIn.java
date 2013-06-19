@@ -285,7 +285,10 @@ public class FrameSignIn extends JFrame implements Context{
 					//然后，对tempForTestBImages进行小波变换，转成BufferedImage[2]
 					BufferedImage[] waveTestBImages = Wavelet.Wavelet(tempForTestBImages);
 					
-					//---------------------计算Z，需要获取m-----------------
+					//计算Z时，需要获取m
+					//获取m，并保存进单例中
+					double[] m = ;
+					LdaFeatures.getInstance().setAveVector(m);
 					
 					//计算2张经小波变换的测试图waveTestBImages的投影Z
 					for(int i=0; i<2; i++)

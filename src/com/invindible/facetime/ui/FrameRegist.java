@@ -391,6 +391,13 @@ public class FrameRegist extends JFrame implements Context{
 						//第一次,增加进度条
 						ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
 						
+						//将总体均值m插入数据库中
+						double[] m = LdaFeatures.getInstance().getAveVector();
+						ProjectDao.doinsertmean(conn, m);
+						
+						//第二次,增加进度条
+						ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+						
 						//将5张用户的图片封装进Imageinfo
 						Imageinfo imageInfo = new Imageinfo();
 						InputStream[] inputStream = new InputStream[5];
@@ -406,9 +413,6 @@ public class FrameRegist extends JFrame implements Context{
 							inputStream[i] = new ByteArrayInputStream(os.toByteArray());  
 						}
 						imageInfo.setInputstream(inputStream);
-						
-						//第二次,增加进度条
-						ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
 						
 						//插入账户、密码和图片（返回插入的id）
 						int[] userIds = UserDao.doInsert(user, conn, imageInfo);
