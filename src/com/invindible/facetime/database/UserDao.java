@@ -38,7 +38,7 @@ public class UserDao {
 	 * @throws IOException
 	 */
 	
-	public static int  doInsert(User u,Connection conn,Imageinfo im) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
+	public static int[]  doInsert(User u,Connection conn,Imageinfo im) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException {
 		// TODO Auto-generated method stub
 		PreparedStatement pst=conn.prepareStatement("insert into userinfo values(userid.nextval,?,?)");
 		pst.setString(1, u.getUsername());
@@ -55,11 +55,23 @@ public class UserDao {
 			pst=conn.prepareStatement("insert into imageinfo values("+id+",?)");
 			pst.setBinaryStream(1, is[i],is[i].available());
 			pst.executeUpdate();
-			pst=conn.prepareStatement("insert into project(id) values(?)");
-			pst.setInt(1, id);
-			pst.executeUpdate();
 		}
-		return id;
+		pst=conn.prepareStatement("insert into project(id) values(?)");
+		pst.setInt(1, id);
+		pst.executeUpdate();
+		pst=conn.prepareStatement("select id from project",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+		rs=pst.executeQuery();
+		rs.last();
+		int[] allid=new int[rs.getRow()];
+		int index=0;
+		rs.beforeFirst();
+		while(rs.next())
+		{
+			allid[index++]=rs.getInt("id");
+		}
+		pst.close();
+		rs.close();
+		return allid;
 	}
 	
 	/**
