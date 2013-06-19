@@ -2,7 +2,8 @@ package com.invindible.facetime.algorithm;
 
 public class Mark {
 	public static boolean domark(double[][] test,double[][] model,double[] testMean,double[][] modelMean,double[] allMean){
-		int target=modelMean.length/5;
+		int target=modelMean.length;
+		System.out.println("target "+target);
 		
 		double value=L2Form.value(modelMean,allMean);		//l2 domain 
 		double l1value=L1Form.l1value(modelMean,allMean);   //l1 domain
