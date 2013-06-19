@@ -30,6 +30,12 @@ signdate varchar2(20),
 foreign key(id) references userinfo(id)
 );
 
+create table classmean(
+id number,
+mean clob,
+foreign key(id) references userinfo(id);
+)
+
 create sequence userid
 increment by 1
 start with 1

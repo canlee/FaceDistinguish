@@ -194,4 +194,41 @@ public class ProjectDao {
 		return mean;
 		
 	}
+	
+	public static void doinsertmean(Connection conn,double[][] mean,int[] id) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("update classmean set mean=? where id=?");
+		String save="";
+		double[][] tmp=new double[1][mean[0].length];
+		for(int i=0;i<id.length;i++){
+			tmp[0]=mean[i];
+			save=procedure(tmp);
+			pst.setString(1, save);
+			pst.setInt(2, i);
+			pst.executeUpdate();
+			save="";
+			pst.clearParameters();
+		}
+		pst.close();	
+	}
+	
+	public static double[][] doselectclassmean(Connection conn) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("select mean from classmean",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+		ResultSet rs=pst.executeQuery();
+		rs.last();
+		int row=rs.getRow();
+		int column=rs.getString("mean").split(" ").length;
+		double[][] mean=new double[row][column];
+		int index=0;
+		rs.beforeFirst();
+		while(rs.next()){
+			String[] value=rs.getString("mean").split(" ");
+			for(int i=0;i<value.length;i++){
+				mean[index][i]=Double.valueOf(value[i]);
+				index++;
+			}
+		}
+		pst.close();
+		rs.close();
+		return mean;
+	}
 }
