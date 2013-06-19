@@ -172,5 +172,22 @@ public class ProjectDao {
 		pst.setString(1, save);
 		pst.executeUpdate();
 		pst.close();
+		rs.close();
+	}
+	
+	public static double[] doselectmean(Connection conn) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("select *from mean");
+		ResultSet rs=pst.executeQuery();
+		rs.next();
+		String save=rs.getString("allmean");
+		String[] smean=save.split(" ");
+		double[] mean=new double[smean.length];
+		for(int i=0;i<smean.length;i++){
+			mean[i]=Double.valueOf(smean[i]);
+		}
+		pst.close();
+		rs.close();
+		return mean;
+		
 	}
 }
