@@ -134,8 +134,6 @@ public class ProjectDao {
 		ResultSet rs=pst.executeQuery();
 		rs.last();
 		int[] id=new int[rs.getRow()];
-		rs.beforeFirst();
-		rs.next();
 		double[][] modelProject=new double[rs.getRow()*5][rs.getString("pro").split(" ").length/5];
 		int tmp=0;
 		int projectTmp=0;
@@ -145,10 +143,11 @@ public class ProjectDao {
 			id[tmp++]=rs.getInt("id");
 			
 			String[] proj=project.split(" ");	
-			for(int j=0;j<5;j++){
-			for(int i=0;i<modelProject[0].length;i++)
+			for(int j=0;j<5;j++){  //5个投影
+			for(int i=0;i<modelProject[0].length;i++)  //每个投影的列数
 				{	
 					modelProject[projectTmp][i]=Double.valueOf(proj[i+modelProject[0].length*j]);
+					          
 				}				
 				projectTmp++;
 			}
