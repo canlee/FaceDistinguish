@@ -1,5 +1,5 @@
 create table userinfo(
-id number primary key
+id number primary key,
 username varchar2(20),
 password varchar2(20)
 );
