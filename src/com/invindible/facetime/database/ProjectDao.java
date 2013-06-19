@@ -154,7 +154,23 @@ public class ProjectDao {
 		}
 		pro.setId(id);
 		pro.setProject(modelProject);
-		return pro;
-		
+		return pro;		
+	}
+	
+	public static void doinsertmean(Connection conn,double[] mean) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("select *from mean");
+		ResultSet rs=pst.executeQuery();
+		String sql="";
+		if(rs.next())
+			sql="update mean set allmean=?";
+		else
+			sql="insert into mean values(?)";
+		pst=conn.prepareStatement(sql);
+		double[][] tmp=new double[1][mean.length];
+		tmp[0]=mean;
+		String save=procedure(tmp);
+		pst.setString(1, save);
+		pst.executeUpdate();
+		pst.close();
 	}
 }

@@ -14,6 +14,10 @@ create table wopt(
 array clob
 );
 
+create table mean(
+allmean clob
+);
+
 create table project(
 id number,
 pro clob,
