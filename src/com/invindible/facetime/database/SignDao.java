@@ -15,21 +15,15 @@ import com.invindible.facetime.model.Sign;
 import com.invindible.facetime.model.User;
 
 public class SignDao {
-	public static void doSign(User u,Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
-		PreparedStatement pst=conn.prepareStatement("select id from userinfo where username=? and password=?");
-		pst.setString(1, u.getUsername());
-		pst.setString(2, u.getPassword());
-		ResultSet rs=pst.executeQuery();
-		int id;
-		rs.next();
-		id=rs.getInt("id");
+	public static void doSign(int id,Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 		java.util.Date date=new java.util.Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String snow = sdf.format(date); 
-		pst=conn.prepareStatement("insert into sign values(?,?)");
+		PreparedStatement pst = conn.prepareStatement("insert into sign values(?,?)");
 		pst.setInt(1, id);
 		pst.setString(2, snow);
 		pst.executeUpdate();
+		pst.close();
 	}
 	
 	public static ArrayList<Sign> doselect(String datetime,Connection conn) throws SQLException, IOException{
