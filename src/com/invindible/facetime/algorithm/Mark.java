@@ -49,18 +49,18 @@ public class Mark {
 				tmpsecond=second(tmp,facedis);  //l2 find out the second nearest
 				identify[0]=tmp;
 				if(tmpsecond!=-1){
-				if(Math.abs(facedis[tmpsecond]/facedis[tmp])<5)
-				{;}
-				else if(tmp/5+1!=tmpsecond/5+1)
-					{
-						error2++;				
+					if(Math.abs(facedis[tmpsecond]/facedis[tmp])<5)
+					{;}
+					else if(tmp/5+1!=tmpsecond/5+1)
+						{
+							error2++;				
+						}
 					}
-					}
-				else
-				{
-					flag[i]=false;
-					continue;
-				}
+			}
+			else
+			{
+				flag[i]=false;
+				continue;
 			}
 			
 			
@@ -116,7 +116,7 @@ public class Mark {
 			 {
 					flag[i]=false;
 					continue;
-				}
+			}
 			 
 			 if(l1tmp!=-1){
 					int second=second(tmp,l1facedis);
