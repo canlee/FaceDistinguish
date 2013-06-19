@@ -2,6 +2,8 @@ package com.invindible.facetime.algorithm;
 
 public class Mark {
 	public static boolean domark(double[][] test,double[][] model,double[] testMean,double[][] modelMean,double[] allMean){
+		int target=modelMean.length/5;
+		
 		double value=L2Form.value(modelMean,allMean);		//l2 domain 
 		double l1value=L1Form.l1value(modelMean,allMean);   //l1 domain
 		
@@ -12,7 +14,7 @@ public class Mark {
 		
 		double[] facedis;  //l2 distance
 		double[] l1dis;   //l1 distance
-		boolean[] flag=new boolean[3];
+		int[] record=new int[3];
 		for(int i=0;i<=test.length;i++){
 			boolean l2,l1;
 			int[] identify=new int [6];
@@ -22,7 +24,7 @@ public class Mark {
 				l1=L1Form.inL1(testMean, allMean, l1value);	//whether in or not
 				if(!l1||!l2)
 				{
-					flag[i]=false;
+					record[i]=-1;
 					continue;
 				}
 				facedis=L2Form.L2Form(model, testMean);  //calculate l2 distance
@@ -34,7 +36,7 @@ public class Mark {
 				l1=L1Form.inL1(test[i], allMean, l1value);
 				if(!l1||!l2)
 				{
-					flag[i]=false;
+					record[i]=-1;
 					continue;
 				}
 				facedis=L2Form.L2Form(model, test[i]);  //calculate l2 distance
@@ -47,7 +49,7 @@ public class Mark {
 			//---------------------------与总体比较
 			if(tmp!=-1){
 				tmpsecond=second(tmp,facedis);  //l2 find out the second nearest
-				identify[0]=tmp;
+				identify[0]=tmp/5+1;
 				if(tmpsecond!=-1){
 					if(Math.abs(facedis[tmpsecond]/facedis[tmp])<5)
 					{;}
@@ -59,7 +61,7 @@ public class Mark {
 			}
 			else
 			{
-				flag[i]=false;
+				record[i]=-1;
 				continue;
 			}
 			
@@ -67,7 +69,7 @@ public class Mark {
 			int tmpl1second;
 			if(l1tmp!=-1){	 //l1  find out the second nearest
 			tmpl1second=second(l1tmp, l1dis);
-			identify[2]=l1tmp;
+			identify[2]=l1tmp/5+1;
 			if(tmpl1second!=-1){
 				if(Math.abs(l1dis[tmpl1second]/l1dis[l1tmp])<5)
 				;			
@@ -79,7 +81,7 @@ public class Mark {
 			}
 			else
 			{
-				flag[i]=false;
+				record[i]=-1;
 				continue;
 			}
 			
@@ -104,7 +106,7 @@ public class Mark {
 			
 			 if(tmp!=-1){
 					int second=second(tmp,l2facedis);
-					identify[4]=tmp;
+					identify[4]=tmp+1;
 					if(second!=-1){
 					if(l2facedis[tmp]<0.55*l2facedis[second])
 					{;}
@@ -114,13 +116,13 @@ public class Mark {
 			 }
 			 else
 			 {
-					flag[i]=false;
+					record[i]=-1;
 					continue;
 			}
 			 
 			 if(l1tmp!=-1){
 					int second=second(tmp,l1facedis);
-					identify[5]=l1tmp;
+					identify[5]=l1tmp+1;
 					if(second!=-1){
 					if(l1facedis[l1tmp]<0.55*l1facedis[second])
 					{;}
@@ -130,12 +132,12 @@ public class Mark {
 			 }
 			 else
 			 {
-					flag[i]=false; 
+					record[i]=-1;
 					continue;
 				}
 			 
-			 identify[1]=matmp;
-			 identify[3]=mintmp;
+			 identify[1]=matmp+1;
+			 identify[3]=mintmp+1;
 			 
 			//-----------------------与平均比较
 			 
@@ -143,22 +145,31 @@ public class Mark {
 					for(int d=c+1;d<identify.length;d++){
 						if(identify[c]!=identify[d])
 						{
-							flag[i]=false;
+							record[i]=-1;
 							break;
 						}
 					}
-					if(!flag[i])
-						break;
+					if(record[i]==-1)
+						{
+							break;
+						}
+					else if(c==identify.length-1){
+						record[i]=identify[c];
+					}
 				}
+			 if(error1>=2||error2>=2)
+				 record[i]=-1;
+			 System.out.println("record[i]:"+record[i]);
 			
 		}
 		
-		if(flag[0]&&flag[1]&&flag[2])
+		if(record[0]==target&&record[1]==target&&record[2]==target)
 			return true;
-		else if((flag[0]&&flag[2])||(flag[1]&&flag[2]))
+		else if((record[0]==target||record[1]==target)&&record[2]==target)
 			return true;
-		else 
+		else
 			return false;
+		
 	}
 		private static int second(int min,double[] dis){
 			double tmp=Double.MAX_VALUE;
