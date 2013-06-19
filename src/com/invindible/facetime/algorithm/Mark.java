@@ -130,7 +130,7 @@ public class Mark {
 			 }
 			 else
 			 {
-					flag[i]=false;
+					flag[i]=false; 
 					continue;
 				}
 			 
