@@ -46,6 +46,16 @@ public class testProgressBar extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				ProgressBarSignIn.frameProgressBarSignIn = new ProgressBarSignIn();
 				ProgressBarSignIn.frameProgressBarSignIn.setVisible(true);
+				
+				ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+				System.out.println("1");
+				ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+				int a = 1;
+				System.out.println("2");
+				ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+				System.out.println("3");
+				ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+				System.out.println("4");
 			}
 		});
 		btnNewButton.setBounds(62, 58, 93, 23);
@@ -59,6 +69,8 @@ public class testProgressBar extends JFrame {
 		});
 		btnNewButton_1.setBounds(135, 141, 93, 23);
 		contentPane.add(btnNewButton_1);
+		
+
 	}
 
 }

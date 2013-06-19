@@ -55,7 +55,7 @@ public class MixedMahalnobisDistance {
 		ArrayList<double[][]> arrμi = TransformμiToArr(μi);
 		
 		//计算Σi(α)相关数据x^
-		calArrXi();
+//		calArrXi();
 		
 		//计算Σi
 		calΣi();

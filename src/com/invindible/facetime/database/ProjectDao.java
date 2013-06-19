@@ -97,12 +97,16 @@ public class ProjectDao {
 		rs=pst.executeQuery();
 		rs.last();
 		int peoplenum=rs.getRow();
-		int row=peoplenum-1;
-		int column=arr.length/4;
+		int row=-1;
+		if(peoplenum==1)
+			row=1;
+		else
+			row=peoplenum-1;
+		int column=arr.length/row;
 		double[][] array=new double[row][column];
 		for(int i=0;i<row;i++){
 			for(int j=0;j<column;j++)
-				array[i][j]=Double.valueOf(arr[i*5+j]);
+				array[i][j]=Double.valueOf(arr[i*column+j]);
 		}
 		return array;
 	}
@@ -112,7 +116,7 @@ public class ProjectDao {
 		double[][] projectArray=project.getProject();
 		int[] id=project.getId();
 		int tmp=0;
-		PreparedStatement pst= conn.prepareStatement("update pro set pro=? where id=?");
+		PreparedStatement pst= conn.prepareStatement("update project set pro=? where id=?");
 		for(int i=0;i<id.length;i++){
 			String save="";
 			double[][] tmpProject=new double[5][projectArray[0].length];
@@ -189,5 +193,48 @@ public class ProjectDao {
 		rs.close();
 		return mean;
 		
+	}
+	
+	public static void doinsertmean(Connection conn,double[][] mean,int[] id) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("update classmean set mean=? where id=?");
+		String save="";
+		double[][] tmp=new double[1][mean[0].length];
+		for(int i=0;i<id.length;i++){
+			tmp[0]=mean[i];
+			save=procedure(tmp);
+			pst.setString(1, save);
+			pst.setInt(2, id[i]);
+			pst.executeUpdate();
+			save="";
+			pst.clearParameters();
+		}
+		pst.close();	
+	}
+	
+	public static double[][] doselectclassmean(Connection conn) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("select mean from classmean",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+		ResultSet rs=pst.executeQuery();
+		rs.last();
+		int row=rs.getRow();
+		System.out.println("row:" + row);
+		rs.beforeFirst();
+		rs.next();
+		System.out.println(rs.getString("mean"));
+		int column=rs.getString("mean").split(" ").length;
+//		System.out.println("row:" + row + "   column" + column);
+		double[][] mean=new double[row][column];
+		int index=0;
+		rs.beforeFirst();
+		while(rs.next()){
+			String[] value=rs.getString("mean").split(" ");
+			for(int i=0;i<value.length;i++){
+//				System.out.println("index:" + index + "  i:" + i );
+				mean[index][i]=Double.valueOf(value[i]);
+			}
+				index++;
+		}
+		pst.close();
+		rs.close();
+		return mean;
 	}
 }

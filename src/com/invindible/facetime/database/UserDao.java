@@ -59,6 +59,9 @@ public class UserDao {
 		pst=conn.prepareStatement("insert into project(id) values(?)");
 		pst.setInt(1, id);
 		pst.executeUpdate();
+		pst=conn.prepareStatement("insert into classmean(id) values(?)");
+		pst.setInt(1, id);
+		pst.executeUpdate();
 		pst=conn.prepareStatement("select id from project",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 		rs=pst.executeQuery();
 		rs.last();

@@ -17,8 +17,10 @@ import java.awt.image.BufferedImage;
 import javax.swing.JButton;
 
 import com.invindible.facetime.algorithm.LDA;
+import com.invindible.facetime.algorithm.Mark;
 import com.invindible.facetime.database.Oracle_Connect;
 import com.invindible.facetime.database.ProjectDao;
+import com.invindible.facetime.feature.Features;
 import com.invindible.facetime.model.FaceImage;
 import com.invindible.facetime.model.LdaFeatures;
 import com.invindible.facetime.model.Project;
@@ -68,6 +70,9 @@ public class FrameSignIn extends JFrame implements Context{
 	private int requestNum;//剩余的需要更换的照片数量
 	private Connection conn = null;
 	private JButton buttonStart;
+	
+	private String userId;
+	private ImageIcon[] imageFind;
 
 	/**
 	 * Launch the application.
@@ -92,6 +97,7 @@ public class FrameSignIn extends JFrame implements Context{
 		imageIconCaptures = new ImageIcon[2];
 		imageIconResult = new ImageIcon();
 		isImageIconSelected = new boolean[2];
+		imageFind = new ImageIcon[5];
 		changePhoto = true;
 		requestNum = 2;
 		
@@ -216,6 +222,9 @@ public class FrameSignIn extends JFrame implements Context{
 		btnSignIn = new JButton("签到");
 		btnSignIn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				//将 5张照片 和 用户名 当做参数，传递给下一个窗口
+				
 				frameSignIn.setVisible(false);
 				
 				FrameSignInConfirm.frameSignInConfirm = new FrameSignInConfirm();
@@ -248,6 +257,7 @@ public class FrameSignIn extends JFrame implements Context{
 					
 					//从数据库获取WoptT
 					double[][] Wopt = ProjectDao.doselectWopt(conn);
+//					System.out.println("Wopt的维数为:[" + Wopt.length + "])");//[" + Wopt[0].length + "]");
 					//将WoptT保存进单例中
 					LdaFeatures.getInstance().setLastProjectionT(Wopt);
 					
@@ -287,7 +297,7 @@ public class FrameSignIn extends JFrame implements Context{
 					
 					//计算Z时，需要获取m
 					//获取m，并保存进单例中
-					double[] m = ;
+					double[] m = ProjectDao.doselectmean(conn);
 					LdaFeatures.getInstance().setAveVector(m);
 					
 					//计算2张经小波变换的测试图waveTestBImages的投影Z
@@ -322,8 +332,43 @@ public class FrameSignIn extends JFrame implements Context{
 					for(int i=0;i<peopleNum-1;i++)
 						allMean[i]/=peopleNum*photoNum;
 					
-//					if( Mark.domark(testZ, modelP, testZMean, modelMean, allMean) == false)
-//					验证
+					//从数据库中获取"mi的转置"，再经过转置，变成"mi" (每类的差值图像 [像素][n/num])
+					double[][] miTrans = ProjectDao.doselectclassmean(conn);//= LdaFeatures.getInstance().getAveDeviationEach();
+					double[][] mi = Features.matrixTrans(miTrans);
+					//将mi保存进单例中，以供马氏距离计算使用。
+					LdaFeatures.getInstance().setAveDeviationEach(mi);
+					
+					//验证（尝试识别，识别失败则需要重新获取图片）
+					int idFind = Mark.identify(testZ, modelP, testZMean, modelMean, allMean);
+					System.out.println("idFind" + idFind);
+					System.out.println("userIds[]:" + userIds[idFind-1]);
+					//若没找到
+					if( idFind == -1)
+					{
+						JOptionPane.showMessageDialog(null, "识别失败!点击确定后,系统将重新截图。", "提示", JOptionPane.INFORMATION_MESSAGE);
+						
+						for(int i=0; i<2; i++)
+						{
+							isImageIconSelected[i] = true;
+						}
+						changePhoto = true;
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(null, "识别成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+						
+						//获取识别对象的5张照片
+						
+						
+						//将5张照片中的第1张图片显示在labelResult中
+//						labelResult.setIcon(icon);
+						
+
+						
+						//设置“签到按钮”可以点击
+//						btnSignIn.setEnabled(true);
+						//(点击“签到”后，将5张照片当做参数，传递给下一个窗口。)
+					}
 
 				}
 				catch(Exception e1)
