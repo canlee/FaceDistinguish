@@ -85,7 +85,7 @@ public class UserDao {
 			PreparedStatement pst=conn.prepareStatement("select image from imageinfo",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 			ResultSet rs=pst.executeQuery();
 			rs.last();
-			InputStream[] fos=new FileInputStream[rs.getRow()];
+			InputStream[] fos=new InputStream[rs.getRow()];
 			bf=new BufferedImage[rs.getRow()];
 			rs.beforeFirst();
 			int index=0;
