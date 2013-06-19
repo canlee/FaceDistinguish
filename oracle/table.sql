@@ -1,7 +1,7 @@
 create table userinfo(
 id number primary key
-username varchar(20),
-password varchar(20),
+username varchar2(20),
+password varchar2(20)
 );
 
 create table imageinfo(
