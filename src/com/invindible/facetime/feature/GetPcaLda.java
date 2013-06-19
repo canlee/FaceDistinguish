@@ -12,8 +12,8 @@ import com.invindible.facetime.util.image.ImageUtil;
 public class GetPcaLda {
 
 	private static GetPcaLda gpl = null;
-	private static int height = 128;//等比例图片处理时的高
-	private static int width = 128;//等比例图片处理时的宽
+	private static int height = 64;//等比例图片处理时的高
+	private static int width = 64;//等比例图片处理时的宽
 	private static int num = 5;//每个人的图片数量
 	
 	//懒汉式单例
@@ -45,24 +45,24 @@ public class GetPcaLda {
 	 * Pca结果保存至Features类中，Lda结果保存至LDAFeatures类中
 	 * 最佳投影矩阵保存至LDAFeatures类中
 	 */
-	public static void getResult(ImageIcon[] icon)
+	public static void getResult(BufferedImage[] bImg)
 	{
 		int pixLength = width * height;//图片一维数组长度
 		
-		double[][] vec = new double[pixLength][icon.length];
+		double[][] vec = new double[pixLength][bImg.length];//bImg.length为图片数量
 //		System.out.println("pixLength:" + pixLength);
 //		System.out.println("icon.length:" + icon.length);
-		for(int i=0; i<icon.length; i++)
+		for(int i=0; i<bImg.length; i++)
 		{
 //			System.out.println("i:" + i);
-			icon[i] = GetFeatureMatrix.ImageHandle(icon[i], width, height);//图片等比例处理
+//			icon[i] = GetFeatureMatrix.ImageHandle(icon[i], width, height);//图片等比例处理
 			
 //			System.out.println("过了");
-			Image img = icon[i].getImage();
-			BufferedImage bimg = ImageUtil.ImageToBufferedImage(img);
+//			Image img = icon[i].getImage();
+//			BufferedImage bimg = ImageUtil.ImageToBufferedImage(img);
 			
 			//获取第i张图片的像素，并转成double[]
-			int[] imgVec = GetFeatureMatrix.getPixes(bimg);//获取像素
+			int[] imgVec = GetFeatureMatrix.getPixes(bImg[i]);//获取像素
 			
 			double[] imgVecD = GetFeatureMatrix.intToDouble(imgVec);//将int[]转成double[]
 			

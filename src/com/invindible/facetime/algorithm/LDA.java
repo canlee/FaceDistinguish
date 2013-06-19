@@ -599,13 +599,13 @@ public class LDA {
 	/**
 	 * 获取指定图片的特征向量Z
 	 */
-	public static double[] calZ(ImageIcon icon)
+	public static double[] calZ(BufferedImage bImg)
 	{
-		icon = GetFeatureMatrix.ImageHandle(icon, width, height);//图片等比例处理
-		Image img = icon.getImage();
-		BufferedImage bimg = ImageUtil.ImageToBufferedImage(img);
+//		icon = GetFeatureMatrix.ImageHandle(icon, width, height);//图片等比例处理
+//		Image img = icon.getImage();
+//		BufferedImage bimg = ImageUtil.ImageToBufferedImage(img);
 		//获取第i张图片的像素，并转成double[]
-		int[] imgVec = GetFeatureMatrix.getPixes(bimg);//获取像素
+		int[] imgVec = GetFeatureMatrix.getPixes(bImg);//获取像素
 		double[] imgVecD = GetFeatureMatrix.intToDouble(imgVec);//将int[]转成double[]
 		
 		double[] m = LdaFeatures.getInstance().getAveVector();

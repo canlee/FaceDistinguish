@@ -29,8 +29,8 @@ public class GetFeatureMatrix {
 	//ArrayList<double[]> arr = new ArrayList<double[]>();
 	double[] v1 = new double[100];
 	private static int nOld;
-	private static int height = 128;//等比例图片处理时的高
-	private static int width = 128;//等比例图片处理时的宽
+	private static int height = 64;//等比例图片处理时的高
+	private static int width = 64;//等比例图片处理时的宽
 	/**
 	 * 将int[]转化成double[]
 	 */
@@ -273,6 +273,8 @@ public class GetFeatureMatrix {
 		double[] eigenValue = Features.getInstance().getEigenValue();//特征值
 		double[][] featureVec = Features.getInstance().getFeatureVector();//特征向量
 		
+//		System.out.println("width*height:" + width*height);//4096
+//		System.out.println("featureVec[0].length" + featureVec[0].length);//10
 		double[][] resultFeatureVector = new double[width*height][featureVec[0].length]; 
 		
 		for(int i=0; i<featureVec[0].length; i++)
@@ -287,9 +289,9 @@ public class GetFeatureMatrix {
 			Matrix xOld = new Matrix(AveDeviation);
 			Matrix featureVecOfOneObject = new Matrix(temp);
 //			System.out.println("[" + xOld.getRowDimension() + "]" +
-//					"[" + xOld.getColumnDimension() +"]");
+//					"[" + xOld.getColumnDimension() +"]");//[16384][10]
 //			System.out.println("[" + featureVecOfOneObject.getRowDimension() + "]" +
-//					"[" + featureVecOfOneObject.getColumnDimension() +"]");
+//					"[" + featureVecOfOneObject.getColumnDimension() +"]");//[10][1]
 			
 			Matrix resultMatrix = xOld.times(featureVecOfOneObject);
 //			System.out.println("[" + resultMatrix.getRowDimension() + "]" +
@@ -301,6 +303,8 @@ public class GetFeatureMatrix {
 			double[][] temp2 = new double[1][1];
 			temp2 = resultMatrix.getArray();
 			
+//			System.out.println("temp2.length:" + temp2.length);//16384-------------
+//			System.out.println("temp2[0].length:" + temp2[0].length);//1
 			//将构成的[N][1] 复制到[N][i]中
 			for(int j=0; j<temp2.length; j++)
 			{
