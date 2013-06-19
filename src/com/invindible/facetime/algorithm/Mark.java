@@ -159,7 +159,7 @@ public class Mark {
 				}
 			 if(error1>=2||error2>=2)
 				 record[i]=-1;
-			 System.out.println("record[i]:"+record[i]);
+			 System.out.println("record "+i+" :"+record[i]);
 			
 		}
 		
