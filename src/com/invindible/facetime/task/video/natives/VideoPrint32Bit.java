@@ -10,6 +10,7 @@ public class VideoPrint32Bit extends VideoPrintJNI {
 	private VideoPrintListener listener;
 	
 	public VideoPrint32Bit(String videoFile) {
+		super();
 		this.videoFile = videoFile;
 	}
 	

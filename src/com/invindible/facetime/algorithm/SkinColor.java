@@ -38,6 +38,7 @@ public class SkinColor {
 		//肤色分割
 		double[][] probability = SkinColorCutUtil.getProbability(rgb);
 		rgb = SkinColorCutUtil.getSkinGray(probability);
+		probability = null;
 		int threshold = SkinColorCutUtil.getThreshold(rgb);
 		rgb = SkinColorCutUtil.imgToBinary(rgb, threshold);
 		//中值滤波

@@ -1,6 +1,7 @@
 package com.invindible.facetime.service.implement;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import com.invindible.facetime.service.interfaces.FindFaceInterface;
 import com.invindible.facetime.task.image.FindFaceForCameraTask;
@@ -34,6 +35,13 @@ public class FindFaceForCameraInterfaceImpl implements FindFaceInterface {
 			findTask.find(image);
 		}
 	}
+	
+	@Override
+	public void findFace(BufferedImage image, long time) {
+		if(findTask != null) {
+			findTask.find(image, time);
+		}
+	}
 
 	@Override
 	public void stop() {
@@ -41,6 +49,14 @@ public class FindFaceForCameraInterfaceImpl implements FindFaceInterface {
 			findTask.stopTask();
 			findTask = null;
 		}
+	}
+
+	@Override
+	public int getQueueSize() {
+		if(findTask != null) {
+			return findTask.getQueueSize();
+		}
+		return 0;
 	}
 	
 }

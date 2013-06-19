@@ -10,6 +10,7 @@ public class VideoPrint64bit extends VideoPrintJNI {
 	private VideoPrintListener listener;
 	
 	public VideoPrint64bit(String videoFile) {
+		super();
 		this.videoFile = videoFile;
 	}
 	

@@ -6,6 +6,15 @@ package com.invindible.facetime.task.video.natives;
  *
  */
 public abstract class VideoPrintJNI {
+	
+	/**
+	 * 是否开始，如果开始后设置为 false 则停止截图
+	 */
+	protected boolean isStart;
+	
+	public VideoPrintJNI() {
+		isStart = false;
+	}
 
 	/**
 	 * 开始将指定视频截图，结果回调在getScreenResult方法中
@@ -18,7 +27,9 @@ public abstract class VideoPrintJNI {
 	/**
 	 * 停止视频截取
 	 */
-	public native void stop();
+	public void stop() {
+		isStart = false;
+	}
 	
 	/**
 	 * 截图的回调方法

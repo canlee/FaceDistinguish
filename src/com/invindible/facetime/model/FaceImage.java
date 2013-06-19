@@ -16,6 +16,7 @@ import java.util.List;
  */
 public class FaceImage {
 
+	private Integer videoId;		//如果图片是从视频流那里截来的，则用此id来记录是哪个视频的
 	private BufferedImage originImage;	//原始图片
 	private long time;				//截取图片时的时间
 	
@@ -26,6 +27,24 @@ public class FaceImage {
 	public FaceImage() {
 		facesRgb = new ArrayList<ConnectedImage>();
 		DWTRgb = new ArrayList<int[][][]>();
+		videoId = null;
+	}
+	
+	
+	/**
+	 * 如果图片是从视频流那里截来的，则用此id来记录是哪个视频的
+	 * @return
+	 */
+	public Integer getVideoId() {
+		return videoId;
+	}
+	
+	/**
+	 * 如果图片是从视频流那里截来的，则用此id来记录是哪个视频的
+	 * @param videoId
+	 */
+	public void setVideoId(int videoId) {
+		this.videoId = videoId;
 	}
 
 	/**
