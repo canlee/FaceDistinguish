@@ -42,7 +42,7 @@ public class UserDao {
 		// TODO Auto-generated method stub
 		PreparedStatement pst=conn.prepareStatement("insert into userinfo values(userid.nextval,?,?)");
 		pst.setString(1, u.getUsername());
-		pst.setString(2, u.getPassword());
+		pst.setString(2, u.getPassword()); 
 		pst.executeUpdate();
 		pst=conn.prepareStatement("select id from userinfo where username=? and password=?");
 		pst.setString(1, u.getUsername());
