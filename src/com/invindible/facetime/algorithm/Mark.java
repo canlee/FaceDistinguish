@@ -157,6 +157,9 @@ public class Mark {
 			 identify[3]=mintmp+1;
 			 
 			//-----------------------与平均比较
+			 for(int c=0;c<identify.length;c++){
+				 System.out.println(identify[c]);
+			 }
 			 
 			 for(int c=0;c<identify.length;c++){
 					for(int d=c+1;d<identify.length;d++){
