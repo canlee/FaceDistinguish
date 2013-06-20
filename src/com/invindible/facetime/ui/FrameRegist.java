@@ -419,11 +419,18 @@ public class FrameRegist extends JFrame implements Context{
 						//插入账户、密码和图片（返回插入的id）
 						int[] userIds = UserDao.doInsert(user, conn, imageInfo);
 						
-						//将每类的差值图像 [像素][n/num] 转置成 [n/num][素]
+						//将每个图像的差值图像[像素][n] 转置成 [n][像素]
+						double[][] mAveDeviation = LdaFeatures.getInstance().getAveDeviationDouble();
+						double[][] mAveDeviationTrans = Features.matrixTrans(mAveDeviation);
+						//将转置后的每个图像的差值图像存进数据库中
+						ProjectDao.doinsertPeoplemean(conn, mAveDeviationTrans, userIds);
+						
+						
+						//将每类的差值图像 [像素][n/num] 转置成 [n/num][像素]
 						double[][] mi = LdaFeatures.getInstance().getAveDeviationEach();
 						double[][] miTrans = Features.matrixTrans(mi);
 						//将转置后的mi存进数据库中
-						ProjectDao.doinsertmean(conn, miTrans, userIds);
+						ProjectDao.doinsertclassmean(conn, miTrans, userIds);
 						
 						
 						//第三次,增加进度条

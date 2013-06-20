@@ -18,6 +18,7 @@ import javax.swing.JButton;
 
 import com.invindible.facetime.algorithm.LDA;
 import com.invindible.facetime.algorithm.Mark;
+import com.invindible.facetime.database.ApplicationConfig;
 import com.invindible.facetime.database.Oracle_Connect;
 import com.invindible.facetime.database.ProjectDao;
 import com.invindible.facetime.feature.Features;
@@ -40,7 +41,9 @@ import java.awt.Color;
 import javax.swing.border.LineBorder;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.sql.Connection;
+import java.util.ArrayList;
 
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
@@ -94,6 +97,12 @@ public class FrameSignIn extends JFrame implements Context{
 	 * Create the frame.
 	 */
 	public FrameSignIn() {
+//		try {
+//			ApplicationConfig.setupLink();
+//		} catch (IOException e2) {
+//			// TODO Auto-generated catch block
+//			e2.printStackTrace();
+//		}
 		imageIconCaptures = new ImageIcon[2];
 		imageIconResult = new ImageIcon();
 		isImageIconSelected = new boolean[2];
@@ -332,6 +341,29 @@ public class FrameSignIn extends JFrame implements Context{
 					for(int i=0;i<peopleNum-1;i++)
 						allMean[i]/=peopleNum*photoNum;
 					
+					//从数据库中获取"x(m)的转置"，再经过转置，变成"x"(每个图像的差值图像[像素][n])
+					double[][] xAveDeviationTrans = ProjectDao.doselectPeoplemean(conn);//
+					double[][] xAveDeviation = Features.matrixTrans(xAveDeviationTrans);
+					
+					
+					//将每副图的数据保存进temp，再装入ArrayList中
+					//再保存进单例中
+					ArrayList<double[][]> arrResult = new ArrayList<double[][]>();//存放结果的数组
+					int length = xAveDeviation.length;
+					int n = xAveDeviation[0].length;
+					
+					//将xAveDeviation，转成ArrayList<double[][]> 存入单例中，以供马氏距离计算使用。
+					for(int i=0; i<n; i++)
+					{
+						double[][] temp = new double[length][1];
+						for(int j=0; j<length; j++)
+						{
+							temp[j][0] = xAveDeviation[j][i];
+						}
+						arrResult.add(temp);
+					}
+					LdaFeatures.getInstance().setAveDeviation(arrResult);
+					
 					//从数据库中获取"mi的转置"，再经过转置，变成"mi" (每类的差值图像 [像素][n/num])
 					double[][] miTrans = ProjectDao.doselectclassmean(conn);//= LdaFeatures.getInstance().getAveDeviationEach();
 					double[][] mi = Features.matrixTrans(miTrans);
@@ -410,11 +442,12 @@ public class FrameSignIn extends JFrame implements Context{
 			{
 				JOptionPane.showMessageDialog(null, "数据库中尚无数据,请先注册!", "提示",  JOptionPane.INFORMATION_MESSAGE);
 				
-				//关闭此窗口
-				frameSignIn.dispose();
-				//打开主窗口
-				MainUI.frameMainUI = new MainUI();
-				MainUI.frameMainUI.setVisible(true);
+				this.buttonStart.setEnabled(false);
+//				//关闭此窗口
+//				frameSignIn.dispose();
+//				//打开主窗口
+//				MainUI.frameMainUI = new MainUI();
+//				MainUI.frameMainUI.setVisible(true);
 			}
 		}
 		catch(Exception e1)
@@ -429,6 +462,7 @@ public class FrameSignIn extends JFrame implements Context{
 		findTask = new FindFaceForCameraInterfaceImpl(this);
 		findTask.start();
 		
+//		frameSignIn.dispose();
 	}
 
 	@Override

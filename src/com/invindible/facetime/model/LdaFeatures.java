@@ -13,6 +13,7 @@ public class LdaFeatures {
 	private double[][] eachAveVector;//类内平均图像 [像素][C个人]
 	private double[] aveVector;//总体平均图像[像素]
 	private ArrayList<double[][]> aveDeviation;//每个图像的差值图像（每个类内图像减去本类平均图像） [像素][n]
+	private double[][] aveDeviationDouble;//每个图像的差值图像,double型 [像素][n]
 	private double[][] aveDeviationEach;//每类的差值图像 [像素][n/num]
 	
 	private ArrayList<double[][]> projectionAveDeviation;//投影：中心化后的图像投影到Wpca [n][n]
@@ -325,6 +326,14 @@ public class LdaFeatures {
 
 	public void setMi(double[][] mi) {
 		this.mi = mi;
+	}
+
+	public double[][] getAveDeviationDouble() {
+		return aveDeviationDouble;
+	}
+
+	public void setAveDeviationDouble(double[][] aveDeviationDouble) {
+		this.aveDeviationDouble = aveDeviationDouble;
 	}
 	
 	

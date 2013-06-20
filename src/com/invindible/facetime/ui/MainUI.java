@@ -7,6 +7,7 @@ import java.awt.Image;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
 import javax.swing.border.EmptyBorder;
@@ -15,7 +16,9 @@ import java.awt.GridLayout;
 import javax.swing.JSplitPane;
 import javax.swing.JButton;
 
+import com.invindible.facetime.database.ApplicationConfig;
 import com.invindible.facetime.database.OnAndOff;
+import com.invindible.facetime.database.OracleConfig;
 import com.invindible.facetime.org.eclipse.wb.swing.FocusTraversalOnArray;
 import com.invindible.facetime.service.implement.CameraInterfaceImpl;
 
@@ -23,10 +26,13 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 
 public class MainUI extends JFrame{
 	static JPanel contentPane;
 	static MainUI frameMainUI;
+	private boolean isFirstTime = true;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -144,6 +150,46 @@ public class MainUI extends JFrame{
 		contentPane.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{panelMessage, panelPic, btnRegist, btnEnter, panelButton}));
 		panelPic.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{panelMessage}));
 		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{contentPane, panelPic, lblWallPaper, panelButton, btnRegist, btnEnter, panelMessage}));
+	
+		
+		
+		//查看是否是第一次运行
+		try {
+			if (ApplicationConfig.first() == true)
+			{
+				String port = JOptionPane.showInputDialog(null, "请输入Oracle数据库端口（默认：1521）", "程序初始化配置-1",  JOptionPane.INFORMATION_MESSAGE);
+//				
+				String dbName = JOptionPane.showInputDialog(null, "请输入Oracle数据库名称（默认：orcl）", "程序初始化配置-2",  JOptionPane.INFORMATION_MESSAGE);
+				
+				String managerId = JOptionPane.showInputDialog(null, "请输入Oracle数据库管理员用户名（默认：system）", "程序初始化配置-3",  JOptionPane.INFORMATION_MESSAGE);
+				
+				String managerPwd = JOptionPane.showInputDialog(null, "请输入Oracle数据库管理员密码", "程序初始化配置-4",  JOptionPane.INFORMATION_MESSAGE);
+				
+				//开始配置数据库
+				ApplicationConfig.setupConfig(port, dbName);
+				
+				//建立连接
+				ApplicationConfig.setupLink();
+				
+				//用管理员建立ai_face数据库用户
+				OracleConfig.config(managerId, managerPwd);
+				
+				//为ai_face建立 数据库的表
+				OracleConfig.configtable();
+				
+			}
+			else
+			{
+				//建立数据库连接
+				ApplicationConfig.setupLink();
+				System.out.println("walk u");
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	
+	
 	}
 	
 	//图片等比例处理方法,width和height为宽度和高度

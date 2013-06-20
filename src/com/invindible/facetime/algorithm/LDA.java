@@ -127,6 +127,9 @@ public class LDA {
 			}
 		}
 		
+		//将结果的double[][]类型保存进单例中
+		LdaFeatures.getInstance().setAveDeviationDouble(resultTemp);
+		
 		//将每副图的数据保存进temp，再装入ArrayList中
 		for(int i=0; i<n; i++)
 		{
