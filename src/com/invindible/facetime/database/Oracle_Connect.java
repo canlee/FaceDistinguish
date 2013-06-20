@@ -18,9 +18,11 @@ public class Oracle_Connect {
 	
 	private static final Oracle_Connect o_c=new Oracle_Connect();
 	
-	private String url="jdbc:oracle:thin:@localhost";
-	public void setUrl(String port,String databasename) {
-		url+=":"+port+":"+databasename;
+	private String url;
+	
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	private final static String user="ai_face";
