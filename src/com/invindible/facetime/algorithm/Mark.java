@@ -179,9 +179,9 @@ public class Mark {
 	public static int identify(double[][] test,double[][] model,double[] testMean,double[][] modelMean,double[] allMean){	
 		
 		int[] record=mark(test,model,testMean,modelMean,allMean);	
-		if(record[0]==record[1]&&record[1]==record[2])
+		if(record[0]==record[1]&&record[1]==record[2]&&record[1]!=-1)
 				return record[1];
-			else if((record[0]==record[2]||record[1]==record[2]))
+			else if((record[0]==record[2]||record[1]==record[2])&&record[2]!=-1)
 				return record[2];
 			else
 				return -1;
