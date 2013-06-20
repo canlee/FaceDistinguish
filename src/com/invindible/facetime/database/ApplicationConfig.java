@@ -40,7 +40,7 @@ public class ApplicationConfig {
 		bw.close();
 	}
 	
-	/**
+	/** 
 	 * 建立数据连接
 	 * @throws IOException
 	 */
