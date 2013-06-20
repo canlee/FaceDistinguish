@@ -620,6 +620,7 @@ public class LDA {
 		Matrix maTemp = new Matrix(temp);
 		
 		double[][] lastProjection = LdaFeatures.getInstance().getLastProjectionT();//获取WoptT
+//		System.out.println("Wopt的维数为:[" + lastProjection.length + "][" + lastProjection[0].length + "]");
 		Matrix maWopt = new Matrix(lastProjection);
 		
 		

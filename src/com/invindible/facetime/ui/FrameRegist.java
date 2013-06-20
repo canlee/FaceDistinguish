@@ -20,6 +20,7 @@ import com.invindible.facetime.algorithm.Mark;
 import com.invindible.facetime.database.Oracle_Connect;
 import com.invindible.facetime.database.ProjectDao;
 import com.invindible.facetime.database.UserDao;
+import com.invindible.facetime.feature.Features;
 import com.invindible.facetime.feature.GetFeatureMatrix;
 import com.invindible.facetime.feature.GetPcaLda;
 import com.invindible.facetime.model.FaceImage;
@@ -189,8 +190,9 @@ public class FrameRegist extends JFrame implements Context{
 						//------------------------------peopleNum需要从数据库中获取---------------------------------------------
 						//获取peopleNum
 						peopleNum = bimg.length / 5;
+						peopleNum++;
 						//实例化bImages图片数组
-						bImages = new BufferedImage[peopleNum * photoNum];
+						bImages = new BufferedImage[peopleNum * photoNum];//因为注册多了一个人，所以peopleN+1
 //						icon = new ImageIcon[peopleNum * photoNum];
 						
 						for(int i=0; i<bimg.length; i++)
@@ -256,7 +258,7 @@ public class FrameRegist extends JFrame implements Context{
 				BufferedImage[] waveBImages;
 				//若数据库中无人，加入了“酱油”，则只对新加的人进行小波变换
 				//变换完后，需要将“已经过小波变换的酱油的图片”加入数组中
-				if(peopleNum == 2)
+				if(haveSoy)
 				{
 					BufferedImage[] tempForOneManWaveBImages = Wavelet.Wavelet(tempForOneManBImages);
 					waveBImages = new BufferedImage[10];
@@ -372,7 +374,9 @@ public class FrameRegist extends JFrame implements Context{
 				}
 				//若可以，则注册成功，将用户名、密码、5张照片存入数据库
 				else{
-					JOptionPane.showMessageDialog(null, "注册成功！正在将数据存入数据库中。", "注册成功", JOptionPane.INFORMATION_MESSAGE);
+//					JOptionPane.showMessageDialog(null, "注册成功！正在将数据存入数据库中。", "注册成功", JOptionPane.INFORMATION_MESSAGE);
+					ProgressBarSignIn.frameProgressBarSignIn = new ProgressBarSignIn();
+					ProgressBarSignIn.frameProgressBarSignIn.setVisible(true);
 					
 					try
 					{
@@ -381,8 +385,20 @@ public class FrameRegist extends JFrame implements Context{
 						Wopt wopt = new Wopt();
 						wopt.setWopt(WoptT);
 						
+						
 						//将Wopt插入数据库中
 						ProjectDao.doinsertWopt(conn, wopt);
+						
+						//第一次,增加进度条
+						ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+						
+						//将总体均值m插入数据库中
+						double[] m = LdaFeatures.getInstance().getAveVector();
+						ProjectDao.doinsertmean(conn, m);
+
+						
+						//第二次,增加进度条
+						ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
 						
 						//将5张用户的图片封装进Imageinfo
 						Imageinfo imageInfo = new Imageinfo();
@@ -402,6 +418,16 @@ public class FrameRegist extends JFrame implements Context{
 						
 						//插入账户、密码和图片（返回插入的id）
 						int[] userIds = UserDao.doInsert(user, conn, imageInfo);
+						
+						//将每类的差值图像 [像素][n/num] 转置成 [n/num][素]
+						double[][] mi = LdaFeatures.getInstance().getAveDeviationEach();
+						double[][] miTrans = Features.matrixTrans(mi);
+						//将转置后的mi存进数据库中
+						ProjectDao.doinsertmean(conn, miTrans, userIds);
+						
+						
+						//第三次,增加进度条
+						ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
 						
 						//若有“酱油”，则将“酱油”的投影移除
 						double[][] insertModelP = new double[modelP.length-5][modelP[0].length];
@@ -428,12 +454,20 @@ public class FrameRegist extends JFrame implements Context{
 						//插入所有投影
 						ProjectDao.doinsertProject(conn, project);
 						
+						//第四次,增加进度条
+						ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+						
 					}
 					catch(Exception e1)
 					{
 						e1.printStackTrace();
 					}
 					
+					//提示数据库操作成功
+					JOptionPane.showMessageDialog(null, "数据已插入数据库中！", "操作成功", JOptionPane.INFORMATION_MESSAGE);
+					
+					//关闭进度条窗口
+					ProgressBarSignIn.frameProgressBarSignIn.dispose();
 					
 					frameRegist.dispose();
 					MainUI.frameMainUI = new MainUI();

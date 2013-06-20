@@ -7,6 +7,7 @@ import java.awt.Image;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
@@ -15,7 +16,14 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JButton;
 
+import com.invindible.facetime.algorithm.LDA;
+import com.invindible.facetime.algorithm.Mark;
+import com.invindible.facetime.database.Oracle_Connect;
+import com.invindible.facetime.database.ProjectDao;
+import com.invindible.facetime.feature.Features;
 import com.invindible.facetime.model.FaceImage;
+import com.invindible.facetime.model.LdaFeatures;
+import com.invindible.facetime.model.Project;
 import com.invindible.facetime.service.implement.CameraInterfaceImpl;
 import com.invindible.facetime.service.implement.FindFaceForCameraInterfaceImpl;
 import com.invindible.facetime.service.interfaces.CameraInterface;
@@ -25,11 +33,15 @@ import com.invindible.facetime.task.interfaces.Context;
 import com.invindible.facetime.task.video.VideoStreamTask;
 import com.invindible.facetime.util.Debug;
 import com.invindible.facetime.util.image.ImageUtil;
+import com.invindible.facetime.wavelet.Wavelet;
+
 import javax.swing.border.BevelBorder;
 import java.awt.Color;
 import javax.swing.border.LineBorder;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.sql.Connection;
+
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.SwingConstants;
@@ -56,6 +68,11 @@ public class FrameSignIn extends JFrame implements Context{
 	private boolean[] isImageIconSelected;//第i个照片是否要更换的标志
 	private boolean changePhoto;//是否要更换照片的标志
 	private int requestNum;//剩余的需要更换的照片数量
+	private Connection conn = null;
+	private JButton buttonStart;
+	
+	private String userId;
+	private ImageIcon[] imageFind;
 
 	/**
 	 * Launch the application.
@@ -80,6 +97,7 @@ public class FrameSignIn extends JFrame implements Context{
 		imageIconCaptures = new ImageIcon[2];
 		imageIconResult = new ImageIcon();
 		isImageIconSelected = new boolean[2];
+		imageFind = new ImageIcon[5];
 		changePhoto = true;
 		requestNum = 2;
 		
@@ -204,6 +222,9 @@ public class FrameSignIn extends JFrame implements Context{
 		btnSignIn = new JButton("签到");
 		btnSignIn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				//将 5张照片 和 用户名 当做参数，传递给下一个窗口
+				
 				frameSignIn.setVisible(false);
 				
 				FrameSignInConfirm.frameSignInConfirm = new FrameSignInConfirm();
@@ -216,6 +237,190 @@ public class FrameSignIn extends JFrame implements Context{
 		btnSignIn.setFont(new Font("宋体", Font.PLAIN, 16));
 		//设置“签到”按钮默认无法点击
 		btnSignIn.setEnabled(false);
+		
+		buttonStart = new JButton("开始识别");
+		buttonStart.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//若图片尚未截取,则提示请先等待拍照
+				if(requestNum != 0)
+				{
+					JOptionPane.showMessageDialog(null, "图片尚未截取,请先站在摄像头前,等待截取面部信息。", "提示", JOptionPane.INFORMATION_MESSAGE);
+					return;
+				}
+				
+				
+//				//从数据库中读取所有样本数据和WoptT
+				try
+				{
+					conn = Oracle_Connect.getInstance().getConn();
+					
+					//从数据库获取WoptT
+					double[][] Wopt = ProjectDao.doselectWopt(conn);
+//					System.out.println("Wopt的维数为:[" + Wopt.length + "])");//[" + Wopt[0].length + "]");
+					//将WoptT保存进单例中
+					LdaFeatures.getInstance().setLastProjectionT(Wopt);
+					
+					//从数据库获取所有样本的投影Z
+					Project project = new Project();
+					project = ProjectDao.doselectProject(conn);
+					
+					//用户id
+					int[] userIds = project.getId();
+					
+					int peopleNum = userIds.length;
+					
+					//所有训练样例的投影Z
+					double[][] modelP = project.getProject();
+					
+//					2.2张照片的投影（将拍到的图片，通过Wopt投影后,转成double[][]）
+					double[][] testZ = new double[2][modelP[0].length];//[测试用例数量][C-1]
+//					3.训练样例的投影（上面的modelP）
+					//double[][] modelP
+//					4.<2>的均值（从<2>处理）
+					double[] testZMean = new double[testZ[0].length];
+//					5.（投影Z的）N个人的，类内均值（每个人都有一个均值)
+					double[][] modelMean=new double[peopleNum][peopleNum-1];
+//					6.（投影Z的）总体均值
+					double[] allMean=new double[peopleNum-1];
+					
+					//2张照片的投影（将拍到的图片，通过Wopt投影后,转成double[][]）
+					BufferedImage[] tempForTestBImages = new BufferedImage[2];
+					for(int i=0; i<2; i++)
+					{
+						Image img = imageIconCaptures[i].getImage();
+						tempForTestBImages[i] = ImageUtil.ImageToBufferedImage(img);
+					}
+					
+					//然后，对tempForTestBImages进行小波变换，转成BufferedImage[2]
+					BufferedImage[] waveTestBImages = Wavelet.Wavelet(tempForTestBImages);
+					
+					//计算Z时，需要获取m
+					//获取m，并保存进单例中
+					double[] m = ProjectDao.doselectmean(conn);
+					LdaFeatures.getInstance().setAveVector(m);
+					
+					//计算2张经小波变换的测试图waveTestBImages的投影Z
+					for(int i=0; i<2; i++)
+					{
+						testZ[i]=LDA.getInstance().calZ(waveTestBImages[i]);
+					}
+					
+					//4.<2>的均值（从<2>处理）
+					for(int i=0; i<(peopleNum-1); i++)
+					{
+						for(int j=0; j<2; j++)
+						{
+							testZMean[i] += testZ[j][i];
+						}
+						testZMean[i] /= 2;
+					}
+					
+					int photoNum = 5;
+					//5.（投影Z的）N个人的，类内均值（每个人都有一个均值)
+					//6.（投影Z的）总体均值
+					for(int i=0;i<peopleNum;i++){
+						for(int k=0;k<peopleNum-1;k++){
+							for(int j=0;j<photoNum;j++){
+								modelMean[i][k]+=modelP[photoNum*i+j][k];
+							}
+							allMean[k]+=modelMean[i][k];
+							modelMean[i][k]/=photoNum;
+						}			
+					}
+					
+					for(int i=0;i<peopleNum-1;i++)
+						allMean[i]/=peopleNum*photoNum;
+					
+					//从数据库中获取"mi的转置"，再经过转置，变成"mi" (每类的差值图像 [像素][n/num])
+					double[][] miTrans = ProjectDao.doselectclassmean(conn);//= LdaFeatures.getInstance().getAveDeviationEach();
+					double[][] mi = Features.matrixTrans(miTrans);
+					//将mi保存进单例中，以供马氏距离计算使用。
+					LdaFeatures.getInstance().setAveDeviationEach(mi);
+					
+					//验证（尝试识别，识别失败则需要重新获取图片）
+					int idFind = Mark.identify(testZ, modelP, testZMean, modelMean, allMean);
+					System.out.println("idFind" + idFind);
+					System.out.println("userIds[]:" + userIds[idFind-1]);
+					//若没找到
+					if( idFind == -1)
+					{
+						JOptionPane.showMessageDialog(null, "识别失败!点击确定后,系统将重新截图。", "提示", JOptionPane.INFORMATION_MESSAGE);
+						
+						for(int i=0; i<2; i++)
+						{
+							isImageIconSelected[i] = true;
+						}
+						changePhoto = true;
+					}
+					else
+					{
+						JOptionPane.showMessageDialog(null, "识别成功", "提示", JOptionPane.INFORMATION_MESSAGE);
+						
+						//获取识别对象的5张照片
+						
+						
+						//将5张照片中的第1张图片显示在labelResult中
+//						labelResult.setIcon(icon);
+						
+
+						
+						//设置“签到按钮”可以点击
+//						btnSignIn.setEnabled(true);
+						//(点击“签到”后，将5张照片当做参数，传递给下一个窗口。)
+					}
+
+				}
+				catch(Exception e1)
+				{
+					e1.printStackTrace();
+				}
+//				
+//				//开始识别
+//				
+////			//若识别成功
+//				if( 识别成功 == true)
+//				{
+					//设置“签到按钮”可以点击
+//					btnSignIn.setEnabled(true);
+//				}
+//				//若失败识别，则重新捕获2张照片。
+//				else
+//				{
+//					for(int i=0; i<2; i++)
+//					{
+//						isImageIconSelected[i] = true;
+//					}
+//					changePhoto = true;
+//				}
+				
+			}
+		});
+		buttonStart.setFont(new Font("宋体", Font.PLAIN, 16));
+		buttonStart.setBounds(175, 33, 105, 27);
+		panelResultBox.add(buttonStart);
+		
+		//首先，检验一下数据库中有没有人
+		//即检验一下数据库中是否有WpotT参数
+		try
+		{
+			conn = Oracle_Connect.getInstance().getConn();
+			//若不存在WoptT，则给出提示，系统自动返回主界面
+			if( ProjectDao.firstORnot(conn) == true)
+			{
+				JOptionPane.showMessageDialog(null, "数据库中尚无数据,请先注册!", "提示",  JOptionPane.INFORMATION_MESSAGE);
+				
+				//关闭此窗口
+				frameSignIn.dispose();
+				//打开主窗口
+				MainUI.frameMainUI = new MainUI();
+				MainUI.frameMainUI.setVisible(true);
+			}
+		}
+		catch(Exception e1)
+		{
+			e1.printStackTrace();
+		}
 		
 		//开启摄像头
 		new HarrCascadeParserTask(this).start();
@@ -286,6 +491,7 @@ public class FrameSignIn extends JFrame implements Context{
 										System.out.println("changePhoto = false;");
 										
 //										//从数据库中读取所有样本数据和WoptT
+//										//读取Wopt
 //										
 //										//开始识别
 //										

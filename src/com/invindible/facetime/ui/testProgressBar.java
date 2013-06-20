@@ -44,8 +44,18 @@ public class testProgressBar extends JFrame {
 		JButton btnNewButton = new JButton("打开进度条");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ProgressBarSignIn.progressBarSignIn = new ProgressBarSignIn();
-				ProgressBarSignIn.progressBarSignIn.setVisible(true);
+				ProgressBarSignIn.frameProgressBarSignIn = new ProgressBarSignIn();
+				ProgressBarSignIn.frameProgressBarSignIn.setVisible(true);
+				
+				ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+				System.out.println("1");
+				ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+				int a = 1;
+				System.out.println("2");
+				ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+				System.out.println("3");
+				ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+				System.out.println("4");
 			}
 		});
 		btnNewButton.setBounds(62, 58, 93, 23);
@@ -54,11 +64,13 @@ public class testProgressBar extends JFrame {
 		JButton btnNewButton_1 = new JButton("进度条增加");
 		btnNewButton_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ProgressBarSignIn.progressBarSignIn.addProgressBar();
+				ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
 			}
 		});
 		btnNewButton_1.setBounds(135, 141, 93, 23);
 		contentPane.add(btnNewButton_1);
+		
+
 	}
 
 }

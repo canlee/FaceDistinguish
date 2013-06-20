@@ -5,21 +5,29 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JProgressBar;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JLabel;
+
+import com.sun.media.rtsp.TimerListener;
+
 import java.awt.Font;
+import java.awt.Color;
 
 public class ProgressBarSignIn extends JFrame {
 
-	static ProgressBarSignIn progressBarSignIn;
+	static ProgressBarSignIn frameProgressBarSignIn;
 	private JPanel contentPane;
 	private JProgressBar progressBar;
 	private JLabel lblNewLabel;
 	private JLabel label;
+	private Timer timer;
+	private int addTimes;//progressBar增加的次数，[0,addRange]次
+	private int addRange = 25;//每一次增加的幅度，即progressBar一次增加多少为止
 
 	/**
 	 * Launch the application.
@@ -49,7 +57,9 @@ public class ProgressBarSignIn extends JFrame {
 		contentPane.setLayout(null);
 		
 		progressBar = new JProgressBar();
+		progressBar.setForeground(new Color(0, 255, 0));
 		progressBar.setBounds(10, 128, 338, 29);
+//		progressBar.setForeground(fg)
 		contentPane.add(progressBar);
 		
 		lblNewLabel = new JLabel("注册成功！请稍等，");
@@ -63,8 +73,32 @@ public class ProgressBarSignIn extends JFrame {
 		contentPane.add(label);
 	}
 	
+	public void startAddProgressBar()
+	{
+//		this.progressBar.setValue( progressBar.getValue() + 25);
+		this.addTimes = 0;
+		this.timer = new Timer(10, new TimerListener());
+		this.timer.start();
+	}
+	
 	public void addProgressBar()
 	{
-		this.progressBar.setValue( progressBar.getValue() + 25);
+		this.progressBar.setValue( progressBar.getValue() +1);
+	}
+	
+	class TimerListener implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			addProgressBar();
+			addTimes++;
+			if( addTimes == addRange)
+			{
+				timer.stop();
+			}
+			
+		}
+		
 	}
 }
