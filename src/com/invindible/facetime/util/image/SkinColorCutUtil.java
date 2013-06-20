@@ -112,6 +112,8 @@ public class SkinColorCutUtil {
 		double[][] tmp2 = MathUtil.matrixMult(tmp, C_INVERSE);
 		tmp = MathUtil.matrixTranspose(tmp);
 		tmp = MathUtil.matrixMult(tmp2, tmp);
+		x = null;
+		tmp2 = null;
 		return Math.exp(tmp[0][0] * -0.5);
 	}
 	
@@ -135,6 +137,7 @@ public class SkinColorCutUtil {
 				result[i][j] = getProbabilitySkin(tmp);
 			}
 		}
+		tmp = null;
 		return result;
 	}
 	
@@ -325,6 +328,7 @@ public class SkinColorCutUtil {
 	public static double[][] getProbability(int[][][] rgbMat) {
 		int[][][] yCbCr = ImageUtil.RGBToYCbCr(rgbMat);
 		double[][] probability = getProbabilitySkin(yCbCr);
+		yCbCr = null;
 		return probability;
 	}
 	
@@ -400,6 +404,9 @@ public class SkinColorCutUtil {
 				maxArg = i;
 			}
 		}
+		PkTable = null;
+		KPkTable = null;
+		pk = null;
 		Debug.print("阈值：" + maxArg);
 		return maxArg;
 	}

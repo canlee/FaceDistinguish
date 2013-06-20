@@ -206,6 +206,21 @@ public class FindFaceTask extends Task {
 		}
 	}
 	
+	/**
+	 * 把图片放入待检测队列，以查找人脸
+	 * @param img
+	 * @param time	截取图片的时间
+	 */
+	public void find(BufferedImage img, long time) {
+		FaceImage fi = new FaceImage();
+		fi.setOriginImage(img);
+		fi.setTime(time);
+		synchronized (lock) {
+			findQueue.offer(fi);
+			lock.notifyAll();
+		}
+	}
+	
 
 	@Override
 	protected void doTask() {
@@ -254,6 +269,15 @@ public class FindFaceTask extends Task {
 			isFinding = false;
 			lock.notifyAll();
 		}
+	}
+	
+	
+	/**
+	 * 待检测队列的长度
+	 * @return
+	 */
+	public int getQueueSize() {
+		return findQueue.size();
 	}
 
 }

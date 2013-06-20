@@ -138,6 +138,10 @@ public class ImagePreProcessUtil {
 				result[2][i][j] = result[2][i][j] <= 255 ? result[2][i][j] : 255;
 			}
 		}
+		yCbCr = null;
+		RL = null;
+		subMat = null;
+		tmp = null;
 		return result;
 	}
 	
@@ -215,6 +219,7 @@ public class ImagePreProcessUtil {
 					}
 				}
 			}
+			struct = null;
 			return result;
 		}
 		return brgbMat;

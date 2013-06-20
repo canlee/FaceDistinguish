@@ -58,7 +58,7 @@ public class Test3 extends JFrame implements Context {
 				BufferedImage img = ImageUtil.getImgByRGB(rgbMat);
 				imagePanel.setBufferImage(img);
 				imagePanel.setSize(img.getWidth(), img.getHeight());
-//				printScreenTask.stopTask();
+				printScreenTask.stopTask();
 //			}
 			break;
 
