@@ -232,7 +232,7 @@ public class ProjectDao {
 				mean[index][i]=Double.valueOf(value[i]);
 			}
 				index++;
-		}
+		} 
 		pst.close();
 		rs.close();
 		return mean;
