@@ -15,7 +15,7 @@ import com.invindible.facetime.model.Sign;
 import com.invindible.facetime.model.User;
 
 public class SignDao {
-	public static void doSign(int id,Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
+	public static String doSign(int id,Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 		java.util.Date date=new java.util.Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String snow = sdf.format(date); 
@@ -24,6 +24,7 @@ public class SignDao {
 		pst.setString(2, snow);
 		pst.executeUpdate();
 		pst.close();
+		return snow;
 	}
 	
 	public static ArrayList<Sign> doselect(String datetime,Connection conn) throws SQLException, IOException{
