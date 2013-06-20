@@ -36,6 +36,7 @@ public class Mark {
 				if(!l1||!l2)
 				{
 					record[i]=-1;
+					System.out.println("不在范围内");
 					continue;
 				}
 				facedis=L2Form.L2Form(model, testMean);  //calculate l2 distance
@@ -48,6 +49,7 @@ public class Mark {
 				if(!l1||!l2)
 				{
 					record[i]=-1;
+					System.out.println("不在范围内");
 					continue;
 				}
 				facedis=L2Form.L2Form(model, test[i]);  //calculate l2 distance
@@ -73,6 +75,7 @@ public class Mark {
 			else
 			{
 				record[i]=-1;
+				System.out.println("l2不在范围内");
 				continue;
 			}
 			
@@ -93,6 +96,7 @@ public class Mark {
 			else
 			{
 				record[i]=-1;
+				System.out.println("l1不在范围内");
 				continue;
 			}
 			
@@ -128,6 +132,7 @@ public class Mark {
 			 else
 			 {
 					record[i]=-1;
+					System.out.println("l2均值不在范围内");
 					continue;
 			}
 			 
@@ -144,6 +149,7 @@ public class Mark {
 			 else
 			 {
 					record[i]=-1;
+					System.out.println("l1均值不在范围内");
 					continue;
 				}
 			 
@@ -157,6 +163,7 @@ public class Mark {
 						if(identify[c]!=identify[d])
 						{
 							record[i]=-1;
+							System.out.println("6个值不等");
 							break;
 						}
 					}
