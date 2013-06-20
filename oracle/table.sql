@@ -36,10 +36,16 @@ mean clob,
 foreign key(id) references userinfo(id)
 )
 ;
+create table peoplemean(
+id number,
+mean clob,
+foreign key(id) references userinfo(id)
+)
+;
 create sequence userid 
 increment by 1 
 start with 1 
 nomaxvalue 
 nocycle 
-nocach 
+nocache
 ;

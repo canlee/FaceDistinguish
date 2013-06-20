@@ -12,8 +12,19 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class OracleConfig {
+	
+	/**
+	 * 
+	 * @param username  system sys etc(用户输入)
+	 * @param password   (用户输入)
+	 * @throws IOException
+	 * @throws InstantiationException
+	 * @throws IllegalAccessException
+	 * @throws ClassNotFoundException
+	 * @throws SQLException
+	 */
 	public static void config(String username,String password) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
-	    final  String url="jdbc:oracle:thin:@localhost:1521:orcl";
+	    final  String url=Oracle_Connect.getInstance().getUrl();
 	    final  String user=username;
 	    final  String pass=password;
 	    Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
@@ -35,7 +46,8 @@ public class OracleConfig {
 			else
 				sql+=tmp;
 		}
-		br.close();		
+		br.close();	
+		conn.close();
 	}
 	
 	public static void configtable() throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException, IOException{
@@ -60,13 +72,4 @@ public class OracleConfig {
 		br.close();
 	}
 	
-	public static void main(String args[]){
-		try {
-			//config();
-			configtable();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }

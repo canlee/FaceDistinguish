@@ -111,7 +111,12 @@ public class ProjectDao {
 		return array;
 	}
 	
-	
+	/**
+	 * 插入投影
+	 * @param conn
+	 * @param project
+	 * @throws SQLException
+	 */
 	public static void doinsertProject(Connection conn,Project project) throws SQLException{
 		double[][] projectArray=project.getProject();
 		int[] id=project.getId();
@@ -132,6 +137,12 @@ public class ProjectDao {
 		}
 	}
 	
+	/**
+	 * 获取投影
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
 	public static Project doselectProject(Connection conn) throws SQLException{
 		Project pro=new Project();
 		PreparedStatement pst=conn.prepareStatement("select id,pro from project",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
@@ -161,6 +172,12 @@ public class ProjectDao {
 		return pro;		
 	}
 	
+	/**
+	 * 总体均值
+	 * @param conn
+	 * @param mean
+	 * @throws SQLException
+	 */
 	public static void doinsertmean(Connection conn,double[] mean) throws SQLException{
 		PreparedStatement pst=conn.prepareStatement("select *from mean");
 		ResultSet rs=pst.executeQuery();
@@ -179,6 +196,12 @@ public class ProjectDao {
 		rs.close();
 	}
 	
+	/**
+	 * 获取总体均值
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
 	public static double[] doselectmean(Connection conn) throws SQLException{
 		PreparedStatement pst=conn.prepareStatement("select *from mean");
 		ResultSet rs=pst.executeQuery();
@@ -195,7 +218,14 @@ public class ProjectDao {
 		
 	}
 	
-	public static void doinsertmean(Connection conn,double[][] mean,int[] id) throws SQLException{
+	/**
+	 * 插入类均值
+	 * @param conn
+	 * @param mean
+	 * @param id
+	 * @throws SQLException
+	 */
+	public static void doinsertclassmean(Connection conn,double[][] mean,int[] id) throws SQLException{
 		PreparedStatement pst=conn.prepareStatement("update classmean set mean=? where id=?");
 		String save="";
 		double[][] tmp=new double[1][mean[0].length];
@@ -211,12 +241,18 @@ public class ProjectDao {
 		pst.close();	
 	}
 	
+	/**
+	 * 获取类均值
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
 	public static double[][] doselectclassmean(Connection conn) throws SQLException{
 		PreparedStatement pst=conn.prepareStatement("select mean from classmean",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 		ResultSet rs=pst.executeQuery();
 		rs.last();
 		int row=rs.getRow();
-		System.out.println("row:" + row);
+	//	System.out.println("row:" + row);
 		rs.beforeFirst();
 		rs.next();
 		System.out.println(rs.getString("mean"));
@@ -232,6 +268,67 @@ public class ProjectDao {
 				mean[index][i]=Double.valueOf(value[i]);
 			}
 				index++;
+		} 
+		pst.close();
+		rs.close();
+		return mean;
+	}
+	
+	/**
+	 * 
+	 * @param conn
+	 * @param mean
+	 * @param id
+	 * @throws SQLException
+	 */
+	public static void doinsertPeoplemean(Connection conn,double[][] mean,int[] id) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("update peoplemean set mean=? where id=?");
+		String save="";
+		double[][] tmp;
+		for(int i=0;i<id.length;i++){
+			tmp=new double[5][mean[0].length];
+			for(int j=0;j<5;j++){
+				tmp[0]=mean[i*5+j];
+			}
+			save=procedure(tmp);
+			pst.setString(1, save);
+			pst.setInt(2, id[i]);
+			pst.executeUpdate();
+			save="";
+			pst.clearParameters();
+		}
+		pst.close();
+	}
+	
+	/**
+	 * 
+	 * @param conn
+	 * @return
+	 * @throws SQLException
+	 */
+	public static double[][] doselectPeoplemean(Connection conn) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("select mean from peoplemean",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+		ResultSet rs=pst.executeQuery();
+		rs.last();
+		int row=rs.getRow();
+	//	System.out.println("row:" + row);
+		rs.beforeFirst();
+		rs.next();
+		//System.out.println(rs.getString("mean"));
+		int column=rs.getString("mean").split(" ").length/5;
+//		System.out.println("row:" + row + "   column" + column);
+		double[][] mean=new double[row*5][column];
+		int index=0;
+		rs.beforeFirst();
+		while(rs.next()){
+			String[] value=rs.getString("mean").split(" ");
+			for(int j=0;j<5;j++){
+			for(int i=0;i<column;i++){
+//				System.out.println("index:" + index + "  i:" + i );
+				mean[index][i]=Double.valueOf(value[i+j*column]);
+			}
+			index++;
+			}
 		} 
 		pst.close();
 		rs.close();
