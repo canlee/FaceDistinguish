@@ -36,6 +36,7 @@ public class Mark {
 				if(!l1||!l2)
 				{
 					record[i]=-1;
+					System.out.println("不在范围内");
 					continue;
 				}
 				facedis=L2Form.L2Form(model, testMean);  //calculate l2 distance
@@ -48,6 +49,7 @@ public class Mark {
 				if(!l1||!l2)
 				{
 					record[i]=-1;
+					System.out.println("不在范围内");
 					continue;
 				}
 				facedis=L2Form.L2Form(model, test[i]);  //calculate l2 distance
@@ -73,6 +75,7 @@ public class Mark {
 			else
 			{
 				record[i]=-1;
+				System.out.println("l2不在范围内");
 				continue;
 			}
 			
@@ -93,6 +96,7 @@ public class Mark {
 			else
 			{
 				record[i]=-1;
+				System.out.println("l1不在范围内");
 				continue;
 			}
 			
@@ -128,6 +132,7 @@ public class Mark {
 			 else
 			 {
 					record[i]=-1;
+					System.out.println("l2均值不在范围内");
 					continue;
 			}
 			 
@@ -144,6 +149,7 @@ public class Mark {
 			 else
 			 {
 					record[i]=-1;
+					System.out.println("l1均值不在范围内");
 					continue;
 				}
 			 
@@ -151,12 +157,16 @@ public class Mark {
 			 identify[3]=mintmp+1;
 			 
 			//-----------------------与平均比较
+			 for(int c=0;c<identify.length;c++){
+				 System.out.println(identify[c]);
+			 }
 			 
 			 for(int c=0;c<identify.length;c++){
 					for(int d=c+1;d<identify.length;d++){
 						if(identify[c]!=identify[d])
 						{
 							record[i]=-1;
+							System.out.println("6个值不等");
 							break;
 						}
 					}
@@ -179,9 +189,9 @@ public class Mark {
 	public static int identify(double[][] test,double[][] model,double[] testMean,double[][] modelMean,double[] allMean){	
 		
 		int[] record=mark(test,model,testMean,modelMean,allMean);	
-		if(record[0]==record[1]&&record[1]==record[2])
+		if(record[0]==record[1]&&record[1]==record[2]&&record[1]!=-1)
 				return record[1];
-			else if((record[0]==record[2]||record[1]==record[2]))
+			else if((record[0]==record[2]||record[1]==record[2])&&record[2]!=-1)
 				return record[2];
 			else
 				return -1;

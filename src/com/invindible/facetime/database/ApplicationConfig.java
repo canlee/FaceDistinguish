@@ -40,7 +40,7 @@ public class ApplicationConfig {
 		bw.close();
 	}
 	
-	/**
+	/** 
 	 * 建立数据连接
 	 * @throws IOException
 	 */
@@ -51,7 +51,8 @@ public class ApplicationConfig {
 		String port=br.readLine();
 		String databasename=br.readLine();
 		br.close();
-		Oracle_Connect.getInstance().setUrl(port, databasename);
+		String url="jdbc:oracle:thin:@localhost"+":"+port+":"+databasename;
+		Oracle_Connect.getInstance().setUrl(url);
 	}
 	
 }

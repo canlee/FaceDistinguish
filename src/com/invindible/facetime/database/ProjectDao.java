@@ -334,4 +334,26 @@ public class ProjectDao {
 		rs.close();
 		return mean;
 	}
+	
+	public static void deleteUserById(Connection conn,int id) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("delete from project");
+		pst.execute();
+		pst=conn.prepareStatement("delete from peoplemean");
+		pst.execute();
+		pst=conn.prepareStatement("delete from classmean");
+		pst.execute();
+		pst=conn.prepareStatement("delete from mean");
+		pst.execute();
+		clean(conn);
+		pst=conn.prepareStatement("delete from sign where id=?");
+		pst.setInt(1, id);
+		pst.execute();
+		pst=conn.prepareStatement("delete from imageinfo where id=?");
+		pst.setInt(1, id);
+		pst.execute();
+		pst=conn.prepareStatement("delete from userinfo where id=?");
+		pst.setInt(1, id);
+		pst.execute();
+		pst.close();
+	}
 }

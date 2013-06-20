@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.imageio.stream.ImageInputStream;
@@ -23,6 +24,7 @@ import oracle.sql.BLOB;
 
 import com.invindible.facetime.model.Imageinfo;
 import com.invindible.facetime.model.User;
+import com.invindible.facetime.model.UserDeleteModel;
 
 
 public class UserDao {
@@ -132,18 +134,18 @@ public class UserDao {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static boolean doLogin(User u,Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
+	public static int doLogin(User u,Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 		boolean flag;
-		PreparedStatement pst=conn.prepareStatement("select username,password from userinfo where username=? and password=?");
+		PreparedStatement pst=conn.prepareStatement("select id from userinfo where username=? and password=?");
 		pst.setString(1, u.getUsername());
 		pst.setString(2, u.getPassword());
 		ResultSet rs=pst.executeQuery();
-		if(rs!=null)
-			flag=true;
+		int id;
+		if(rs.next())
+			id=rs.getInt("id");
 		else
-			flag=false;
-		pst.close();
-		return flag;
+			id=-1;
+		return id;
 	}
 	
 	/**
@@ -181,5 +183,31 @@ public class UserDao {
 		pst.close();
 		rs.close();
 		return bf;
+	}
+	
+	public static ArrayList<UserDeleteModel> selectUser(Connection conn,String username) throws SQLException, IOException{
+		ArrayList<UserDeleteModel> user=new ArrayList<UserDeleteModel>();
+		PreparedStatement pst=conn.prepareStatement("select id,username from userinfo where username like'%"+username+"%'");
+		ResultSet rs=pst.executeQuery();
+		int id;
+		String name;
+		InputStream[] fos=new InputStream[1];
+		BufferedImage[] bf=new BufferedImage[1];
+		while(rs.next()){
+			UserDeleteModel userdeletemodel=new UserDeleteModel();
+			id=rs.getInt("id");
+			name=rs.getString("username");
+			pst=conn.prepareStatement("select image from imageinfo where id=?");
+			pst.setInt(1, id);
+			ResultSet rstmp=pst.executeQuery();
+			rstmp.next();
+			fos[0]=rstmp.getBinaryStream("image");
+			bf[0]= ImageIO.read(fos[0]);
+			userdeletemodel.setId(id);
+			userdeletemodel.setUsername(name);
+			userdeletemodel.setBfi(bf[0]);
+			user.add(userdeletemodel);
+		}
+		return user;
 	}
 }
