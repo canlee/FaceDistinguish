@@ -132,18 +132,18 @@ public class UserDao {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public static boolean doLogin(User u,Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
+	public static int doLogin(User u,Connection conn) throws InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException{
 		boolean flag;
-		PreparedStatement pst=conn.prepareStatement("select username,password from userinfo where username=? and password=?");
+		PreparedStatement pst=conn.prepareStatement("select id from userinfo where username=? and password=?");
 		pst.setString(1, u.getUsername());
 		pst.setString(2, u.getPassword());
 		ResultSet rs=pst.executeQuery();
-		if(rs!=null)
-			flag=true;
+		int id;
+		if(rs.next())
+			id=rs.getInt("id");
 		else
-			flag=false;
-		pst.close();
-		return flag;
+			id=-1;
+		return id;
 	}
 	
 	/**
