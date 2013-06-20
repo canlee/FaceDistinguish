@@ -37,7 +37,7 @@ public class SignDao {
 			Sign si=new Sign();
 			id=rs.getInt("id");
 			si.setSigndate(rs.getString("signdate"));
-			pst=conn.prepareStatement("select image from iamgeinfo where id=?");
+			pst=conn.prepareStatement("select image from imageinfo where id=?");
 			pst.setInt(1, id);
 			rstmp=pst.executeQuery();
 			if(rstmp.next())

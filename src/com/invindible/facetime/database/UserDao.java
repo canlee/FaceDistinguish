@@ -199,7 +199,8 @@ public class UserDao {
 			name=rs.getString("username");
 			pst=conn.prepareStatement("select image from imageinfo where id=?");
 			pst.setInt(1, id);
-			rs=pst.executeQuery();
+			ResultSet rstmp=pst.executeQuery();
+			rstmp.next();
 			fos[0]=rs.getBinaryStream("image");
 			bf[0]= ImageIO.read(fos[0]);
 			userdeletemodel.setId(id);
