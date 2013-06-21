@@ -404,6 +404,12 @@ public class FrameManagerMainUI extends JFrame {
 								//给出提示，数据库中已经无人
 								
 							}
+							//若剩下人数不止1个
+							//则对数据库中所有样本进行训练，重新保存新数据.
+//							else
+							{
+								
+							}
 							
 						}
 						else
