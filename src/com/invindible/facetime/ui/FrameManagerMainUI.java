@@ -2,6 +2,7 @@ package com.invindible.facetime.ui;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Image;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -17,21 +18,31 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 
+import com.invindible.facetime.algorithm.LDA;
 import com.invindible.facetime.database.Oracle_Connect;
 import com.invindible.facetime.database.ProjectDao;
 import com.invindible.facetime.database.SignDao;
 import com.invindible.facetime.database.UserDao;
+import com.invindible.facetime.feature.Features;
+import com.invindible.facetime.feature.GetPcaLda;
+import com.invindible.facetime.model.LdaFeatures;
+import com.invindible.facetime.model.Project;
 import com.invindible.facetime.model.Sign;
 import com.invindible.facetime.model.UserDeleteModel;
+import com.invindible.facetime.model.Wopt;
 import com.invindible.facetime.ui.datechooser.DateChooser;
 import com.invindible.facetime.util.image.ImageUtil;
+import com.invindible.facetime.wavelet.Wavelet;
 import com.sun.org.apache.xpath.internal.operations.Or;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import javax.swing.JTable;
 import javax.swing.border.TitledBorder;
@@ -42,13 +53,14 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
 public class FrameManagerMainUI extends JFrame {
 
 	static FrameManagerMainUI frameManagerMainUI;
 	private JPanel contentPane;
 	private JTextField txtTime;
-	private Connection conn;
+	private static Connection conn;
 	private JLabel labelPictureSign;
 	private JLabel labelPictureUserList;
 	private JTextField txtUserName;
@@ -62,6 +74,10 @@ public class FrameManagerMainUI extends JFrame {
 	private ImageIcon[] userSignPictures;
 	private ImageIcon[] userListPictures;
 	private int[] deleteId;
+	
+	private JButton buttonChooseTime;
+	private DateChooser dateChooser;
+	private String datetime; 
 
 
 	/**
@@ -80,10 +96,144 @@ public class FrameManagerMainUI extends JFrame {
 		});
 	}
 
+	//删除数据后，对数据库中剩余的样本重新训练
+	public static void TrainAfterDelete()
+	{
+		//设置人数，和每人的照片数（此处默认每人5张）
+		int peopleNum = 2;//2是暂定的，需要根据数据库进行修改
+		int photoNum = 5;
+		
+		//WoptT矩阵
+		double[][] WoptT;
+		//Project数据
+		Project pr;
+//		//保存从数据库获取的图片的数组
+//		BufferedImage[] bImages = null;
+		
+		//用来PCA、LDA计算的数组
+		ImageIcon[] icon = null;// = new ImageIcon[2*5];//[peopleNum*photoNum]
+		
+		try
+		{
+			conn = Oracle_Connect.getInstance().getConn();
+			
+			//读取所有样本的图片
+			BufferedImage[] bImg = UserDao.doSelectAll(conn);
+			
+//			for(int i=0; i<bimg.length; i++)
+//			{
+//				int[] le = ImageUtil.getPixes(bimg[i]);
+//
+//				System.out.println("长度:" + le.length);
+//			}
+			
+			//------------------------------peopleNum需要从数据库中获取---------------------------------------------
+			//获取peopleNum
+			peopleNum = bImg.length / 5;
+			
+//			//实例化bImages图片数组
+//			bImages = new BufferedImage[peopleNum * photoNum];
+//			icon = new ImageIcon[peopleNum * photoNum];
+			
+			
+//			//从数据库中获取所有图片
+//			for(int i=0; i<bimg.length; i++)
+//			{
+//				bImages[i] = bimg[i];
+//			}
+			
+			//对bImages[]的图片进行小波变换
+			BufferedImage[] waveBImages = Wavelet.Wavelet(bImg);
+			
+			//2.训练（将 本人的5张照片 和 数据库中的所有照片（每人5张） 投影到WoptT上)
+			GetPcaLda.getResult(waveBImages);
+			
+			double[][] modelP=new double[peopleNum*photoNum][peopleNum-1];
+			for(int i=0;i<peopleNum*photoNum;i++){
+				modelP[i]=LDA.getInstance().calZ(waveBImages[i]);//投影
+			}
+			
+//			插入数据库需要4个数据，前3个都是double[][]
+//			1.(为了计算<2>所用)WoptT（从单例中获取）
+			//double[] WoptT
+			WoptT = LdaFeatures.getInstance().getLastProjectionT();
+//			2.训练样例的投影（上面的modelP）
+			//double[][] modelP
+//			3.（投影Z的）N个人的，类内均值（每个人都有一个均值)
+			double[][] modelMean=new double[peopleNum][peopleNum-1];
+//			4.（投影Z的）总体均值
+			double[] allMean=new double[peopleNum-1];
+			
+			//3.（投影Z的）N个人的，类内均值（每个人都有一个均值)
+			//4.（投影Z的）总体均值
+			for(int i=0;i<peopleNum;i++){
+				for(int k=0;k<peopleNum-1;k++){
+					for(int j=0;j<photoNum;j++){
+						modelMean[i][k]+=modelP[photoNum*i+j][k];
+					}
+					allMean[k]+=modelMean[i][k];
+					modelMean[i][k]/=photoNum;
+				}			
+			}
+			
+			for(int i=0;i<peopleNum-1;i++)
+				allMean[i]/=peopleNum*photoNum;
+			
+			//以下将所有训练完的数据存入数据库中
+			
+			//封装double[][] Wopt 进 Wopt wopt
+			Wopt wopt = new Wopt();
+			wopt.setWopt(WoptT);
+			
+			
+			//将Wopt插入数据库中
+			ProjectDao.doinsertWopt(conn, wopt);
+			
+			//将总体均值m插入数据库中
+			double[] m = LdaFeatures.getInstance().getAveVector();
+			ProjectDao.doinsertmean(conn, m);
+			
+			//获取所有用户ID
+			int[] userIds = UserDao.selectAllIds(conn);
+			
+			
+			//将每个图像的差值图像[像素][n] 转置成 [n][像素]
+			double[][] mAveDeviation = LdaFeatures.getInstance().getAveDeviationDouble();
+			double[][] mAveDeviationTrans = Features.matrixTrans(mAveDeviation);
+			//将转置后的每个图像的差值图像存进数据库中
+			ProjectDao.doinsertPeoplemean(conn, mAveDeviationTrans, userIds);
+			
+			
+			//将每类的差值图像 [像素][n/num] 转置成 [n/num][像素]
+			double[][] mi = LdaFeatures.getInstance().getAveDeviationEach();
+			double[][] miTrans = Features.matrixTrans(mi);
+			//将转置后的mi存进数据库中
+			ProjectDao.doinsertclassmean(conn, miTrans, userIds);
+			
+			
+			//封装用户Id和投影Z 进 Project
+			Project project = new Project();
+			project.setId(userIds);
+			project.setProject(modelP);
+			//插入所有投影
+			ProjectDao.doinsertProject(conn, project);
+			
+			//提示用户，已训练完
+			JOptionPane.showMessageDialog(null, "数据库中剩余用户的特征已训练完!", "提示", JOptionPane.INFORMATION_MESSAGE	);
+			
+		}
+		catch(Exception e1)
+		{
+			e1.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Create the frame.
 	 */
 	public FrameManagerMainUI() {
+		dateChooser = new DateChooser(this);
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 711, 526);
 		contentPane = new JPanel();
@@ -114,6 +264,7 @@ public class FrameManagerMainUI extends JFrame {
 		txtTime.setBounds(120, 8, 110, 21);
 		panelTimePick.add(txtTime);
 		txtTime.setColumns(10);
+		txtTime.setEditable(false);
 		
 		JPanel panelTableSign = new JPanel();
 		panelTableSign.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u7B7E\u5230\u8868", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -289,18 +440,42 @@ public class FrameManagerMainUI extends JFrame {
 		btnNewButton.setBounds(366, 4, 76, 29);
 		panelTimePick.add(btnNewButton);
 		
-		JButton buttonChooseTime = new JButton("选择时间");
+		
+		buttonChooseTime = new JButton("选择时间");
 		buttonChooseTime.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-//				DateChooser dateChooser = new DateChooser(this);
+                dateChooser.showChooser(buttonChooseTime,  20, 20);
+                if(dateChooser.getDate() != null)
+                { 
+                	datetime=new SimpleDateFormat("yyyy-MM-dd").format(dateChooser.getDate());
+                	System.out.println(datetime);
+                	txtTime.setText(datetime);
+                }
+                
+                
 
 				
 			}
+			
+			
 		});
 		buttonChooseTime.setFont(new Font("宋体", Font.PLAIN, 14));
 		buttonChooseTime.setBounds(240, 4, 116, 29);
 		panelTimePick.add(buttonChooseTime);
+		
+		//选择时间窗口关闭方法
+		 this.addWindowListener(new WindowAdapter(){  //添加窗口关闭事件
+	            public void windowClosing(WindowEvent e){
+	                
+	                setVisible(false);
+	                dispose();
+	                
+	                System.exit(0);
+	            }
+		 });
+		
+		
 		
 		JPanel panelUserSearch = new JPanel();
 		panelUserSearch.setLayout(null);
@@ -413,21 +588,24 @@ public class FrameManagerMainUI extends JFrame {
 							//若只剩1人（即“酱油”），则把酱油也删了
 							if(  UserDao.userRemaining(conn) == 1)
 							{
+								//从数据库中获取最后的酱油的数据
 								ArrayList<UserDeleteModel> arrUserDeleteModel =
 										UserDao.selectUser(conn, searchName);
 								
+								//获取酱油的ID
 								int soyId = arrUserDeleteModel.get(0).getId();
 								//从数据库中删除酱油
 								ProjectDao.deleteUserById(conn, soyId);
 								
 								//给出提示，数据库中已经无人
+								JOptionPane.showMessageDialog(null, "最后一个用户已被删除，数据库中无数据。", "提示", JOptionPane.INFORMATION_MESSAGE);
 								
 							}
 							//若剩下人数不止1个
 							//则对数据库中所有样本进行训练，重新保存新数据.
-//							else
+							else
 							{
-								
+								TrainAfterDelete();
 							}
 							
 						}
@@ -449,6 +627,7 @@ public class FrameManagerMainUI extends JFrame {
 					e1.printStackTrace();
 				}
 			}
+
 		});
 		buttonDelete.setBounds(6, 17, 110, 35);
 		panelDelete.add(buttonDelete);

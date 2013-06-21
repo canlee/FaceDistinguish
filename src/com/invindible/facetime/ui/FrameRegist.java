@@ -164,7 +164,6 @@ public class FrameRegist extends JFrame implements Context{
 				//用来PCA、LDA计算的数组
 				ImageIcon[] icon = null;// = new ImageIcon[2*5];//[peopleNum*photoNum]
 				
-				
 				Connection conn = null;
 				try
 				{
