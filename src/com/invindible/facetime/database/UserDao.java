@@ -201,7 +201,7 @@ public class UserDao {
 			pst.setInt(1, id);
 			ResultSet rstmp=pst.executeQuery();
 			rstmp.next();
-			fos[0]=rs.getBinaryStream("image");
+			fos[0]=rstmp.getBinaryStream("image");
 			bf[0]= ImageIO.read(fos[0]);
 			userdeletemodel.setId(id);
 			userdeletemodel.setUsername(name);
