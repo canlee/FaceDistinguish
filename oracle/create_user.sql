@@ -1,4 +1,21 @@
-create user ai_face identified by face_ai
+CREATE TEMPORARY TABLESPACE test_temp 
+TEMPFILE 'D:\faceByInvincible\facetmp.DBF'  
+SIZE 64M 
+AUTOEXTEND ON  
+NEXT 32M MAXSIZE 2048M 
+EXTENT MANAGEMENT LOCAL
+;
+CREATE TABLESPACE test_data 
+LOGGING 
+DATAFILE 'D:\faceByInvincible\face.DBF' 
+SIZE 128M 
+AUTOEXTEND ON 
+NEXT 32M MAXSIZE 2048M 
+EXTENT MANAGEMENT LOCAL 
+;
+create user ai_face identified by face_ai 
+DEFAULT TABLESPACE TEST_DATA 
+TEMPORARY TABLESPACE TEST_TEMP
 ;
 grant connect,resource to ai_face
 ;

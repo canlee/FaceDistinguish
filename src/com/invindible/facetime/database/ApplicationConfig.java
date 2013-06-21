@@ -21,7 +21,21 @@ public class ApplicationConfig {
 			return true;
 		}
 		else 
-			return false;
+			{
+			BufferedReader br=new BufferedReader(new FileReader(f));
+			String tmp=br.readLine();
+			if(tmp.equals("")||tmp==null)
+				{
+					br.close();
+					f.delete();
+					return true;
+				}
+			else
+				{
+					br.close();
+					return false;
+				}
+			}
 	}
 	
 	/**

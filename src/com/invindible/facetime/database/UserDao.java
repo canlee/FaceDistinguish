@@ -220,4 +220,19 @@ public class UserDao {
 		pst.close();
 		return remaining;
 	}
+	
+	public static int[] selectAllIds(Connection conn) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("select id from userinfo",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+		ResultSet rs=pst.executeQuery();
+		rs.last();
+		int[] allIds=new int[rs.getRow()];
+		rs.beforeFirst();
+		int index=0;
+		while(rs.next()){
+			allIds[index++]=rs.getInt("id");
+		}
+		rs.close();
+		pst.close();
+		return allIds;
+	}
 }
