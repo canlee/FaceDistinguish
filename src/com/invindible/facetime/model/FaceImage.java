@@ -10,7 +10,6 @@ import java.util.List;
  * <br>如果是从摄像头中截取的图片则有截取的时间；
  * <br>截取到的人脸的经过预处理的rgb矩阵数组；
  * <br>截取到的人脸在原矩阵中的位置；
- * <br>人脸小波处理的rgb矩阵数据；
  * @author 李亮灿
  *
  */
@@ -22,11 +21,8 @@ public class FaceImage {
 	
 	private List<ConnectedImage> facesRgb;	//人脸图的位置
 	
-	private List<int[][][]> DWTRgb;		//小波处理的人脸图
-	
 	public FaceImage() {
 		facesRgb = new ArrayList<ConnectedImage>();
-		DWTRgb = new ArrayList<int[][][]>();
 		videoId = null;
 	}
 	
@@ -96,20 +92,4 @@ public class FaceImage {
 		this.facesRgb = facesRgb;
 	}
 
-	/**
-	 * 小波处理的人脸图
-	 * @return
-	 */
-	public List<int[][][]> getDWTRgb() {
-		return DWTRgb;
-	}
-
-	/**
-	 * 小波处理的人脸图
-	 * @param dWTRgb
-	 */
-	public void setDWTRgb(List<int[][][]> dWTRgb) {
-		DWTRgb = dWTRgb;
-	}
-	
 }
