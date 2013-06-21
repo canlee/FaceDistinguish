@@ -207,7 +207,7 @@ public class UserDao {
 			userdeletemodel.setUsername(name);
 			userdeletemodel.setBfi(bf[0]);
 			user.add(userdeletemodel);
-		} 
+		}  
 		return user;
 	}
 	
