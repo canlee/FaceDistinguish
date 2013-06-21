@@ -212,7 +212,7 @@ public class UserDao {
 	}
 	
 	public static int userRemaining(Connection conn) throws SQLException{
-		PreparedStatement pst=conn.prepareStatement("select id from userinfo");
+		PreparedStatement pst=conn.prepareStatement("select id from userinfo",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 		ResultSet rs=pst.executeQuery();
 		rs.last();
 		int remaining=rs.getRow();
