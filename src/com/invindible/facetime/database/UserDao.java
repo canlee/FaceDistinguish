@@ -210,4 +210,14 @@ public class UserDao {
 		}
 		return user;
 	}
+	
+	public static int userRemaining(Connection conn) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("select id from userinfo");
+		ResultSet rs=pst.executeQuery();
+		rs.last();
+		int remaining=rs.getRow();
+		rs.close();
+		pst.close();
+		return remaining;
+	}
 }
