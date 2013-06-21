@@ -84,6 +84,13 @@ public class FrameIdPwd extends JFrame {
 				String userId = txtUserId.getText();
 				String passWord = txtPassWd.getText();
 				
+				//酱油的账号，不能注册
+				if(userId.equals("none"))
+				{
+					JOptionPane.showMessageDialog(null, "该用户名已被注册！","警告", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
+				
 				//数据库验证用户名是否存在
 				//若用户已被注册（存在数据库中），则给提示已存在
 				User user = new User();

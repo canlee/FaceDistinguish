@@ -42,7 +42,7 @@ public class FrameManagerLogin extends JFrame {
 	 */
 	public FrameManagerLogin() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 350, 253);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -50,7 +50,7 @@ public class FrameManagerLogin extends JFrame {
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(null);
-		panel.setBounds(31, 31, 293, 96);
+		panel.setBounds(12, 21, 293, 96);
 		contentPane.add(panel);
 		
 		txtId = new JTextField();
@@ -59,9 +59,9 @@ public class FrameManagerLogin extends JFrame {
 		txtId.setBounds(124, 10, 102, 21);
 		panel.add(txtId);
 		
-		JLabel labelId = new JLabel("账号：");
+		JLabel labelId = new JLabel("管理员账号：");
 		labelId.setFont(new Font("华文行楷", Font.PLAIN, 16));
-		labelId.setBounds(44, 13, 70, 18);
+		labelId.setBounds(10, 13, 104, 18);
 		panel.add(labelId);
 		
 		JLabel labelPwd = new JLabel("密码：");
@@ -77,7 +77,7 @@ public class FrameManagerLogin extends JFrame {
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setLayout(null);
-		panel_1.setBounds(41, 137, 281, 78);
+		panel_1.setBounds(22, 127, 281, 78);
 		contentPane.add(panel_1);
 		
 		JButton buttonEnter = new JButton("确认");
@@ -89,7 +89,7 @@ public class FrameManagerLogin extends JFrame {
 				String pwd = txtPwd.getText();
 				
 				//若账号和密码正确，则进入管理员主界面
-				if( id.equals("administrator") && pwd.equals("admin"))
+				if( id.equals("admin") && pwd.equals("admin"))
 				{
 					frameManagerLogin.dispose();
 					
@@ -123,6 +123,14 @@ public class FrameManagerLogin extends JFrame {
 		panel_1.add(buttonEnter);
 		
 		JButton buttonReturn = new JButton("返回");
+		buttonReturn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frameManagerLogin.dispose();
+				MainUI.frameMainUI = new MainUI();
+				MainUI.frameMainUI.setVisible(true);
+				
+			}
+		});
 		buttonReturn.setBounds(170, 25, 110, 35);
 		panel_1.add(buttonReturn);
 	}

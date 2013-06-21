@@ -34,8 +34,10 @@ public class MixedMahalnobisDistance {
 	public static double[] calMixedMahalnobisDistance(double[] x,double[][] μi)
 //	public static ArrayList<double[]> calMixedMahalnobisDistance(ArrayList<double[][]> arrX)
 	{		
+//		System.out.println("μi的维数为：[" + μi.length + "][" + μi[0].length +"]");
 		//获取类的个数
 		int cNum = LdaFeatures.getInstance().getPeopleNum();
+//		System.out.println("cNum:" + cNum);
 		
 		//将原来的μi改成了mi
 		//计算mi，将结果保存进ArrayList<double[][]> arrMi 中
@@ -109,6 +111,8 @@ public class MixedMahalnobisDistance {
 				
 				double[][] tempDix = matrixDix.getArray();
 				
+//				System.out.println("tempDix的维数:[" + tempDix.length +"][" + tempDix[0].length + "]");
+//				System.out.println("tempDix[0][0]" + tempDix[0][0]);
 				//求结果的开方
 				dix[i] = Math.sqrt(tempDix[0][0]);
 					
@@ -349,10 +353,23 @@ public class MixedMahalnobisDistance {
 		int num = LdaFeatures.getInstance().getNum();//每人的图片数量
 		int index = 0;//mi的下标
 		
-		
+//		System.out.println("啊！！！！！！！！！");
+//		System.out.println("n:" + n);
+//		System.out.println("num:" + num);
+//		System.out.println("(n/num)-1:  " + ((n/num)-1));
 		//用来存放临时计算结果的数组，将计算好的最终结果放入
-		double[][] Σi = new double[(n/num)-1][(n/num)-1];//[C-1][C-1]
+		int ΣiSize;
+		if( (n/num) == 1)
+		{
+			ΣiSize = 1;
+		}
+		else
+		{
+			ΣiSize = (n/num)-1;
+		}
+		double[][] Σi = new double[ΣiSize][ΣiSize];//[C-1][C-1]
 		
+
 		//用来存放临时矩阵相加结果的矩阵
 		Matrix matrixΣi = new Matrix(Σi);
 		
@@ -387,7 +404,7 @@ public class MixedMahalnobisDistance {
 				arrΣi.add(Σi);
 				index++;
 				//清空临时数据
-				Σi = new double[(n/num)-1][(n/num)-1];
+				Σi = new double[ΣiSize][ΣiSize];
 				matrixΣi = new Matrix(Σi);
 			}
 		}

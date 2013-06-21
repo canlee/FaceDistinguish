@@ -16,23 +16,23 @@ public class Test {
 	 */
 	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, ClassNotFoundException, SQLException {
 		// TODO Auto-generated method stub
-//		boolean flag=ApplicationConfig.first();
-//		if(flag){
-//			ApplicationConfig.setupConfig("1521","orcl");
-//			ApplicationConfig.setupLink();
-//			OracleConfig.config("system","Americanzwj1991");
-//			OracleConfig.configtable();
-//			System.out.println("ok");
-//		}
-//		else{
-//			ApplicationConfig.setupLink();
-//			System.out.println(Oracle_Connect.getInstance().getUrl());
-//		}
+		boolean flag=ApplicationConfig.first();
+		if(flag){
+			ApplicationConfig.setupConfig("1521","orcl");
+			ApplicationConfig.setupLink();
+			OracleConfig.config("system","o123456");
+			OracleConfig.configtable();
+			System.out.println("ok");
+		}
+		else{
+			ApplicationConfig.setupLink();
+			System.out.println(Oracle_Connect.getInstance().getUrl());
+		}
 		
-		java.util.Date date=new java.util.Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String snow = sdf.format(date);
-		System.out.println(snow);
+//		java.util.Date date=new java.util.Date();
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		String snow = sdf.format(date);
+//		System.out.println(snow);
 		
 	}
 

@@ -627,12 +627,12 @@ public class LDA {
 		Matrix maWopt = new Matrix(lastProjection);
 		
 		
-//		//------------------测试语句--------------------
-//		System.out.println("Wpot的维数:");
-//		System.out.println("Wpot:[" + maWopt.getRowDimension() + "][" + maWopt.getColumnDimension() + "]");
-//		System.out.println("(x-m)的维数:");
-//		System.out.println("(x-m):[" + maTemp.getRowDimension() + "][" + maTemp.getColumnDimension() + "]");
-//		//测试语句--------------------------------------
+		//------------------测试语句--------------------
+		System.out.println("Wpot的维数:");
+		System.out.println("Wpot:[" + maWopt.getRowDimension() + "][" + maWopt.getColumnDimension() + "]");
+		System.out.println("(x-m)的维数:");
+		System.out.println("(x-m):[" + maTemp.getRowDimension() + "][" + maTemp.getColumnDimension() + "]");
+		//测试语句--------------------------------------
 		
 		
 		//计算Z: Wopt * (x-m)
