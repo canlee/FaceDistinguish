@@ -23,6 +23,7 @@ import com.invindible.facetime.database.SignDao;
 import com.invindible.facetime.database.UserDao;
 import com.invindible.facetime.model.Sign;
 import com.invindible.facetime.model.UserDeleteModel;
+import com.invindible.facetime.ui.datechooser.DateChooser;
 import com.invindible.facetime.util.image.ImageUtil;
 import com.sun.org.apache.xpath.internal.operations.Or;
 
@@ -100,7 +101,7 @@ public class FrameManagerMainUI extends JFrame {
 		panelSign.setLayout(null);
 		
 		JPanel panelTimePick = new JPanel();
-		panelTimePick.setBounds(10, 10, 347, 46);
+		panelTimePick.setBounds(10, 10, 463, 46);
 		panelSign.add(panelTimePick);
 		panelTimePick.setLayout(null);
 		
@@ -285,8 +286,21 @@ public class FrameManagerMainUI extends JFrame {
 			}
 		});
 		btnNewButton.setFont(new Font("宋体", Font.PLAIN, 14));
-		btnNewButton.setBounds(236, 7, 76, 29);
+		btnNewButton.setBounds(366, 4, 76, 29);
 		panelTimePick.add(btnNewButton);
+		
+		JButton buttonChooseTime = new JButton("选择时间");
+		buttonChooseTime.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+//				DateChooser dateChooser = new DateChooser(this);
+
+				
+			}
+		});
+		buttonChooseTime.setFont(new Font("宋体", Font.PLAIN, 14));
+		buttonChooseTime.setBounds(240, 4, 116, 29);
+		panelTimePick.add(buttonChooseTime);
 		
 		JPanel panelUserSearch = new JPanel();
 		panelUserSearch.setLayout(null);
@@ -397,9 +411,14 @@ public class FrameManagerMainUI extends JFrame {
 							
 							//删除完毕后,检查数据库还剩多少人
 							//若只剩1人（即“酱油”），则把酱油也删了
-//							if(  剩下的人数 == 1)
+							if(  UserDao.userRemaining(conn) == 1)
 							{
-								//从数据库中酱油
+								ArrayList<UserDeleteModel> arrUserDeleteModel =
+										UserDao.selectUser(conn, searchName);
+								
+								int soyId = arrUserDeleteModel.get(0).getId();
+								//从数据库中删除酱油
+								ProjectDao.deleteUserById(conn, soyId);
 								
 								//给出提示，数据库中已经无人
 								
