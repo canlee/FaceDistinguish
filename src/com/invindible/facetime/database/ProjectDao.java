@@ -134,7 +134,9 @@ public class ProjectDao {
 			pst.setString(1, save);
 			pst.setInt(2, id[i]);
 			pst.executeUpdate();
+			pst.clearParameters();
 		}
+		pst.close();
 	}
 	
 	/**
