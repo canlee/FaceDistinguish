@@ -90,7 +90,7 @@ public class UserDao {
 		// TODO Auto-generated method stub
 		BufferedImage[] bf=null;
 		try {
-			PreparedStatement pst=conn.prepareStatement("select image from imageinfo",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+			PreparedStatement pst=conn.prepareStatement("select id,image from imageinfo order by id asc",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 			ResultSet rs=pst.executeQuery();
 			rs.last();
 			InputStream[] fos=new InputStream[rs.getRow()];
@@ -187,7 +187,7 @@ public class UserDao {
 	
 	public static ArrayList<UserDeleteModel> selectUser(Connection conn,String username) throws SQLException, IOException{
 		ArrayList<UserDeleteModel> user=new ArrayList<UserDeleteModel>();
-		PreparedStatement pst=conn.prepareStatement("select id,username from userinfo where username like'%"+username+"%'");
+		PreparedStatement pst=conn.prepareStatement("select id,username from userinfo where username like'%"+username+"%' order by id asc");
 		ResultSet rs=pst.executeQuery();
 		int id;
 		String name;
@@ -222,7 +222,7 @@ public class UserDao {
 	}
 	
 	public static int[] selectAllIds(Connection conn) throws SQLException{
-		PreparedStatement pst=conn.prepareStatement("select id from userinfo",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement pst=conn.prepareStatement("select id from userinfo order by id asc",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 		ResultSet rs=pst.executeQuery();
 		rs.last();
 		int[] allIds=new int[rs.getRow()];

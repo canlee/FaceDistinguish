@@ -145,7 +145,7 @@ public class ProjectDao {
 	 */
 	public static Project doselectProject(Connection conn) throws SQLException{
 		Project pro=new Project();
-		PreparedStatement pst=conn.prepareStatement("select id,pro from project",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement pst=conn.prepareStatement("select id,pro from project order by id asc",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 		ResultSet rs=pst.executeQuery();
 		rs.last();
 		int[] id=new int[rs.getRow()];
@@ -248,7 +248,7 @@ public class ProjectDao {
 	 * @throws SQLException
 	 */
 	public static double[][] doselectclassmean(Connection conn) throws SQLException{
-		PreparedStatement pst=conn.prepareStatement("select mean from classmean",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement pst=conn.prepareStatement("select id,mean from classmean order by id asc",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 		ResultSet rs=pst.executeQuery();
 		rs.last();
 		int row=rs.getRow();
@@ -307,7 +307,7 @@ public class ProjectDao {
 	 * @throws SQLException
 	 */
 	public static double[][] doselectPeoplemean(Connection conn) throws SQLException{
-		PreparedStatement pst=conn.prepareStatement("select mean from peoplemean",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+		PreparedStatement pst=conn.prepareStatement("select id,mean from peoplemean order by id asc",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 		ResultSet rs=pst.executeQuery();
 		rs.last();
 		int row=rs.getRow();
