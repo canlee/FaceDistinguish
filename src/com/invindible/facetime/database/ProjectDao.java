@@ -226,19 +226,19 @@ public class ProjectDao {
 	 * @throws SQLException
 	 */
 	public static void doinsertclassmean(Connection conn,double[][] mean,int[] id) throws SQLException{
-		PreparedStatement pst=conn.prepareStatement("update classmean set mean=? where id=?");
+		PreparedStatement pst;
 		String save="";
 		double[][] tmp=new double[1][mean[0].length];
 		for(int i=0;i<id.length;i++){
 			tmp[0]=mean[i];
 			save=procedure(tmp);
+			pst=conn.prepareStatement("update classmean set mean=? where id=?");
 			pst.setString(1, save);
 			pst.setInt(2, id[i]);
 			pst.executeUpdate();
 			save="";
-			pst.clearParameters();
-		}
-		pst.close();	
+			pst.close();
+		}		
 	}
 	
 	/**
@@ -282,7 +282,7 @@ public class ProjectDao {
 	 * @throws SQLException
 	 */
 	public static void doinsertPeoplemean(Connection conn,double[][] mean,int[] id) throws SQLException{
-		PreparedStatement pst=conn.prepareStatement("update peoplemean set mean=? where id=?");
+		PreparedStatement pst;
 		String save="";
 		double[][] tmp;
 		for(int i=0;i<id.length;i++){
@@ -290,14 +290,15 @@ public class ProjectDao {
 			for(int j=0;j<5;j++){
 				tmp[0]=mean[i*5+j];
 			}
+			pst=conn.prepareStatement("update peoplemean set mean=? where id=?");
 			save=procedure(tmp);
 			pst.setString(1, save);
 			pst.setInt(2, id[i]);
 			pst.executeUpdate();
 			save="";
-			pst.clearParameters();
+			pst.close();
 		}
-		pst.close();
+		
 	}
 	
 	/**
