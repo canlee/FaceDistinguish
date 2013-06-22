@@ -108,6 +108,8 @@ public class ProjectDao {
 			for(int j=0;j<column;j++)
 				array[i][j]=Double.valueOf(arr[i*column+j]);
 		}
+		pst.close();
+		rs.close();
 		return array;
 	}
 	
@@ -171,6 +173,7 @@ public class ProjectDao {
 		}
 		pro.setId(id);
 		pro.setProject(modelProject);
+		pst.close();
 		return pro;		
 	}
 	
