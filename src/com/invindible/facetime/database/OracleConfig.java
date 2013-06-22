@@ -30,18 +30,7 @@ public class OracleConfig {
 	    Class.forName("oracle.jdbc.driver.OracleDriver").newInstance();
 		Connection conn = DriverManager.getConnection(url,user,password);
 	    PreparedStatement pst;
-		File f=new File("D:\\faceByInvincible");
-		if(!f.exists())
-			f.mkdir();
-		else {
-			f=new File("D\\faceByInvincible\\facetmp.DBF");
-			if(f.exists())
-				f.delete();
-			f=new File("D\\faceByInvincible\\face.DBF");
-			if(f.exists())
-				f.delete();
-		}
-		f=new File("oracle\\create_user.sql");
+		File f=new File("oracle\\create_user.sql");
 		BufferedReader br=new BufferedReader(new FileReader(f));
 		String tmp="";
 		String sql="";

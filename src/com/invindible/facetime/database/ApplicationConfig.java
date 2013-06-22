@@ -20,21 +20,15 @@ public class ApplicationConfig {
 			f.createNewFile();
 			return true;
 		}
-		else 
+		else
 			{
 			BufferedReader br=new BufferedReader(new FileReader(f));
 			String tmp=br.readLine();
-			if(tmp.equals("")||tmp==null)
-				{
-					br.close();
-					f.delete();
-					return true;
-				}
+			System.out.println(tmp);
+			if(tmp==null||tmp.equals(""))
+				return true;
 			else
-				{
-					br.close();
-					return false;
-				}
+				return false;
 			}
 	}
 	
