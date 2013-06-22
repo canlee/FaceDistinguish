@@ -117,7 +117,7 @@ public class FrameManagerMainUI extends JFrame {
 		{
 			conn = Oracle_Connect.getInstance().getConn();
 			
-			//读取所有样本的图片
+			//1.读取所有样本的图片
 			BufferedImage[] bImg = UserDao.doSelectAll(conn);
 			
 //			for(int i=0; i<bimg.length; i++)
@@ -131,16 +131,6 @@ public class FrameManagerMainUI extends JFrame {
 			//获取peopleNum
 			peopleNum = bImg.length / 5;
 			
-//			//实例化bImages图片数组
-//			bImages = new BufferedImage[peopleNum * photoNum];
-//			icon = new ImageIcon[peopleNum * photoNum];
-			
-			
-//			//从数据库中获取所有图片
-//			for(int i=0; i<bimg.length; i++)
-//			{
-//				bImages[i] = bimg[i];
-//			}
 			
 			//对bImages[]的图片进行小波变换
 			BufferedImage[] waveBImages = Wavelet.Wavelet(bImg);
@@ -148,6 +138,7 @@ public class FrameManagerMainUI extends JFrame {
 			//2.训练（将 本人的5张照片 和 数据库中的所有照片（每人5张） 投影到WoptT上)
 			GetPcaLda.getResult(waveBImages);
 			
+			//3.计算所有人的投影[N][C-1]
 			double[][] modelP=new double[peopleNum*photoNum][peopleNum-1];
 			for(int i=0;i<peopleNum*photoNum;i++){
 				modelP[i]=LDA.getInstance().calZ(waveBImages[i]);//投影
@@ -203,6 +194,17 @@ public class FrameManagerMainUI extends JFrame {
 			//将转置后的每个图像的差值图像存进数据库中
 			ProjectDao.doinsertPeoplemean(conn, mAveDeviationTrans, userIds);
 			
+			System.out.println("userId如下：");
+			for(int i=0; i<userIds.length; i++)
+			{
+				System.out.println("第 " + i + " 个userId: " + userIds[i]);
+			}
+			
+			
+			System.out.println("peopleMean的维数:" + mAveDeviationTrans.length + " " + mAveDeviationTrans[0].length);
+			
+			
+			
 			
 			//将每类的差值图像 [像素][n/num] 转置成 [n/num][像素]
 			double[][] mi = LdaFeatures.getInstance().getAveDeviationEach();
@@ -210,6 +212,7 @@ public class FrameManagerMainUI extends JFrame {
 			//将转置后的mi存进数据库中
 			ProjectDao.doinsertclassmean(conn, miTrans, userIds);
 			
+			System.out.println("classMean的维数：" + miTrans.length + " " + miTrans[0].length);
 			
 			//封装用户Id和投影Z 进 Project
 			Project project = new Project();
@@ -217,6 +220,8 @@ public class FrameManagerMainUI extends JFrame {
 			project.setProject(modelP);
 			//插入所有投影
 			ProjectDao.doinsertProject(conn, project);
+			
+			System.out.println("modelP的维数:" + modelP.length + " " + modelP[0].length);
 			
 			//提示用户，已训练完
 			JOptionPane.showMessageDialog(null, "数据库中剩余用户的特征已训练完!", "提示", JOptionPane.INFORMATION_MESSAGE	);
@@ -689,14 +694,19 @@ public class FrameManagerMainUI extends JFrame {
 					}
 					
 					
-					//若有酱油，则将酱油从队列中移除
-					if(arrUserDeleteModel.get(0).getUsername().equals("none"))
+					//遍历一遍队列
+					for(int i=0; i<arrUserDeleteModel.size(); i++)
 					{
-						arrUserDeleteModel.remove(0);
-						//若因酱油删除后，人数为0，则直接跳出函数
-						if(arrUserDeleteModel.size() == 0)
+						//若有酱油，则将酱油从队列中移除
+						if(arrUserDeleteModel.get(i).getUsername().equals("none"))
 						{
-							return;
+							arrUserDeleteModel.remove(i);
+							//若因酱油删除后，人数为0，则直接跳出函数
+							if(arrUserDeleteModel.size() == 0)
+							{
+								return;
+							}
+							break;
 						}
 					}
 					
