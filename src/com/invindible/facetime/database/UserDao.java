@@ -121,6 +121,8 @@ public class UserDao {
 			if(rs.getString("username").equals(username))
 				return false;
 		}
+		pst.close();
+		rs.close();
 		return true;
 	}
 	
@@ -145,6 +147,8 @@ public class UserDao {
 			id=rs.getInt("id");
 		else
 			id=-1;
+		pst.close();
+		rs.close();
 		return id;
 	}
 	
@@ -163,6 +167,8 @@ public class UserDao {
 		User u=new User();
 		u.setUsername(rs.getString("username"));
 		u.setPassword(rs.getString("password"));
+		pst.close();
+		rs.close();
 		return u;		
 	}
 	
@@ -208,6 +214,8 @@ public class UserDao {
 			userdeletemodel.setBfi(bf[0]);
 			user.add(userdeletemodel);
 		}  
+		pst.close();
+		rs.close();
 		return user;
 	}
 	

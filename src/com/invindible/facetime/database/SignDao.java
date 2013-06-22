@@ -49,6 +49,8 @@ public class SignDao {
 				si.setUsername(rstmp.getString("username"));
 			sign.add(si);
 		}
+		pst.close();
+		rs.close();
 		return sign;
 	}
 }
