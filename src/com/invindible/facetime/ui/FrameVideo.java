@@ -555,7 +555,7 @@ public class FrameVideo extends JFrame implements Context {
 				//根据识别结果的ID号，保存进ArrayList<VideoMarkModel>相应的位置中
 				//若 新识别的距离 < 原识别结果的距离，则替换原识别结果
 				//若找到的ID为1，即酱油，则不显示
-				if ( CompareDistance(vmm) && (vmm.getMark()!=1) )
+				if ( (vmm.getMark()!=1) && CompareDistance(vmm)  )
 				{
 					
 					
@@ -635,10 +635,13 @@ public class FrameVideo extends JFrame implements Context {
 		
 		//若有3个或3个以上距离 更小，说明临时数据结果更符合该识别对象
 		//可以用临时数据替换原数据，返回true
-//		if( lessCount >= 4)
+
 		System.out.println("lessCount:" + lessCount);
-		if( lessCount >= 3)
+		if( lessCount >= 4)
+//		if( lessCount >= 3)
 		{
+			originalVmm.setMark(objectIndex);//可有可无
+			originalVmm.setDis(newDis);
 			return true;
 		}
 		else
