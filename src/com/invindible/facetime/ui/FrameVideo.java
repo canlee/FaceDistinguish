@@ -20,7 +20,9 @@ import com.invindible.facetime.algorithm.VideoMark;
 import com.invindible.facetime.feature.GetPcaLda;
 import com.invindible.facetime.model.FaceImage;
 import com.invindible.facetime.model.VideoMarkModel;
+import com.invindible.facetime.service.implement.FindFaceInterfaceImpl;
 import com.invindible.facetime.service.implement.FindVideoFaceImpl;
+import com.invindible.facetime.service.interfaces.FindFaceInterface;
 import com.invindible.facetime.service.interfaces.FindVideoFaceInterface;
 import com.invindible.facetime.task.init.HarrCascadeParserTask;
 import com.invindible.facetime.task.interfaces.Context;
@@ -41,10 +43,10 @@ public class FrameVideo extends JFrame implements Context {
 	static FrameVideo frameVideo;
 	private JPanel contentPane;
 	private JTextField txtPath1;
-	private ImageIcon[] imageObjectsInVideo;//视频里找到的人,人数在窗体构造函数中初始化
-	private ImageIcon[] imageObjectToFind = new ImageIcon[9];//要找的对象，最多9人
-	private BufferedImage[] imageObjectsInVideoBuffImg;
-	private BufferedImage[]imageObjectToFindBuffImg = new BufferedImage[9];
+//	private ImageIcon[] imageObjectsInVideo;//视频里找到的人,人数在窗体构造函数中初始化
+//	private ImageIcon[] imageObjectToFind = new ImageIcon[9];//要找的对象，最多9人
+//	private BufferedImage[] imageObjectsInVideoBuffImg;
+//	private BufferedImage[] imageObjectToFindBuffImg = new BufferedImage[9];
 	private ArrayList<VideoMarkModel> arrVideoMarkModel = new ArrayList<VideoMarkModel>();//存储9个对象的视频检测数据(包括原图、人脸出现的视频时间、人脸图)
 	private VideoMarkModel tempVideoMarkModel = new VideoMarkModel();//临时保存一次视频人脸检测数据，以供距离对比
 	
@@ -61,6 +63,19 @@ public class FrameVideo extends JFrame implements Context {
 	private ImagePanel panelFaceInVideo;//视频中截取的人脸（亮灿部分）
 	private ImagePanel panelFaceOriginalInObjects;//识别成功后，显示用户提供的对象原图的地方
 	private JLabel lblUserFindId;
+	
+	private FindFaceInterface findTask;
+	private FindVideoFaceInterface fvfi;
+	
+	private ImagePanel lblObject1;
+	private ImagePanel lblObject2;
+	private ImagePanel lblObject3;
+//	private ImagePanel lblObject4;
+//	private ImagePanel lblObject5;
+//	private ImagePanel lblObject6;
+//	private ImagePanel lblObject7;
+//	private ImagePanel lblObject8;
+//	private ImagePanel lblObject9;
 
 	/**
 	 * Launch the application.
@@ -134,7 +149,7 @@ public class FrameVideo extends JFrame implements Context {
 		
 		JPanel panelObjects = new JPanel();
 		panelObjects.setBorder(new TitledBorder(null, "JPanel title", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panelObjects.setBounds(432, 17, 456, 406);
+		panelObjects.setBounds(432, 17, 456, 440);
 		contentPane.add(panelObjects);
 		panelObjects.setLayout(null);
 		
@@ -144,7 +159,7 @@ public class FrameVideo extends JFrame implements Context {
 		panelObject1.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u5BF9\u8C611", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelObject1.setLayout(null);
 		
-		JLabel lblObject1 = new JLabel("暂无选择");
+		lblObject1 = new ImagePanel();
 		lblObject1.setBounds(43, 14, 128, 128);
 		panelObject1.add(lblObject1);
 		
@@ -164,7 +179,7 @@ public class FrameVideo extends JFrame implements Context {
 		panelObject2.setBounds(224, 17, 208, 184);
 		panelObjects.add(panelObject2);
 		
-		JLabel lblObject2 = new JLabel("暂无选择");
+		lblObject2 = new ImagePanel();
 		lblObject2.setBounds(43, 14, 128, 128);
 		panelObject2.add(lblObject2);
 		
@@ -184,7 +199,7 @@ public class FrameVideo extends JFrame implements Context {
 		panelObject3.setBounds(6, 212, 208, 184);
 		panelObjects.add(panelObject3);
 		
-		JLabel lblObject3 = new JLabel("暂无选择");
+		lblObject3 = new ImagePanel();
 		lblObject3.setBounds(43, 14, 128, 128);
 		panelObject3.add(lblObject3);
 		
@@ -198,7 +213,7 @@ public class FrameVideo extends JFrame implements Context {
 		btnCalcleObject3.setBounds(108, 151, 95, 23);
 		panelObject3.add(btnCalcleObject3);
 		
-		JButton btnTrain = new JButton("训练样本特征");
+		JButton btnTrain = new JButton("2.训练样本特征");
 		btnTrain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -206,7 +221,7 @@ public class FrameVideo extends JFrame implements Context {
 			}
 		});
 		btnTrain.setFont(new Font("宋体", Font.PLAIN, 14));
-		btnTrain.setBounds(259, 365, 133, 25);
+		btnTrain.setBounds(293, 394, 133, 25);
 		panelObjects.add(btnTrain);
 		
 		JPanel panelPage = new JPanel();
@@ -229,12 +244,25 @@ public class FrameVideo extends JFrame implements Context {
 		panelPage.add(btnPageDown);
 		btnPageDown.setFont(new Font("宋体", Font.PLAIN, 14));
 		
+		JButton button = new JButton("1.获取头像");
+		button.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				GetFacesFromObjects();
+				
+				
+			}
+		});
+		button.setFont(new Font("宋体", Font.PLAIN, 14));
+		button.setBounds(293, 356, 133, 25);
+		panelObjects.add(button);
+		
 		//视频查找人脸的线程
 		new HarrCascadeParserTask(this).start();
 //		FindVideoFaceInterface fvfi = new FindVideoFaceImpl(this, "E:\\VideoTest\\testVideo.wmv", 0);
 		//------------------------------------问题，视频如何定位----------------------------------
 		
-		JButton btnStartFindFace = new JButton("开始在视频中查找人脸");
+		JButton btnStartFindFace = new JButton("3.开始在视频中查找人脸");
 		btnStartFindFace.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -248,7 +276,7 @@ public class FrameVideo extends JFrame implements Context {
 					
 						//根据选择的路径
 						//开始在视频中 查找人脸
-						FindVideoFaceInterface fvfi = new FindVideoFaceImpl(FrameVideo.this, "C:\\VideoTest\\testVideo.wmv", 0);
+						fvfi = new FindVideoFaceImpl(FrameVideo.this, "C:\\VideoTest\\testVideo.wmv", 0);
 //						FindVideoFaceInterface fvfi = new FindVideoFaceImpl(FrameVideo.this, txtPath1.getText(), 0);
 						fvfi.findFace();
 						
@@ -266,7 +294,7 @@ public class FrameVideo extends JFrame implements Context {
 			}
 		});
 		btnStartFindFace.setFont(new Font("宋体", Font.PLAIN, 14));
-		btnStartFindFace.setBounds(203, 382, 183, 25);
+		btnStartFindFace.setBounds(199, 382, 187, 25);
 		contentPane.add(btnStartFindFace);
 		
 		JButton btnReturn = new JButton("返回主界面");
@@ -274,6 +302,7 @@ public class FrameVideo extends JFrame implements Context {
 			public void actionPerformed(ActionEvent e) {
 				//要考虑线程暂停问题
 				//应该给出用户提示
+				fvfi.stop();
 				frameVideo.dispose();
 				
 				MainUI.frameMainUI = new MainUI();
@@ -303,7 +332,7 @@ public class FrameVideo extends JFrame implements Context {
 		JPanel panel_3 = new JPanel();
 		panel_3.setBounds(338, 33, 140, 152);
 		panel_4.add(panel_3);
-		panel_3.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u89C6\u9891\u4E2D\u8BC6\u522B\u51FA\u6765\u7684\u4EBA\u8138", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_3.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u89C6\u9891\u8BC6\u522B\u51FA\u6765\u7684\u4EBA\u8138", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panel_3.setLayout(null);
 		
 		panelFacePicture = new ImagePanel();
@@ -368,6 +397,47 @@ public class FrameVideo extends JFrame implements Context {
 			
 		case FindVideoFaceInterface.OPEN_VIDEO_FAIL:
 			Debug.print("打开视频失败");
+			break;
+		
+			//获取人脸
+		case FindFaceInterface.FIND_FACE_SUCCESS:
+			FaceImage fiFace = (FaceImage) objects[1];
+			if(fiFace.getFacesRgb().size() > 0) {
+				BufferedImage img = ImageUtil.getImgByRGB(fiFace.getFacesRgb().get(0).getRgbMat());
+				//等比例处理
+				img = ImageUtil.imageScale(img, 128, 128);
+				
+				
+				//获取id(此处Time用作index，来标示用户ID)
+				long id =fiFace.getTime();
+				
+				//将获取的头像设置回对象原图位置
+//				imageObjectToFindBuffImg[(int) id] = img;
+				objectsToFind[(int) id] = img;
+				
+				switch((int) id)
+				{
+					case 0:
+						lblObject1.setBufferImage(img);
+						
+						break;
+					case 1:
+						lblObject2.setBufferImage(img);
+						break;
+					case 2:
+						lblObject3.setBufferImage(img);
+						break;
+					default:
+						break;
+				}
+				
+//				imagePanel.setBufferImage(img);
+//				Debug.print(img.getWidth() + ", " + img.getHeight());
+//				imagePanel.setBounds(originPanel.getWidth() + 10, 0, img.getWidth(), img.getHeight());
+			}
+			else {
+				Debug.print("no face");
+			}
 			break;
 		
 		case HarrCascadeParserTask.PARSER_SUCCESS:
@@ -450,8 +520,9 @@ public class FrameVideo extends JFrame implements Context {
 					//原图
 					BufferedImage originalBImg = fi.getOriginImage();
 					originalBImg = ImageUtil.imageScale(originalBImg, 300, 180);
-					panelOriginalPicture.setBufferImage(fi.getOriginImage());
-					//人脸图
+//					panelOriginalPicture.setBufferImage(fi.getOriginImage());
+					panelOriginalPicture.setBufferImage(originalBImg);
+					//人脸图(视频中识别出来的人脸，记录在这里)
 					panelFacePicture.setBufferImage(waveBeforeBuffImgs[i]);
 					//用户ID提示
 					lblUserFindId.setText("[ " + vmm.getMark() + " ]");
@@ -541,27 +612,6 @@ public class FrameVideo extends JFrame implements Context {
 	 */
 	private void TrainSelectedObjects()
 	{
-		//-------------------------------测试阶段，尝试对2张人脸进行搜索-（这一部分应由界面给出)------------------------------
-		//对2张测试图片进行赋值
-		ImageIcon imgIcon0 = new ImageIcon("C:\\VideoTest\\test1.jpg");
-		ImageIcon imgIcon1 = new ImageIcon("C:\\VideoTest\\test2.jpg");
-		
-
-		
-		
-		objectsToFind[0] = ImageUtil.ImageToBufferedImage(imgIcon0.getImage());
-		objectsToFind[1] = ImageUtil.ImageToBufferedImage(imgIcon1.getImage());
-		
-		//等比例缩放成128*128
-		objectsToFind[0] = ImageUtil.imageScale(objectsToFind[0], 128, 128);
-		objectsToFind[1] = ImageUtil.imageScale(objectsToFind[1], 128, 128);
-		
-		isObjectsSelected[0] = true;
-		isObjectsSelected[1] = true;
-		
-		objectsSelectedCount = 2;
-		
-		//-------------------------------测试阶段，尝试对2张人脸进行搜索-------------------------------
 		
 		//计算前，先设置GetPcaLda的每人照片数量
 		GetPcaLda.setNum(1);
@@ -618,4 +668,40 @@ public class FrameVideo extends JFrame implements Context {
 		//计算后，将GetPcaLda的每人照片数量设置回5
 		GetPcaLda.setNum(5);
 	}
+	
+	/**
+	 * 从用户提供的图片中获取头像
+	 */
+	private void GetFacesFromObjects()
+	{
+		//-------------------------------测试阶段，尝试对2张人脸进行搜索-（这一部分应由界面给出)------------------------------
+		//对2张测试图片进行赋值
+		ImageIcon imgIcon0 = new ImageIcon("C:\\VideoTest\\test1.jpg");
+		ImageIcon imgIcon1 = new ImageIcon("C:\\VideoTest\\test2.jpg");
+		
+		objectsToFind[0] = ImageUtil.ImageToBufferedImage(imgIcon0.getImage());
+		objectsToFind[1] = ImageUtil.ImageToBufferedImage(imgIcon1.getImage());
+		
+		isObjectsSelected[0] = true;
+		isObjectsSelected[1] = true;
+		
+		objectsSelectedCount = 2;
+		
+		findTask = new FindFaceInterfaceImpl(this);
+		findTask.start();
+		for(int i=0; i<objectsSelectedCount; i++)
+		{
+			System.out.println("i:" + i);
+			findTask.findFace(objectsToFind[i], i);
+		}
+		
+//		//等比例缩放成128*128
+//		objectsToFind[0] = ImageUtil.imageScale(objectsToFind[0], 128, 128);
+//		objectsToFind[1] = ImageUtil.imageScale(objectsToFind[1], 128, 128);
+		
+		
+		//-------------------------------测试阶段，尝试对2张人脸进行搜索-------------------------------
+		
+	}
+	
 }
