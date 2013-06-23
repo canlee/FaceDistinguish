@@ -107,7 +107,7 @@ public class VideoMark {
 			vmm.setMark(record[0]);
 			vmm.setDis(tmpdis);
 			return vmm;
-			
+			 
 	}
 	
 	private static int second(int min,double[] dis){
