@@ -52,6 +52,7 @@ public class LDA {
 		//将num保存进单例中(其实可以不用的)
 		LdaFeatures.getInstance().setNum(num);
 		
+		
 		//构建平均向量的值
 		for(int i=0; i<length; i++)
 		{
@@ -103,12 +104,29 @@ public class LDA {
 	public static ArrayList<double[][]> calAveDeviation(double[][] vec) {
 		ArrayList<double[][]> arrResult = new ArrayList<double[][]>();//存放结果的数组
 		
+		//获取 类内平均图像 [像素][C个人]
+		//当每人只有1张图片时，类内平均图像要设置成全0
+		//以便计算 每个图像的差值图像
 		double[][] eachAveVector = LdaFeatures.getInstance().getEachAveVector();
 		int length = vec.length;//length指向量的维数，X={1,2,3,...,length}
 		int n = vec[0].length;//n指向量的个数，X1,X2,X3...Xn;
 		double[][] resultTemp = new double[length][n];
 		int index = 0;//下标
 		int num = LdaFeatures.getInstance().getNum();
+		
+		//--------------------------当每人照片只有1张时特殊处理-------------------------------
+		//若每个人只有1张图片，则将 "类内平均图像mi" 暂时设定为[4096][C]全0
+		//暂时设定的结果不保存进单例中，单例中的mi仍然是正常的mi
+		if( num == 1)
+		{
+			for(int i=0; i<eachAveVector[0].length; i++)
+			{
+				for(int j=0; j< eachAveVector.length; j++)
+				{
+					eachAveVector[j][i] = 0;
+				}
+			}
+		}
 		
 		for(int i=0; i<length; i++)
 		{
@@ -627,12 +645,12 @@ public class LDA {
 		Matrix maWopt = new Matrix(lastProjection);
 		
 		
-		//------------------测试语句--------------------
-		System.out.println("Wpot的维数:");
-		System.out.println("Wpot:[" + maWopt.getRowDimension() + "][" + maWopt.getColumnDimension() + "]");
-		System.out.println("(x-m)的维数:");
-		System.out.println("(x-m):[" + maTemp.getRowDimension() + "][" + maTemp.getColumnDimension() + "]");
-		//测试语句--------------------------------------
+//		//------------------测试语句--------------------
+//		System.out.println("Wpot的维数:");
+//		System.out.println("Wpot:[" + maWopt.getRowDimension() + "][" + maWopt.getColumnDimension() + "]");
+//		System.out.println("(x-m)的维数:");
+//		System.out.println("(x-m):[" + maTemp.getRowDimension() + "][" + maTemp.getColumnDimension() + "]");
+//		//测试语句--------------------------------------
 		
 		
 		//计算Z: Wopt * (x-m)

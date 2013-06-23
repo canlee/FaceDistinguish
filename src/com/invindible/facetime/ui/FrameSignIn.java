@@ -270,7 +270,7 @@ public class FrameSignIn extends JFrame implements Context{
 				System.out.println("requestNum:" + requestNum);
 				if(requestNum != 0)
 				{
-					JOptionPane.showMessageDialog(null, "图片尚未截取,请先站在摄像头前,等待截取面部信息。", "提示", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "图片尚未截取完毕,等待摄像头截取面部信息。", "提示", JOptionPane.INFORMATION_MESSAGE);
 					return;
 				}
 				
@@ -295,6 +295,11 @@ public class FrameSignIn extends JFrame implements Context{
 					
 					//用户id
 					int[] userIds = project.getId();
+					
+					for(int i=0; i<userIds.length; i++)
+					{
+						System.out.println("第 "+ i + " 个userId:" + userIds[i]);
+					}
 					
 					int peopleNum = userIds.length;
 					//将peopleNum保存进单例中
@@ -371,6 +376,8 @@ public class FrameSignIn extends JFrame implements Context{
 					for(int i=0;i<modelMeanSize;i++)
 						allMean[i]/=peopleNum*photoNum;
 					
+					System.out.println("modelP[0][0]" + modelP[0][0]);
+					
 					//从数据库中获取"x(m)的转置"，再经过转置，变成"x"(每个图像的差值图像[像素][n])
 					double[][] xAveDeviationTrans = ProjectDao.doselectPeoplemean(conn);//
 					double[][] xAveDeviation = Features.matrixTrans(xAveDeviationTrans);
@@ -400,9 +407,11 @@ public class FrameSignIn extends JFrame implements Context{
 					//将mi保存进单例中，以供马氏距离计算使用。
 					LdaFeatures.getInstance().setAveDeviationEach(mi);
 					
+
 					
 					//验证（尝试识别，识别失败则需要重新获取图片）
 					int idFind = Mark.identify(testZ, modelP, testZMean, modelMean, allMean);
+					
 //					System.out.println("idFind" + idFind);
 //					System.out.println("userIds[]:" + userIds[idFind-1]);
 //					System.out.println("idFind:" + idFind);

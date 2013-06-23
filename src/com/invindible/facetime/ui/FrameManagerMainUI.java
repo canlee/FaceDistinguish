@@ -74,6 +74,7 @@ public class FrameManagerMainUI extends JFrame {
 	private ImageIcon[] userSignPictures;
 	private ImageIcon[] userListPictures;
 	private int[] deleteId;
+	private JButton btnSearch;
 	
 	private JButton buttonChooseTime;
 	private DateChooser dateChooser;
@@ -144,7 +145,7 @@ public class FrameManagerMainUI extends JFrame {
 				modelP[i]=LDA.getInstance().calZ(waveBImages[i]);//投影
 			}
 			
-//			插入数据库需要4个数据，前3个都是double[][]
+//			需要插入数据库的4个数据
 //			1.(为了计算<2>所用)WoptT（从单例中获取）
 			//double[] WoptT
 			WoptT = LdaFeatures.getInstance().getLastProjectionT();
@@ -497,7 +498,7 @@ public class FrameManagerMainUI extends JFrame {
 		panelUserSearch.add(txtUserName);
 		txtUserName.setColumns(10);
 		
-		JButton btnSearch = new JButton("查询");
+		btnSearch = new JButton("查询");
 		btnSearch.setBounds(236, 7, 93, 23);
 		panelUserSearch.add(btnSearch);
 		
@@ -618,6 +619,8 @@ public class FrameManagerMainUI extends JFrame {
 						{
 							return;
 						}
+						
+						btnSearch.doClick();
 					}
 					else
 					{

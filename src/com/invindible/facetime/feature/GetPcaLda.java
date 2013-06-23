@@ -14,7 +14,7 @@ public class GetPcaLda {
 	private static GetPcaLda gpl = null;
 	private static int height = 64;//等比例图片处理时的高
 	private static int width = 64;//等比例图片处理时的宽
-	private static int num = 5;//每个人的图片数量
+	private static int num = 5;//每个人的图片数量，在视频计算时，务必先设置此值,计算完毕后设置回5
 	
 	//懒汉式单例
 	synchronized public static GetPcaLda getInstance(){

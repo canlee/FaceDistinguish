@@ -127,6 +127,8 @@ public class MainUI extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				frameMainUI.dispose();
 				
+				FrameVideo.frameVideo = new FrameVideo();
+				FrameVideo.frameVideo.setVisible(true);
 			}
 		});
 		btnVideo.setBounds(276, 57, 115, 32);
