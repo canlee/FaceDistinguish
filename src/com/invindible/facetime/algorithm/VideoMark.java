@@ -61,7 +61,7 @@ public class VideoMark {
 			if(l1tmp!=-1){	 //l1  find out the second nearest
 			tmpl1second=second(l1tmp, l1dis);
 			identify[1]=l1tmp+1;
-			tmpdis[1]=facedis[l1tmp];
+			tmpdis[1]=l1dis[l1tmp];
 			if(tmpl1second!=-1){
 				System.out.println("l1比值："+Math.abs(l1dis[tmpl1second]/l1dis[l1tmp]));
 				if(Math.abs(l1dis[tmpl1second]/l1dis[l1tmp])>2.5)
@@ -88,17 +88,22 @@ public class VideoMark {
 					for(int d=c+1;d<identify.length;d++){
 						if(identify[c]!=identify[d])
 						{
-							//record[0]=-1;
+							record[0]=-1;
 							System.out.println("4个值不等");
 							return null;
 						}
 					}
+
 					if(c==identify.length-1){
 						record[0]=identify[c];
-					}		
 					}
+				}
+			 
+			 
+			 
+			 
 			 System.out.println("error1:"+error1);	
-			 if(error1==2)
+			 if(error1>=2)
 				 {			
 				 return null;
 				 }
