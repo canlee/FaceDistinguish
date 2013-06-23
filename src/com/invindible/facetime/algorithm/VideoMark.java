@@ -14,7 +14,7 @@ public class VideoMark {
 		double[] facedis;  //l2 distance
 		double[] l1dis;   //l1 distance
 		
-		
+		 
 		int[] record=new int[1];
 			boolean l2,l1;
 			int[] identify=new int [4];
