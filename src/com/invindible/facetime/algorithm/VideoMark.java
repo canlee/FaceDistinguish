@@ -43,7 +43,8 @@ public class VideoMark {
 				identify[0]=tmp+1;
 				tmpdis[0]=facedis[tmp];
 				if(tmpsecond!=-1){
-					if(Math.abs(facedis[tmpsecond]/facedis[tmp])<5)
+					System.out.println("l2比值："+Math.abs(facedis[tmpsecond]/facedis[tmp]));
+					if(Math.abs(facedis[tmpsecond]/facedis[tmp])>3.5)
 					{error1++;}
 			}
 			}
@@ -62,7 +63,8 @@ public class VideoMark {
 			identify[1]=l1tmp+1;
 			tmpdis[1]=facedis[l1tmp];
 			if(tmpl1second!=-1){
-				if(Math.abs(l1dis[tmpl1second]/l1dis[l1tmp])<5)
+				System.out.println("l1比值："+Math.abs(l1dis[tmpl1second]/l1dis[l1tmp]));
+				if(Math.abs(l1dis[tmpl1second]/l1dis[l1tmp])>2.5)
 					error1++;			
 			}
 			}
@@ -95,9 +97,11 @@ public class VideoMark {
 						record[0]=identify[c];
 					}		
 					}
-			 
+			 System.out.println("error1:"+error1);	
 			 if(error1==2)
+				 {			
 				 return null;
+				 }
 			 System.out.println("record :"+record[0]);
 			VideoMarkModel vmm=new VideoMarkModel();
 			vmm.setMark(record[0]);
