@@ -67,6 +67,10 @@ public class FrameVideo extends JFrame implements Context {
 	private JLabel lblUserFindId;
 	private JLabel lblUserFindTime;
 	
+	private JLabel lblObject1Num;
+	private JLabel lblObject2Num;
+	private JLabel lblObject3Num;
+	
 	private int pageIndex;
 	
 	private JButton btnPageDown;
@@ -193,7 +197,7 @@ public class FrameVideo extends JFrame implements Context {
 		JPanel panelObject1 = new JPanel();
 		panelObject1.setBounds(6, 17, 208, 184);
 		panelObjects.add(panelObject1);
-		panelObject1.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u5BF9\u8C611", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelObject1.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u5BF9\u8C61 ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelObject1.setLayout(null);
 		
 		lblObject1 = new ImagePanel();
@@ -222,8 +226,13 @@ public class FrameVideo extends JFrame implements Context {
 		btnCancleObject1.setBounds(108, 151, 95, 23);
 		panelObject1.add(btnCancleObject1);
 		
+		lblObject1Num = new JLabel("1");
+		lblObject1Num.setFont(new Font("宋体-方正超大字符集", Font.PLAIN, 16));
+		lblObject1Num.setBounds(32, 0, 21, 15);
+		panelObject1.add(lblObject1Num);
+		
 		JPanel panelObject2 = new JPanel();
-		panelObject2.setBorder(new TitledBorder(null, "\u5BF9\u8C612", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelObject2.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u5BF9\u8C61 ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelObject2.setLayout(null);
 		panelObject2.setBounds(224, 17, 208, 184);
 		panelObjects.add(panelObject2);
@@ -248,8 +257,13 @@ public class FrameVideo extends JFrame implements Context {
 		btnCalcleObject2.setBounds(103, 151, 95, 23);
 		panelObject2.add(btnCalcleObject2);
 		
+		lblObject2Num = new JLabel("2");
+		lblObject2Num.setFont(new Font("宋体-方正超大字符集", Font.PLAIN, 16));
+		lblObject2Num.setBounds(32, 0, 21, 15);
+		panelObject2.add(lblObject2Num);
+		
 		JPanel panelObject3 = new JPanel();
-		panelObject3.setBorder(new TitledBorder(null, "\u5BF9\u8C613", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panelObject3.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u5BF9\u8C61 ", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panelObject3.setLayout(null);
 		panelObject3.setBounds(6, 212, 208, 184);
 		panelObjects.add(panelObject3);
@@ -273,6 +287,11 @@ public class FrameVideo extends JFrame implements Context {
 		btnCalcleObject3.setFont(new Font("宋体", Font.PLAIN, 12));
 		btnCalcleObject3.setBounds(108, 151, 95, 23);
 		panelObject3.add(btnCalcleObject3);
+		
+		lblObject3Num = new JLabel("3");
+		lblObject3Num.setFont(new Font("宋体-方正超大字符集", Font.PLAIN, 16));
+		lblObject3Num.setBounds(32, 0, 21, 15);
+		panelObject3.add(lblObject3Num);
 		
 		JButton btnTrain = new JButton("2.训练样本特征");
 		btnTrain.addActionListener(new ActionListener() {
@@ -307,12 +326,9 @@ public class FrameVideo extends JFrame implements Context {
 				if(pageIndex == 1)
 				{
 					btnPageUp.setEnabled(false);
-					
 				}
-//				else
-//				{
-//					btnPageUp.setEnabled(true);
-//				}
+				//根据页数，刷新ImagePanel
+				RefreshImagePanel();
 			}
 		});
 		btnPageUp.setBounds(25, 34, 83, 28);
@@ -331,10 +347,8 @@ public class FrameVideo extends JFrame implements Context {
 				{
 					btnPageDown.setEnabled(false);
 				}
-//				else
-//				{
-//					btnPageDown.setEnabled(true);
-//				}
+				//根据页数，刷新ImagePanel
+				RefreshImagePanel();
 			}
 		});
 		btnPageDown.setBounds(25, 82, 83, 28);
@@ -616,11 +630,9 @@ public class FrameVideo extends JFrame implements Context {
 			{
 				//根据识别结果的ID号，保存进ArrayList<VideoMarkModel>相应的位置中
 				//若 新识别的距离 < 原识别结果的距离，则替换原识别结果
-				//若找到的ID不是1-3，即不是酱油，则显示
-				if ( (vmm.getMark()>3) && CompareDistance(vmm)  )
+				//若找到的ID不是1，即不是酱油，则显示
+				if ( (vmm.getMark()!=1) && CompareDistance(vmm)  )
 				{
-					
-					
 					
 					//暂时将图片显示在界面上
 					//原图
@@ -631,14 +643,14 @@ public class FrameVideo extends JFrame implements Context {
 					//人脸图(视频中识别出来的人脸，记录在这里)
 					panelFacePicture.setBufferImage(waveBeforeBuffImgs[i]);
 					//用户ID提示
-					lblUserFindId.setText("对象[ " + (vmm.getMark()-3) + " ]");
+					lblUserFindId.setText("对象[ " + (vmm.getMark()-1) + " ]");
 					//用户找到的视频时间显示：
 					long hour = fi.getTime() / 1000 / 60 / 60 % 60;
 					long minute = fi.getTime() / 1000 / 60 %60;
 					long second = fi.getTime() / 1000 % 60;
 					lblUserFindTime.setText( "[ " + hour + "时 "+ minute + "分  " + second + "秒 ]");
 					//用户提供的查找对象的原图显示
-					panelFaceOriginalInObjects.setBufferImage(objectsToFind[vmm.getMark()-4]);//vmm.getMark()最小为1,1-3为酱油，故-4才是所找目标
+					panelFaceOriginalInObjects.setBufferImage(objectsToFind[vmm.getMark()-2]);//vmm.getMark()最小为1,1为酱油，故-2才是所找目标
 					
 					int objectIndex = vmm.getMark();
 					arrVideoMarkModel.get(objectIndex).setMark(vmm.getMark());
@@ -675,8 +687,8 @@ public class FrameVideo extends JFrame implements Context {
 		//"1-3"为酱油，"4"为arrVideoMarkModel中的"0"
 		System.out.println("vmm.getMark():  " + vmm.getMark());
 		
-		int objectIndex =vmm.getMark()-4;
-//		int objectIndex =vmm.getMark()-2;
+//		int objectIndex =vmm.getMark()-4;
+		int objectIndex =vmm.getMark()-2;
 //		int objectIndex =vmm.getMark()-1;
 		
 		//获取原数据
@@ -742,25 +754,26 @@ public class FrameVideo extends JFrame implements Context {
 		GetPcaLda.setNum(1);
 		
 		//选中对象的初始化，对他们进行小波变换
-		//由于加入“酱油”（放在第1-3位），故人数要+3
-		BufferedImage[] waveBeforeObjectBImages = new BufferedImage[objectsSelectedCount+3];
+		//由于加入“酱油”（放在第1位），故人数要+1
+		BufferedImage[] waveBeforeObjectBImages = new BufferedImage[objectsSelectedCount+1];
 		
 		System.out.println("objectsSelectedCount:" + objectsSelectedCount);
-//		//获取酱油的1张图片
-//		ImageIcon imgIcon = new ImageIcon("Pictures/none/after37-1.jpg");
-//		waveBeforeObjectBImages[0] = 
-//				ImageUtil.ImageToBufferedImage(imgIcon.getImage());
-		for(int i=0; i<3; i++)
-		{
-			System.out.println("i:" + i);
-			String source = "Pictures/none/after37-" + (i+1) + ".jpg";
-			ImageIcon imgIcon = new ImageIcon(source);
-			waveBeforeObjectBImages[i] = 
-					ImageUtil.ImageToBufferedImage(imgIcon.getImage());
-		}
+		//获取酱油的1张图片
+		ImageIcon imgIcon = new ImageIcon("Pictures/none/after37-1.jpg");
+		waveBeforeObjectBImages[0] = 
+				ImageUtil.ImageToBufferedImage(imgIcon.getImage());
+		//获取3张酱油的图片
+//		for(int i=0; i<3; i++)
+//		{
+//			System.out.println("i:" + i);
+//			String source = "Pictures/none/after37-" + (i+1) + ".jpg";
+//			ImageIcon imgIcon = new ImageIcon(source);
+//			waveBeforeObjectBImages[i] = 
+//					ImageUtil.ImageToBufferedImage(imgIcon.getImage());
+//		}
 		
 		
-		int index = 3;// 第0-2个 给了“酱油”
+		int index = 1;// 第0个 给了“酱油”
 		for(int i=0; i<9; i++)
 		{
 			//若该对象被选中，则添加到waveObjectBImages里面
@@ -778,7 +791,7 @@ public class FrameVideo extends JFrame implements Context {
 		GetPcaLda.getResult(waveAfterObjectBImages);
 		
 		//计算 选中对象的图片的 投影Z	
-		int peopleNum = objectsSelectedCount+3;//人数（+3为酱油）
+		int peopleNum = objectsSelectedCount+1;//人数（+3为酱油）
 		int photoNum = 1;//每人1张图
 		modelP=new double[peopleNum*photoNum][peopleNum-1];
 		for(int i=0;i<peopleNum;i++){
@@ -859,7 +872,8 @@ public class FrameVideo extends JFrame implements Context {
 						isObjectsSelected[j] = false;
 						
 						//改变ImagePanel的显示
-						ChangeImagePanelPic(i,j);
+//						ChangeImagePanelPic(i,j);
+						RefreshImagePanel();
 						break;
 					}
 				}
@@ -1042,6 +1056,39 @@ public class FrameVideo extends JFrame implements Context {
 	 */
 	private void RefreshImagePanel()
 	{
+		int i = pageIndex - 1;
+		switch (pageIndex) 
+		{
+			
+			case 1:
+				lblObject1.setBufferImage(objectsToFind[i*3]);
+				lblObject1Num.setText("1");
+				lblObject2.setBufferImage(objectsToFind[i*3 + 1]);
+				lblObject2Num.setText("2");
+				lblObject3.setBufferImage(objectsToFind[i*3 + 2]);
+				lblObject3Num.setText("3");
+				break;
+	
+			case 2:
+				lblObject1.setBufferImage(objectsToFind[i*3]);
+				lblObject1Num.setText("4");
+				lblObject2.setBufferImage(objectsToFind[i*3 + 1]);
+				lblObject2Num.setText("5");
+				lblObject3.setBufferImage(objectsToFind[i*3 + 2]);
+				lblObject3Num.setText("6");	
+				break;
+			case 3:
+				lblObject1.setBufferImage(objectsToFind[i*3]);
+				lblObject1Num.setText("7");
+				lblObject2.setBufferImage(objectsToFind[i*3 + 1]);
+				lblObject2Num.setText("8");
+				lblObject3.setBufferImage(objectsToFind[i*3 + 2]);
+				lblObject3Num.setText("9");
+				break;
+				
+			default:
+				break;
+		}
 		
 	}
 	
