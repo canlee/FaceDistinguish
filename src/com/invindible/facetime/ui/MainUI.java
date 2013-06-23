@@ -93,7 +93,7 @@ public class MainUI extends JFrame{
 		OnAndOff.getInstance().Start();
 		
 		
-		JButton btnRegist = new JButton("注册");
+		JButton btnRegist = new JButton("1.注册");
 		btnRegist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frameMainUI.dispose();
@@ -110,7 +110,7 @@ public class MainUI extends JFrame{
 		btnRegist.setBounds(56, 15, 115, 32);
 		panelButton.add(btnRegist);
 		
-		final JButton btnEnter = new JButton("登陆签到");
+		final JButton btnEnter = new JButton("2.登陆签到");
 		btnEnter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frameMainUI.dispose();
@@ -122,7 +122,7 @@ public class MainUI extends JFrame{
 		btnEnter.setBounds(276, 15, 115, 32);
 		panelButton.add(btnEnter);
 		
-		JButton btnVideo = new JButton("视频监视");
+		JButton btnVideo = new JButton("4.视频监视");
 		btnVideo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frameMainUI.dispose();
@@ -134,7 +134,7 @@ public class MainUI extends JFrame{
 		btnVideo.setBounds(276, 57, 115, 32);
 		panelButton.add(btnVideo);
 		
-		JButton buttonManage = new JButton("管理员管理");
+		JButton buttonManage = new JButton("3.管理员管理");
 		buttonManage.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				

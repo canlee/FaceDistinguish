@@ -52,6 +52,7 @@ import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
+import javax.swing.JPasswordField;
 
 public class FrameSignIn extends JFrame implements Context{
 
@@ -82,9 +83,9 @@ public class FrameSignIn extends JFrame implements Context{
 	private int userIdForSign;
 	private ImageIcon[] imageFind;
 	private JTextField txtUserId;
-	private JTextField txtUserPwd;
 	
 	private String userAccount;
+	private JPasswordField passwordField;
 
 	/**
 	 * Launch the application.
@@ -106,6 +107,7 @@ public class FrameSignIn extends JFrame implements Context{
 	 * Create the frame.
 	 */
 	public FrameSignIn() {
+		setTitle("2.登陆签到-识别/登陆");
 //		try {
 //			ApplicationConfig.setupLink();
 //		} catch (IOException e2) {
@@ -517,19 +519,14 @@ public class FrameSignIn extends JFrame implements Context{
 		labelUserPwd.setBounds(10, 54, 60, 21);
 		panel.add(labelUserPwd);
 		
-		txtUserPwd = new JTextField();
-		txtUserPwd.setFont(new Font("宋体", Font.PLAIN, 16));
-		txtUserPwd.setColumns(10);
-		txtUserPwd.setBounds(90, 53, 102, 21);
-		panel.add(txtUserPwd);
-		
 		JButton buttonLoginByIdPwd = new JButton("登陆");
 		buttonLoginByIdPwd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
 				//获取用户名和密码
 				String userId = txtUserId.getText();
-				String userPwd = txtUserPwd.getText();
+//				String userPwd = txtUserPwd.getText();
+				String userPwd = passwordField.getText();
 				
 				User user = new User();
 				user.setUsername(userId);
@@ -587,6 +584,10 @@ public class FrameSignIn extends JFrame implements Context{
 		lblNewLabel.setFont(new Font("宋体", Font.PLAIN, 14));
 		lblNewLabel.setBounds(202, 54, 140, 19);
 		panel.add(lblNewLabel);
+		
+		passwordField = new JPasswordField();
+		passwordField.setBounds(90, 53, 102, 21);
+		panel.add(passwordField);
 		
 		//首先，检验一下数据库中有没有人
 		//即检验一下数据库中是否有WpotT参数

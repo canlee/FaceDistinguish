@@ -17,6 +17,8 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.UIManager;
 import javax.swing.JLabel;
 
+import org.omg.CORBA.Environment;
+
 import com.invindible.facetime.algorithm.LDA;
 import com.invindible.facetime.algorithm.VideoMark;
 import com.invindible.facetime.feature.GetPcaLda;
@@ -56,6 +58,7 @@ public class FrameVideo extends JFrame implements Context {
 	private BufferedImage[] objectsToFind;//9个要在视频中查找的对象
 	private boolean[] isObjectsSelected;//对象是否被选中的标志
 	private int objectsSelectedCount;//选中的对象的数量
+	private BufferedImage buffImgNoObject;//无对象的图片
 	
 	private static double[][] modelP;//训练样本的投影Z
 	private static double[] allMean;
@@ -67,9 +70,11 @@ public class FrameVideo extends JFrame implements Context {
 	private JLabel lblUserFindId;
 	private JLabel lblUserFindTime;
 	
+	
 	private JLabel lblObject1Num;
 	private JLabel lblObject2Num;
 	private JLabel lblObject3Num;
+	private JLabel lblPageNum;
 	
 	private int pageIndex;
 	
@@ -95,7 +100,7 @@ public class FrameVideo extends JFrame implements Context {
 //	private ImagePanel lblObject8;
 //	private ImagePanel lblObject9;
 	
-	private String videoPath1;
+	private String videoPath1 = "";
 	private String videoPath2;
 	private String videoPath3;
 
@@ -119,9 +124,18 @@ public class FrameVideo extends JFrame implements Context {
 	 * Create the frame.
 	 */
 	public FrameVideo() {
+		setTitle("4.视频监视");
 		
 		pageIndex = 1;
 		objectsToFind = new BufferedImage[9];
+		
+		for(int i=0; i<9; i++)
+		{
+			ImageIcon imageNoObject = new ImageIcon("Pictures/noObject.jpg");
+			objectsToFind[i] = ImageUtil.ImageToBufferedImage(imageNoObject.getImage());
+		}
+		ImageIcon imageNoObject = new ImageIcon("Pictures/noObject.jpg");
+		buffImgNoObject = ImageUtil.ImageToBufferedImage(imageNoObject.getImage());
 		isObjectsSelected = new boolean[9];
 		
 //		//初始化arrVideoMarkModel
@@ -204,7 +218,7 @@ public class FrameVideo extends JFrame implements Context {
 		lblObject1.setBounds(43, 14, 128, 128);
 		panelObject1.add(lblObject1);
 		
-		JButton btnObject1 = new JButton("选择对象1");
+		JButton btnObject1 = new JButton("选择该对象");
 		btnObject1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -241,7 +255,7 @@ public class FrameVideo extends JFrame implements Context {
 		lblObject2.setBounds(43, 14, 128, 128);
 		panelObject2.add(lblObject2);
 		
-		JButton btnObject2 = new JButton("选择对象2");
+		JButton btnObject2 = new JButton("选择该对象");
 		btnObject2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -253,6 +267,12 @@ public class FrameVideo extends JFrame implements Context {
 		panelObject2.add(btnObject2);
 		
 		JButton btnCalcleObject2 = new JButton("取消该对象");
+		btnCalcleObject2.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				CancleChooseJpgPicture(lblObject2, 1);
+			}
+		});
 		btnCalcleObject2.setFont(new Font("宋体", Font.PLAIN, 12));
 		btnCalcleObject2.setBounds(103, 151, 95, 23);
 		panelObject2.add(btnCalcleObject2);
@@ -272,7 +292,7 @@ public class FrameVideo extends JFrame implements Context {
 		lblObject3.setBounds(43, 14, 128, 128);
 		panelObject3.add(lblObject3);
 		
-		JButton btnObject3 = new JButton("选择对象3");
+		JButton btnObject3 = new JButton("选择该对象");
 		btnObject3.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ChooseJpgPicture(lblObject3, 2);
@@ -284,6 +304,12 @@ public class FrameVideo extends JFrame implements Context {
 		panelObject3.add(btnObject3);
 		
 		JButton btnCalcleObject3 = new JButton("取消该对象");
+		btnCalcleObject3.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				CancleChooseJpgPicture(lblObject3, 2);
+			}
+		});
 		btnCalcleObject3.setFont(new Font("宋体", Font.PLAIN, 12));
 		btnCalcleObject3.setBounds(108, 151, 95, 23);
 		panelObject3.add(btnCalcleObject3);
@@ -309,7 +335,7 @@ public class FrameVideo extends JFrame implements Context {
 		panelObjects.add(panelPage);
 		panelPage.setLayout(null);
 		
-		final JLabel lblPageNum = new JLabel("第 [1] 页");
+		lblPageNum = new JLabel("第 [1] 页");
 		lblPageNum.setBounds(25, 5, 83, 19);
 		panelPage.add(lblPageNum);
 		lblPageNum.setFont(new Font("宋体", Font.PLAIN, 16));
@@ -377,6 +403,26 @@ public class FrameVideo extends JFrame implements Context {
 		btnStartFindFace.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+				//若视频的路径为空，则提示必须选择一个视频
+				if(videoPath1.isEmpty())
+				{
+					JOptionPane.showMessageDialog(null, "尚未选择视频路径！请点击上方选择视频按钮！", "提示", JOptionPane.INFORMATION_MESSAGE);
+					return;
+				}
+				
+				if(objectsSelectedCount == 0)
+				{
+					JOptionPane.showMessageDialog(null, "尚未选择对象！请先选择对象！", "提示", JOptionPane.INFORMATION_MESSAGE);
+					return;
+				}
+				
+//				尚未训练
+				if(modelP == null)
+				{
+					JOptionPane.showMessageDialog(null, "尚未训练！请在选择对象后，训练样本特征！", "提示", JOptionPane.INFORMATION_MESSAGE);
+					return;
+				}
+				
 				//确认询问是否开始查找人脸
 				if( JOptionPane.YES_OPTION == 
 				JOptionPane.showConfirmDialog(null, "确认开始查找人脸？这个过程可能会持续几分钟，系统开销较大。", "提示", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE))
@@ -427,7 +473,7 @@ public class FrameVideo extends JFrame implements Context {
 		contentPane.add(btnReturn);
 		
 		JPanel panel_4 = new JPanel();
-		panel_4.setBorder(new TitledBorder(null, "JPanel title", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_4.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u89C6\u9891\u68C0\u6D4B\u7ED3\u679C", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panel_4.setBounds(39, 467, 837, 245);
 		contentPane.add(panel_4);
 		panel_4.setLayout(null);
@@ -487,6 +533,50 @@ public class FrameVideo extends JFrame implements Context {
 		lblUserFindTime = new JLabel("尚未识别");
 		lblUserFindTime.setBounds(361, 205, 117, 15);
 		panel_4.add(lblUserFindTime);
+		
+		JButton btnStopFindFace = new JButton("(可选)4.停止视频检测");
+		btnStopFindFace.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				if(JOptionPane.YES_OPTION == 
+						JOptionPane.showConfirmDialog(null, "确定要暂停线程？", "暂停提示", JOptionPane.YES_NO_CANCEL_OPTION))
+				{
+					try
+					{
+						//暂停找脸线程和识别线程
+						findTask.stop();
+						fvfi.stop();
+						
+						//初始化视频检测数据(将已检测的数据清零)
+						arrVideoMarkModel = new ArrayList<VideoMarkModel>();
+						for(int i=0; i<9; i++)
+						{
+							//初始化arrVideoMarkModel
+							VideoMarkModel vmmTemp = new VideoMarkModel();
+							vmmTemp.setMark(-1);
+							double disMinMax = Double.MAX_VALUE;
+							double[] dis={disMinMax,disMinMax,disMinMax,disMinMax};
+							vmmTemp.setDis(dis);
+							
+							arrVideoMarkModel.add(vmmTemp);
+						}
+						JOptionPane.showMessageDialog(null, "已暂停视频检测！", "视频提示", JOptionPane.INFORMATION_MESSAGE);
+						
+					}
+					catch(Exception e1)
+					{
+						JOptionPane.showMessageDialog(null, "检测线程尚未开始！无须暂停！", "提示", JOptionPane.INFORMATION_MESSAGE);
+					}
+				}
+				
+			}
+		});
+		btnStopFindFace.setFont(new Font("宋体", Font.PLAIN, 14));
+		btnStopFindFace.setBounds(199, 432, 187, 25);
+		contentPane.add(btnStopFindFace);
+		
+		//根据页数，刷新页面
+		RefreshImagePanel();
 	}
 
 	@Override
@@ -514,6 +604,7 @@ public class FrameVideo extends JFrame implements Context {
 			
 		case FindVideoFaceInterface.FIND_VIDEO_FACE_FINISH:
 			Debug.print("完成了");
+			JOptionPane.showMessageDialog(null, "视频已检测完毕！", "视频提示", JOptionPane.INFORMATION_MESSAGE);
 			break;
 			
 		case FindVideoFaceInterface.OPEN_VIDEO_FAIL:
@@ -536,26 +627,30 @@ public class FrameVideo extends JFrame implements Context {
 //				imageObjectToFindBuffImg[(int) id] = img;
 				objectsToFind[(int) id] = img;
 				
-				switch((int) id)
-				{
-					case 0:
-						lblObject1.setBufferImage(img);
-						break;
-					case 1:
-						lblObject2.setBufferImage(img);
-						break;
-					case 2:
-						lblObject3.setBufferImage(img);
-						break;
-					default:
-						break;
-				}
+				RefreshImagePanel();
+//				switch((int) id)
+//				{
+//					case 0:
+//						lblObject1.setBufferImage(img);
+//						break;
+//					case 1:
+//						lblObject2.setBufferImage(img);
+//						break;
+//					case 2:
+//						lblObject3.setBufferImage(img);
+//						break;
+//					default:
+//						break;
+//				}
 				
 //				imagePanel.setBufferImage(img);
 //				Debug.print(img.getWidth() + ", " + img.getHeight());
 //				imagePanel.setBounds(originPanel.getWidth() + 10, 0, img.getWidth(), img.getHeight());
 			}
 			else {
+				//获取id(此处Time用作index，来标示用户ID)
+				long id = fiFace.getTime();
+				JOptionPane.showMessageDialog(null, "对象[" + (id+1) + "]的图片中无法找到人脸或更细致的人脸！", "提示", JOptionPane.INFORMATION_MESSAGE);
 				Debug.print("no face");
 			}
 			break;
@@ -657,7 +752,9 @@ public class FrameVideo extends JFrame implements Context {
 					arrVideoMarkModel.get(objectIndex).setDis(vmm.getDis());
 					
 					System.out.println("-----------------------===成功找到一个人！===------------------------------");
-					JOptionPane.showMessageDialog(null, "成功找到一个人！！", "提示", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "成功识别对象["+ (vmm.getMark()-1) +"]！\n\r" + "视频截取时间：" +
+							"[ " + hour + "时 "+ minute + "分  " + second + "秒 ]"
+							, "视频识别提示", JOptionPane.INFORMATION_MESSAGE);
 				}
 				//否则，若 ... > ...，则不替换结果
 				else
@@ -749,6 +846,12 @@ public class FrameVideo extends JFrame implements Context {
 	 */
 	private void TrainSelectedObjects()
 	{
+		if( objectsSelectedCount == 0)
+		{
+			JOptionPane.showMessageDialog(null, "对象为空，无法训练！请先选择对象！", "提示", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		}
+		
 		
 		//计算前，先设置GetPcaLda的每人照片数量
 		GetPcaLda.setNum(1);
@@ -779,6 +882,8 @@ public class FrameVideo extends JFrame implements Context {
 			//若该对象被选中，则添加到waveObjectBImages里面
 			if( isObjectsSelected[i] == true)
 			{
+//				System.out.println("i:" + i);
+//				System.out.println("！！！！！！！！进来一次！！！！！！！！！！！");
 				waveBeforeObjectBImages[index] = objectsToFind[i];
 				index++;
 			}
@@ -864,21 +969,30 @@ public class FrameVideo extends JFrame implements Context {
 				{
 					if( isObjectsSelected[j] == true)
 					{
-						
+						System.out.println("交换时:i=" + i + ",j=" + j);
 						objectsToFind[i] = objectsToFind[j];
 						
 						//改变选中的标志
 						isObjectsSelected[i] = true;
 						isObjectsSelected[j] = false;
 						
+						//将第j张图片清空
+						objectsToFind[j] = buffImgNoObject;
+						
 						//改变ImagePanel的显示
 //						ChangeImagePanelPic(i,j);
-						RefreshImagePanel();
+						
 						break;
 					}
 				}
 			}
 		}
+		//自动转到第一页，并且刷新页面
+		pageIndex = 1;
+		lblPageNum.setText("第 [1] 页]");
+		btnPageUp.setEnabled(false);
+		btnPageDown.setEnabled(true);
+		RefreshImagePanel();
 		
 		
 		for(int i=0; i<9; i++)
@@ -1012,12 +1126,16 @@ public class FrameVideo extends JFrame implements Context {
 				System.out.println(pathObject);
 				//获取给objectsToFind
 				ImageIcon imageIcon = new ImageIcon(pathObject);
-				objectsToFind[i] = ImageUtil.ImageToBufferedImage(imageIcon.getImage());
+				int index = (pageIndex - 1) * 3 + i;//根据页数，据顶objectsToFind的索引index
+				objectsToFind[index] = ImageUtil.ImageToBufferedImage(imageIcon.getImage());
 				//将图像显示在ImagePanel上
-				imagePanel.setBufferImage(objectsToFind[i]);
+				imagePanel.setBufferImage(objectsToFind[index]);
 				
-				objectsSelectedCount++;
-				isObjectsSelected[i] = true;
+				if( isObjectsSelected[index] == false)
+				{
+					objectsSelectedCount++;
+					isObjectsSelected[index] = true;
+				}
 			}
 			else
 			{
@@ -1039,11 +1157,13 @@ public class FrameVideo extends JFrame implements Context {
 	private void CancleChooseJpgPicture(ImagePanel imagePanel, int i)
 	{
 		//若已选中，则取消选中
-		if( isObjectsSelected[i] == true)
+		int index =(pageIndex - 1) * 3 + i;
+		if( isObjectsSelected[index] == true)
 		{
-			isObjectsSelected[i] = false;
+			isObjectsSelected[index] = false;
 			objectsSelectedCount--;
-			imagePanel.setBufferImage(null);
+			objectsToFind[index] = buffImgNoObject;
+			imagePanel.setBufferImage(buffImgNoObject);
 		}
 		else
 		{
@@ -1056,33 +1176,35 @@ public class FrameVideo extends JFrame implements Context {
 	 */
 	private void RefreshImagePanel()
 	{
-		int i = pageIndex - 1;
+//		int i = pageIndex - 1;
+		System.out.println("pageNum:" + pageIndex);
+//		System.out.println("i*3:" + i*3);
 		switch (pageIndex) 
 		{
 			
 			case 1:
-				lblObject1.setBufferImage(objectsToFind[i*3]);
+				lblObject1.setBufferImage(objectsToFind[0]);
 				lblObject1Num.setText("1");
-				lblObject2.setBufferImage(objectsToFind[i*3 + 1]);
+				lblObject2.setBufferImage(objectsToFind[1]);
 				lblObject2Num.setText("2");
-				lblObject3.setBufferImage(objectsToFind[i*3 + 2]);
+				lblObject3.setBufferImage(objectsToFind[2]);
 				lblObject3Num.setText("3");
 				break;
 	
 			case 2:
-				lblObject1.setBufferImage(objectsToFind[i*3]);
+				lblObject1.setBufferImage(objectsToFind[3]);
 				lblObject1Num.setText("4");
-				lblObject2.setBufferImage(objectsToFind[i*3 + 1]);
+				lblObject2.setBufferImage(objectsToFind[4]);
 				lblObject2Num.setText("5");
-				lblObject3.setBufferImage(objectsToFind[i*3 + 2]);
+				lblObject3.setBufferImage(objectsToFind[5]);
 				lblObject3Num.setText("6");	
 				break;
 			case 3:
-				lblObject1.setBufferImage(objectsToFind[i*3]);
+				lblObject1.setBufferImage(objectsToFind[6]);
 				lblObject1Num.setText("7");
-				lblObject2.setBufferImage(objectsToFind[i*3 + 1]);
+				lblObject2.setBufferImage(objectsToFind[7]);
 				lblObject2Num.setText("8");
-				lblObject3.setBufferImage(objectsToFind[i*3 + 2]);
+				lblObject3.setBufferImage(objectsToFind[8]);
 				lblObject3Num.setText("9");
 				break;
 				
