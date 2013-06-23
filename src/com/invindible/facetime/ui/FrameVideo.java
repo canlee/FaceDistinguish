@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Image;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -12,6 +13,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.UIManager;
 import javax.swing.JLabel;
 
@@ -63,6 +65,7 @@ public class FrameVideo extends JFrame implements Context {
 	private ImagePanel panelFaceInVideo;//视频中截取的人脸（亮灿部分）
 	private ImagePanel panelFaceOriginalInObjects;//识别成功后，显示用户提供的对象原图的地方
 	private JLabel lblUserFindId;
+	private JLabel lblUserFindTime;
 	
 	private FindFaceInterface findTask;
 	private FindVideoFaceInterface fvfi;
@@ -164,6 +167,27 @@ public class FrameVideo extends JFrame implements Context {
 		panelObject1.add(lblObject1);
 		
 		JButton btnObject1 = new JButton("选择对象1");
+		btnObject1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				JFileChooser chooser=new JFileChooser() ;
+				chooser.setMultiSelectionEnabled(false);//禁止多选
+//				chooser.setFileFilter(new FileFilter());
+//				chooser.setFileFilter(new FileFilter("java"));//设置过滤器，仅限jpg(jpeg)图   
+				//若选择了一个文件，则获取路径，并且将该路径的图片获取出来
+				if( JFileChooser.APPROVE_OPTION == chooser.showOpenDialog(FrameVideo.this))
+				{
+					String pathObject1 = chooser.getSelectedFile().getPath();
+					System.out.println(pathObject1);
+					//获取给objectsToFind
+				}
+				else
+				{
+					return;
+				}
+				
+			}
+		});
 		btnObject1.setFont(new Font("宋体", Font.PLAIN, 12));
 		btnObject1.setBounds(3, 151, 95, 23);
 		panelObject1.add(btnObject1);
@@ -339,12 +363,12 @@ public class FrameVideo extends JFrame implements Context {
 		panelFacePicture.setBounds(6, 17, 128, 128);
 		panel_3.add(panelFacePicture);
 		
-		JLabel lblid = new JLabel("找到的用户ID：");
-		lblid.setBounds(348, 190, 93, 15);
-		panel_4.add(lblid);
+		JLabel lblId = new JLabel("找到的用户ID：");
+		lblId.setBounds(510, 183, 93, 15);
+		panel_4.add(lblId);
 		
-		lblUserFindId = new JLabel("New label");
-		lblUserFindId.setBounds(422, 205, 54, 15);
+		lblUserFindId = new JLabel("尚未识别");
+		lblUserFindId.setBounds(547, 205, 81, 15);
 		panel_4.add(lblUserFindId);
 		
 		JPanel panel_2 = new JPanel();
@@ -366,6 +390,14 @@ public class FrameVideo extends JFrame implements Context {
 		panelFaceOriginalInObjects = new ImagePanel();
 		panelFaceOriginalInObjects.setBounds(6, 17, 128, 128);
 		panel_5.add(panelFaceOriginalInObjects);
+		
+		JLabel lblTime = new JLabel("找到的时间：");
+		lblTime.setBounds(338, 183, 93, 15);
+		panel_4.add(lblTime);
+		
+		lblUserFindTime = new JLabel("尚未识别");
+		lblUserFindTime.setBounds(361, 205, 117, 15);
+		panel_4.add(lblUserFindTime);
 	}
 
 	@Override
@@ -513,8 +545,8 @@ public class FrameVideo extends JFrame implements Context {
 				//若找到的ID为1，即酱油，则不显示
 				if ( CompareDistance(vmm) && (vmm.getMark()!=1) )
 				{
-					JOptionPane.showMessageDialog(null, "成功找到一个人！！", "提示", JOptionPane.INFORMATION_MESSAGE);
-					System.out.println("-----------------------===成功找到一个人！===------------------------------");
+					
+					
 					
 					//暂时将图片显示在界面上
 					//原图
@@ -525,18 +557,26 @@ public class FrameVideo extends JFrame implements Context {
 					//人脸图(视频中识别出来的人脸，记录在这里)
 					panelFacePicture.setBufferImage(waveBeforeBuffImgs[i]);
 					//用户ID提示
-					lblUserFindId.setText("[ " + vmm.getMark() + " ]");
+					lblUserFindId.setText("对象[ " + vmm.getMark() + " ]");
+					//用户找到的视频时间显示：
+					long hour = fi.getTime() / 1000 / 60 / 60 % 60;
+					long minute = fi.getTime() / 1000 / 60 %60;
+					long second = fi.getTime() / 1000 % 60;
+					lblUserFindTime.setText( "[ " + hour + "时 "+ minute + "分  " + second + "秒 ]");
 					//用户提供的查找对象的原图显示
 					panelFaceOriginalInObjects.setBufferImage(objectsToFind[vmm.getMark()-2]);//vmm.getMark()最小为1,1为酱油，故-2才是所找目标
 					
 					int objectIndex = vmm.getMark();
 					arrVideoMarkModel.get(objectIndex).setMark(vmm.getMark());
 					arrVideoMarkModel.get(objectIndex).setDis(vmm.getDis());
+					
+					System.out.println("-----------------------===成功找到一个人！===------------------------------");
+					JOptionPane.showMessageDialog(null, "成功找到一个人！！", "提示", JOptionPane.INFORMATION_MESSAGE);
 				}
 				//否则，若 ... > ...，则不替换结果
 				else
 				{
-					return;
+					continue;
 				}
 			}
 			
@@ -578,7 +618,8 @@ public class FrameVideo extends JFrame implements Context {
 		
 		//若有3个或3个以上距离 更小，说明临时数据结果更符合该识别对象
 		//可以用临时数据替换原数据，返回true
-		if( lessCount >= 3)
+		if( lessCount >= 4)
+//		if( lessCount >= 3)
 		{
 			return true;
 		}
