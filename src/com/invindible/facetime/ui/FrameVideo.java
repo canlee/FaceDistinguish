@@ -104,14 +104,26 @@ public class FrameVideo extends JFrame implements Context {
 		objectsToFind = new BufferedImage[9];
 		isObjectsSelected = new boolean[9];
 		
-		//初始化arrVideoMarkModel
-		VideoMarkModel vmmTemp = new VideoMarkModel();
-		vmmTemp.setMark(-1);
-		double disMinMax = Double.MAX_VALUE;
-		double[] dis={disMinMax,disMinMax,disMinMax,disMinMax};
-		vmmTemp.setDis(dis);
+//		//初始化arrVideoMarkModel
+//		VideoMarkModel vmmTemp = new VideoMarkModel();
+//		vmmTemp.setMark(-1);
+//		double disMinMax = Double.MAX_VALUE;
+//		double[] dis={disMinMax,disMinMax,disMinMax,disMinMax};
+//		vmmTemp.setDis(dis);
+//		for(int i=0; i<9; i++)
+//		{
+//			arrVideoMarkModel.add(vmmTemp);
+//		}
+		
 		for(int i=0; i<9; i++)
 		{
+			//初始化arrVideoMarkModel
+			VideoMarkModel vmmTemp = new VideoMarkModel();
+			vmmTemp.setMark(-1);
+			double disMinMax = Double.MAX_VALUE;
+			double[] dis={disMinMax,disMinMax,disMinMax,disMinMax};
+			vmmTemp.setDis(dis);
+			
 			arrVideoMarkModel.add(vmmTemp);
 		}
 		
@@ -598,9 +610,11 @@ public class FrameVideo extends JFrame implements Context {
 		
 		//临时数据符合第objectIndex个对象
 		//( vmm.getMark() 最小为1，但arrVideoMarkModel最小为0，故-1)
+		//"1"为酱油，"2"为arrVideoMarkModel中的"0"
 		System.out.println("vmm.getMark():  " + vmm.getMark());
 		
-		int objectIndex =vmm.getMark()-1;
+		int objectIndex =vmm.getMark()-2;
+//		int objectIndex =vmm.getMark()-1;
 		
 		//获取原数据
 		VideoMarkModel originalVmm = arrVideoMarkModel.get(objectIndex);
@@ -608,18 +622,22 @@ public class FrameVideo extends JFrame implements Context {
 		//比较 临时数据 与 原数据 的4个距离
 		double[] originalDis = originalVmm.getDis();//原数据的4个距离
 		double[] newDis = vmm.getDis();//临时数据的4个距离
+		System.out.println("===========比较数据:============");
 		for(int i=0; i<4; i++)
 		{
+			System.out.print("原: " + originalDis[i] + " 新: " + newDis[i]);
 			if( newDis[i] < originalDis[i])
 			{
 				lessCount++;
 			}
 		}
+		System.out.println("=============================");
 		
 		//若有3个或3个以上距离 更小，说明临时数据结果更符合该识别对象
 		//可以用临时数据替换原数据，返回true
-		if( lessCount >= 4)
-//		if( lessCount >= 3)
+//		if( lessCount >= 4)
+		System.out.println("lessCount:" + lessCount);
+		if( lessCount >= 3)
 		{
 			return true;
 		}
