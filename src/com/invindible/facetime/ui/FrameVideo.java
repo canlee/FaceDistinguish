@@ -34,6 +34,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
+import com.invindible.facetime.ui.widget.image.ImagePanel;
+
 public class FrameVideo extends JFrame implements Context {
 
 	static FrameVideo frameVideo;
@@ -53,6 +55,12 @@ public class FrameVideo extends JFrame implements Context {
 	
 	private static double[][] modelP;//训练样本的投影Z
 	private static double[] allMean;
+	
+	private ImagePanel panelOriginalPicture;//识别成功后，将视频的原图截图记录在这里
+	private ImagePanel panelFacePicture;//识别成功后，将视频中截取的人脸记录在这里
+	private ImagePanel panelFaceInVideo;//视频中截取的人脸（亮灿部分）
+	private ImagePanel panelFaceOriginalInObjects;//识别成功后，显示用户提供的对象原图的地方
+	private JLabel lblUserFindId;
 
 	/**
 	 * Launch the application.
@@ -91,7 +99,7 @@ public class FrameVideo extends JFrame implements Context {
 		
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 935, 505);
+		setBounds(100, 100, 915, 754);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -240,7 +248,7 @@ public class FrameVideo extends JFrame implements Context {
 					
 						//根据选择的路径
 						//开始在视频中 查找人脸
-						FindVideoFaceInterface fvfi = new FindVideoFaceImpl(FrameVideo.this, "E:\\VideoTest\\testVideo.wmv", 0);
+						FindVideoFaceInterface fvfi = new FindVideoFaceImpl(FrameVideo.this, "C:\\VideoTest\\testVideo.wmv", 0);
 //						FindVideoFaceInterface fvfi = new FindVideoFaceImpl(FrameVideo.this, txtPath1.getText(), 0);
 						fvfi.findFace();
 						
@@ -275,6 +283,60 @@ public class FrameVideo extends JFrame implements Context {
 		});
 		btnReturn.setBounds(25, 422, 110, 35);
 		contentPane.add(btnReturn);
+		
+		JPanel panel_4 = new JPanel();
+		panel_4.setBorder(new TitledBorder(null, "JPanel title", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_4.setBounds(39, 467, 837, 245);
+		contentPane.add(panel_4);
+		panel_4.setLayout(null);
+		
+		JPanel panel_1 = new JPanel();
+		panel_1.setBounds(6, 17, 322, 203);
+		panel_4.add(panel_1);
+		panel_1.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u539F\u59CB\u622A\u56FE", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_1.setLayout(null);
+		
+		panelOriginalPicture = new ImagePanel();
+		panelOriginalPicture.setBounds(6, 17, 300, 180);
+		panel_1.add(panelOriginalPicture);
+		
+		JPanel panel_3 = new JPanel();
+		panel_3.setBounds(338, 33, 140, 152);
+		panel_4.add(panel_3);
+		panel_3.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u89C6\u9891\u4E2D\u8BC6\u522B\u51FA\u6765\u7684\u4EBA\u8138", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_3.setLayout(null);
+		
+		panelFacePicture = new ImagePanel();
+		panelFacePicture.setBounds(6, 17, 128, 128);
+		panel_3.add(panelFacePicture);
+		
+		JLabel lblid = new JLabel("找到的用户ID：");
+		lblid.setBounds(348, 190, 93, 15);
+		panel_4.add(lblid);
+		
+		lblUserFindId = new JLabel("New label");
+		lblUserFindId.setBounds(422, 205, 54, 15);
+		panel_4.add(lblUserFindId);
+		
+		JPanel panel_2 = new JPanel();
+		panel_2.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u89C6\u9891\u4E2D\u622A\u53D6\u7684\u4EBA\u8138", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_2.setBounds(676, 33, 140, 152);
+		panel_4.add(panel_2);
+		panel_2.setLayout(null);
+		
+		panelFaceInVideo = new ImagePanel();
+		panelFaceInVideo.setBounds(6, 17, 128, 128);
+		panel_2.add(panelFaceInVideo);
+		
+		JPanel panel_5 = new JPanel();
+		panel_5.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u8BC6\u522B\u51FA\u6765\u7684\u7528\u6237\u539F\u56FE", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_5.setBounds(500, 33, 140, 152);
+		panel_4.add(panel_5);
+		panel_5.setLayout(null);
+		
+		panelFaceOriginalInObjects = new ImagePanel();
+		panelFaceOriginalInObjects.setBounds(6, 17, 128, 128);
+		panel_5.add(panelFaceOriginalInObjects);
 	}
 
 	@Override
@@ -338,6 +400,8 @@ public class FrameVideo extends JFrame implements Context {
 			
 			//等比例变换
 			waveBeforeBuffImgs[i] = ImageUtil.imageScale(waveBeforeBuffImgs[i], 128, 128);
+			panelFaceInVideo.setBufferImage(waveBeforeBuffImgs[i]);
+//			JOptionPane.showMessageDialog(null, "第" + i +"张图", "提示", JOptionPane.INFORMATION_MESSAGE);
 		}
 		
 		//对所有等比例变换后的人脸图，进行小波变换
@@ -376,10 +440,24 @@ public class FrameVideo extends JFrame implements Context {
 			{
 				//根据识别结果的ID号，保存进ArrayList<VideoMarkModel>相应的位置中
 				//若 新识别的距离 < 原识别结果的距离，则替换原识别结果
-				if ( CompareDistance(vmm) )
+				//若找到的ID为1，即酱油，则不显示
+				if ( CompareDistance(vmm) && (vmm.getMark()!=1) )
 				{
 					JOptionPane.showMessageDialog(null, "成功找到一个人！！", "提示", JOptionPane.INFORMATION_MESSAGE);
 					System.out.println("-----------------------===成功找到一个人！===------------------------------");
+					
+					//暂时将图片显示在界面上
+					//原图
+					BufferedImage originalBImg = fi.getOriginImage();
+					originalBImg = ImageUtil.imageScale(originalBImg, 300, 180);
+					panelOriginalPicture.setBufferImage(fi.getOriginImage());
+					//人脸图
+					panelFacePicture.setBufferImage(waveBeforeBuffImgs[i]);
+					//用户ID提示
+					lblUserFindId.setText("[ " + vmm.getMark() + " ]");
+					//用户提供的查找对象的原图显示
+					panelFaceOriginalInObjects.setBufferImage(objectsToFind[vmm.getMark()-2]);//vmm.getMark()最小为1,1为酱油，故-2才是所找目标
+					
 					int objectIndex = vmm.getMark();
 					arrVideoMarkModel.get(objectIndex).setMark(vmm.getMark());
 					arrVideoMarkModel.get(objectIndex).setDis(vmm.getDis());
@@ -465,8 +543,8 @@ public class FrameVideo extends JFrame implements Context {
 	{
 		//-------------------------------测试阶段，尝试对2张人脸进行搜索-（这一部分应由界面给出)------------------------------
 		//对2张测试图片进行赋值
-		ImageIcon imgIcon0 = new ImageIcon("E:\\VideoTest\\test1.jpg");
-		ImageIcon imgIcon1 = new ImageIcon("E:\\VideoTest\\test2.jpg");
+		ImageIcon imgIcon0 = new ImageIcon("C:\\VideoTest\\test1.jpg");
+		ImageIcon imgIcon1 = new ImageIcon("C:\\VideoTest\\test2.jpg");
 		
 
 		
