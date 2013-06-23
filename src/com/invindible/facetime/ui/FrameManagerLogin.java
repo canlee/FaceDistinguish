@@ -89,7 +89,7 @@ public class FrameManagerLogin extends JFrame {
 				String pwd = txtPwd.getText();
 				
 				//若账号和密码正确，则进入管理员主界面
-				if( id.equals("admin") && pwd.equals("admin"))
+				if( id.equals("admin") && pwd.equals("administrator"))
 				{
 					frameManagerLogin.dispose();
 					
@@ -103,11 +103,11 @@ public class FrameManagerLogin extends JFrame {
 					{
 						JOptionPane.showMessageDialog(null, "账号或密码不能为空！", "警告", JOptionPane.WARNING_MESSAGE);
 					}
-					else if( !id.equals("administrator") )
+					else if( !id.equals("admin") )
 					{
 						JOptionPane.showMessageDialog(null, "账号错误！", "警告", JOptionPane.WARNING_MESSAGE);
 					}
-					else if( !pwd.equals("admin") )
+					else if( !pwd.equals("administrator") )
 					{
 						JOptionPane.showMessageDialog(null, "密码错误！", "警告", JOptionPane.WARNING_MESSAGE);
 					}
