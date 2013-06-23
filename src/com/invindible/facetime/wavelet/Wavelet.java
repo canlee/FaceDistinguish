@@ -58,6 +58,7 @@ public class Wavelet {
 	
 	private static int[][][] rgb;
 	public static BufferedImage[] Wavelet(BufferedImage[] bfi){
+		BufferedImage[] bf=new BufferedImage[bfi.length];
 		for(int i=0;i<bfi.length;i++){
 		rgb=ImageUtil.getRGBMat(bfi[i]) ;
 		int[][][]gray=ImageUtil.imgToGray(rgb); //trans to gray	
@@ -71,9 +72,9 @@ public class Wavelet {
 		pixel=ImagePreProcessUtil.imgToNoiseFilter(pixel);//col高斯滤波	
 		pixel=Rowreduce(pixel);//提取偶数列	
 		pixel=transposition(pixel);//转置
-		bfi[i]=ImageUtil.getImgByRGB(pixel);
+		bf[i]=ImageUtil.getImgByRGB(pixel);
 		}
-		return bfi;
+		return bf;
 	}
 	
 	public static BufferedImage Wavelet(ConnectedImage connImage){
