@@ -265,8 +265,8 @@ public class FrameRegist extends JFrame implements Context{
 		lblUserID.setBounds(42, 16, 89, 15);
 		contentPane.add(lblUserID);
 		
-		JLabel lblInstructions = new JLabel("文字说明区");
-		lblInstructions.setBounds(19, 310, 232, 85);
+		JLabel lblInstructions = new JLabel("请在截取7张图像后，点击“确认注册”\r\n\r\n。（可更换照片）");
+		lblInstructions.setBounds(19, 310, 360, 85);
 		contentPane.add(lblInstructions);
 		
 		JButton btnTakeNewPhoto = new JButton("更换选中照片");

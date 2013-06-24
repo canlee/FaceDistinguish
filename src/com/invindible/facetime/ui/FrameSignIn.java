@@ -141,7 +141,7 @@ public class FrameSignIn extends JFrame implements Context{
 		contentPane.add(panelCamera);
 		panelCamera.setLayout(null);
 		
-		JLabel label_1 = new JLabel("文字说明区");
+		JLabel label_1 = new JLabel("可用 人脸识别/账户密码 登陆");
 		label_1.setBounds(189, 293, 232, 85);
 		contentPane.add(label_1);
 		
