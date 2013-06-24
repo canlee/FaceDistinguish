@@ -27,85 +27,85 @@ public class Mark {
 		int matmp=Identify.mark(Double.MAX_VALUE,madis);	//ma domain
 		int mintmp=Identify.mark(Double.MAX_VALUE,mindis);  //min domain
 		
-		double[] facedis;  //l2 distance
-		double[] l1dis;   //l1 distance
+//		double[] facedis;  //l2 distance
+//		double[] l1dis;   //l1 distance
 		int[] record=new int[3];
 		
 		System.out.println("l1+l2 value:"+value+" "+l1value);
 		
 		for(int i=0;i<=test.length;i++){
 			boolean l2,l1;
-			int[] identify=new int [6];
-			int error1=0,error2=0; //error2--l2  error1--l1
+			int[] identify=new int [4];
+			int error1=0; //error1 l2 l1
 			if(i==test.length){
-//				l2=L2Form.inL2(testMean, allMean, value);
-//				l1=L1Form.inL1(testMean, allMean, l1value);	//whether in or not
-//				if(!l1||!l2)
-//				{
-//					record[i]=-1;
-//					System.out.println("不在范围内");
-//					continue;
-//				}
-				facedis=L2Form.L2Form(model, testMean);  //calculate l2 distance
-				l1dis=L1Form.L1Form(model, testMean);   //calculate l1 distance
+				l2=L2Form.inL2(testMean, allMean, value);
+				l1=L1Form.inL1(testMean, allMean, l1value);	//whether in or not
+				if(!l1||!l2)
+				{
+					record[i]=-1;
+					System.out.println("不在范围内");
+					continue;
+				}
+//				facedis=L2Form.L2Form(model, testMean);  //calculate l2 distance
+//				l1dis=L1Form.L1Form(model, testMean);   //calculate l1 distance
 			}
 			else
 			{
-//				l2=L2Form.inL2(test[i], allMean, value);
-//				l1=L1Form.inL1(test[i], allMean, l1value);
-//				if(!l1||!l2) 
-//				{
-//					record[i]=-1;
-//					System.out.println("不在范围内");
-//					continue;
-//				}
-				facedis=L2Form.L2Form(model, test[i]);  //calculate l2 distance
-				l1dis=L1Form.L1Form(model, test[i]);   //calculate l1 distance
+				l2=L2Form.inL2(test[i], allMean, value);
+				l1=L1Form.inL1(test[i], allMean, l1value);
+				if(!l1||!l2) 
+				{
+					record[i]=-1;
+					System.out.println("不在范围内");
+					continue;
+				}
+//				facedis=L2Form.L2Form(model, test[i]);  //calculate l2 distance
+//				l1dis=L1Form.L1Form(model, test[i]);   //calculate l1 distance
 			}			
-			int tmp=Identify.mark(value, facedis);  //l2 find out the nearest
-			int l1tmp=Identify.mark(l1value, l1dis);  //l1 find out the nearest
-			int tmpsecond;
+//			int tmp=Identify.mark(value, facedis);  //l2 find out the nearest
+//			int l1tmp=Identify.mark(l1value, l1dis);  //l1 find out the nearest
+//			int tmpsecond;
 			
 			//---------------------------与总体比较
-			if(tmp!=-1){
-				tmpsecond=second(tmp,facedis);  //l2 find out the second nearest
-				identify[0]=tmp/5+1;
-				if(tmpsecond!=-1){
-					if(Math.abs(facedis[tmpsecond]/facedis[tmp])<5)
-					{;}
-					else if(tmp/5+1!=tmpsecond/5+1)
-						{
-							error2++;				
-						}
-					}
-			}
-			else
-			{
-				record[i]=-1;
-				System.out.println("l2不在范围内");
-				continue;
-			}
-			
-			
-			int tmpl1second;
-			if(l1tmp!=-1){	 //l1  find out the second nearest
-			tmpl1second=second(l1tmp, l1dis);
-			identify[2]=l1tmp/5+1;
-			if(tmpl1second!=-1){
-				if(Math.abs(l1dis[tmpl1second]/l1dis[l1tmp])<5)
-				;			
-				else if(l1tmp/5+1!=tmpl1second/5+1)
-					{
-					error1++;					
-					}
-				}
-			}
-			else
-			{
-				record[i]=-1;
-				System.out.println("l1不在范围内");
-				continue;
-			}
+//			if(tmp!=-1){
+//				tmpsecond=second(tmp,facedis);  //l2 find out the second nearest
+//				identify[0]=tmp/5+1;
+//				if(tmpsecond!=-1){
+//					if(Math.abs(facedis[tmpsecond]/facedis[tmp])<5)
+//					{;}
+//					else if(tmp/5+1!=tmpsecond/5+1)
+//						{
+//							error2++;				
+//						}
+//					}
+//			}
+//			else
+//			{
+//				record[i]=-1;
+//				System.out.println("l2不在范围内");
+//				continue;
+//			}
+//			
+//			
+//			int tmpl1second;
+//			if(l1tmp!=-1){	 //l1  find out the second nearest
+//			tmpl1second=second(l1tmp, l1dis);
+//			identify[2]=l1tmp/5+1;
+//			if(tmpl1second!=-1){
+//				if(Math.abs(l1dis[tmpl1second]/l1dis[l1tmp])<5)
+//				;			
+//				else if(l1tmp/5+1!=tmpl1second/5+1)
+//					{
+//					error1++;					
+//					}
+//				}
+//			}
+//			else
+//			{
+//				record[i]=-1;
+//				System.out.println("l1不在范围内");
+//				continue;
+//			}
 			
 			//---------------------------与总体比较
 			
@@ -123,17 +123,17 @@ public class Mark {
 					l2facedis=L2Form.L2Form(modelMean, test[i]);
 					l1facedis=L1Form.L1Form(modelMean, test[i]);
 				}
-			tmp=Identify.mark(value, l2facedis);
-			l1tmp=Identify.mark(l1value, l1facedis);
+			int tmp=Identify.mark(value, l2facedis);
+			int l1tmp=Identify.mark(l1value, l1facedis);
 			
 			 if(tmp!=-1){
 					int second=second(tmp,l2facedis);
-					identify[4]=tmp+1;
+					identify[0]=tmp+1;
 					if(second!=-1){
 					if(l2facedis[tmp]<0.55*l2facedis[second])
 					{;}
 					else
-						error2++;					
+						error1++;					
 				}
 			 }
 			 else
@@ -145,7 +145,7 @@ public class Mark {
 			 
 			 if(l1tmp!=-1){
 					int second=second(tmp,l1facedis);
-					identify[5]=l1tmp+1;
+					identify[1]=l1tmp+1;
 					if(second!=-1){
 					if(l1facedis[l1tmp]<0.55*l1facedis[second])
 					{;}
@@ -160,20 +160,25 @@ public class Mark {
 					continue;
 				}
 			 
-			 identify[1]=matmp+1;
+			 identify[2]=matmp+1;
 			 identify[3]=mintmp+1;
 			 
-			//-----------------------与平均比较
-			 for(int c=0;c<identify.length;c++){
-				 System.out.println(identify[c]);
+			 for(int a=0;a<l2facedis.length;a++){
+				 System.out.println("l2:"+l2facedis[a]);
+				 System.out.println("l1:"+l1facedis[a]);
+				 System.out.println("ma:"+madis[a]);
+				 System.out.println("min:"+mindis[a]);
 			 }
+			 
+			 
+			//-----------------------与平均比较
 			 
 			 for(int c=0;c<identify.length;c++){
 					for(int d=c+1;d<identify.length;d++){
 						if(identify[c]!=identify[d])
 						{
 							record[i]=-1;
-							System.out.println("6个值不等");
+							System.out.println("4个值不等");
 							break;
 						}
 					}
@@ -185,7 +190,7 @@ public class Mark {
 						record[i]=identify[c];
 					}
 				}
-			 if(error1>=2||error2>=2)
+			 if(error1>=2)
 				 record[i]=-1;
 			 System.out.println("record "+i+" :"+record[i]);
 			
@@ -200,7 +205,6 @@ public class Mark {
 		for(int i=0;i<record.length;i++){
 			if(record[i]!=-1)
 			tmp[record[i]-1]++;
-//			System.out.println("tmp"+tmp[record[i]-1]);
 		}
 		
 		int max=tmp[0];

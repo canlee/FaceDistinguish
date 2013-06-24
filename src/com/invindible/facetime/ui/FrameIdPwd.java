@@ -25,6 +25,8 @@ import java.awt.event.ActionEvent;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.swing.JPasswordField;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class FrameIdPwd extends JFrame {
 
@@ -32,6 +34,7 @@ public class FrameIdPwd extends JFrame {
 	private JPanel contentPane;
 	private JTextField txtUserId;
 	private JPasswordField passwordField;
+	private JButton buttonEnter;
 
 	/**
 	 * Launch the application.
@@ -53,6 +56,16 @@ public class FrameIdPwd extends JFrame {
 	 * Create the frame.
 	 */
 	public FrameIdPwd() {
+		addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					buttonEnter.doClick();
+				}
+			}
+		});
 		
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -75,7 +88,9 @@ public class FrameIdPwd extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		JButton buttonEnter = new JButton("确认");
+		buttonEnter = new JButton("确认");
+
+		
 		buttonEnter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
@@ -158,6 +173,16 @@ public class FrameIdPwd extends JFrame {
 		panel_1.setLayout(null);
 		
 		txtUserId = new JTextField();
+		txtUserId.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					buttonEnter.doClick();
+				}
+			}
+		});
 		txtUserId.setFont(new Font("宋体", Font.PLAIN, 16));
 		txtUserId.setColumns(10);
 		txtUserId.setBounds(124, 10, 102, 21);
@@ -174,6 +199,17 @@ public class FrameIdPwd extends JFrame {
 		panel_1.add(label_1);
 		
 		passwordField = new JPasswordField();
+		passwordField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					buttonEnter.doClick();
+				}
+				
+			}
+		});
 		passwordField.setBounds(124, 53, 102, 21);
 		panel_1.add(passwordField);
 	}

@@ -204,14 +204,6 @@ public class FrameManagerMainUI extends JFrame {
 		scrollPane.setViewportView(tableSign);
 		
 		tableSign.setModel(tableModelSign);
-//		table.setModel(new DefaultTableModel(
-//			new Object[][] {
-//				{new Integer(1), null},
-//			},
-//			new String[] {
-//				"\u7528\u6237\u540D", "\u7B7E\u5230\u65E5\u671F"
-//			}
-//		));
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u7528\u6237\u5934\u50CF", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -282,13 +274,6 @@ public class FrameManagerMainUI extends JFrame {
 						{
 							tableModelSign.setValueAt(signObject[i][0], i, 0);
 							tableModelSign.setValueAt(signObject[i][1], i, 1);
-//						tableModel.setValueAt(signObject[i][2], i, 2);
-//						tableModel.setValueAt(new ImageIcon("Pictures\\X.jpg"), i, 2);
-						
-//						tableModel.setValueAt(signGet.getBfi(), i, 2);
-						
-//						tableModel.setValueAt()
-//						tableModel.getValueAt(i, 2).
 						}
 					}
 					
@@ -419,14 +404,6 @@ public class FrameManagerMainUI extends JFrame {
 				"\u7528\u6237ID", "\u7528\u6237\u540D"
 			}) ;
 		tableUserList.setModel(tableModelUserList);
-//		tableUserList.setModel(new DefaultTableModel(
-//			new Object[][] {
-//				{null, null},
-//			},
-//			new String[] {
-//				"\u7528\u6237ID", "\u7528\u6237\u540D"
-//			}
-//		));
 		tableUserList.getColumnModel().getColumn(1).setPreferredWidth(150);
 		scrollPane_1.setViewportView(tableUserList);
 		
@@ -548,7 +525,6 @@ public class FrameManagerMainUI extends JFrame {
 //				{
 //					
 //				}
-//				table.
 				
 				try 
 				{

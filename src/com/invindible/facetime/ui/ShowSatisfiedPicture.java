@@ -166,6 +166,9 @@ public class ShowSatisfiedPicture extends JFrame {
 		});
 		btnClose.setBounds(493, 209, 98, 36);
 		contentPane.add(btnClose);
+		
+		//刷新页面
+		RefreshUi(buffImgObjectsSatisfied, timeFound, objectsToFind);
 	}
 	
 	/**
