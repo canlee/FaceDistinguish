@@ -49,7 +49,7 @@ public class Mark {
 			{
 //				l2=L2Form.inL2(test[i], allMean, value);
 //				l1=L1Form.inL1(test[i], allMean, l1value);
-//				if(!l1||!l2)
+//				if(!l1||!l2) 
 //				{
 //					record[i]=-1;
 //					System.out.println("不在范围内");
