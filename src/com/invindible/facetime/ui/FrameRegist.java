@@ -17,12 +17,12 @@ import javax.swing.JLabel;
 
 import com.invindible.facetime.algorithm.LDA;
 import com.invindible.facetime.algorithm.Mark;
+import com.invindible.facetime.algorithm.feature.Features;
+import com.invindible.facetime.algorithm.feature.GetFeatureMatrix;
+import com.invindible.facetime.algorithm.feature.GetPcaLda;
 import com.invindible.facetime.database.Oracle_Connect;
 import com.invindible.facetime.database.ProjectDao;
 import com.invindible.facetime.database.UserDao;
-import com.invindible.facetime.feature.Features;
-import com.invindible.facetime.feature.GetFeatureMatrix;
-import com.invindible.facetime.feature.GetPcaLda;
 import com.invindible.facetime.model.FaceImage;
 import com.invindible.facetime.model.Imageinfo;
 import com.invindible.facetime.model.LdaFeatures;
@@ -76,6 +76,7 @@ public class FrameRegist extends JFrame implements Context{
 //	private int photoIndex = 1;
 	private ImageIcon[] imageIcons;// = new ImageIcon[5];//5张照片
 	private ImageIcon[] testIcons;//测试用照片，2张
+	private BufferedImage[] soyBufferedImages;
 	private boolean[] isImageIconSelected;// = new boolean[7];//第i个照片是否要更换的标志
 //	private int[] changeIndex = {1,2,3,4,5};
 	private boolean startChangeSelectedIcon;// = true;//是否要更换照片的标志
@@ -89,8 +90,10 @@ public class FrameRegist extends JFrame implements Context{
 	 * Create the frame.
 	 */
 	public FrameRegist(final String userId, final String passWord, final User user) {
+		setTitle("1.用户注册-照相识别");
 		testIcons = new ImageIcon[2];
 		imageIcons = new ImageIcon[5];
+		soyBufferedImages= new BufferedImage[5];
 		isImageIconSelected = new boolean[7];
 		startChangeSelectedIcon = true;
 		requestNum = 7;
@@ -157,11 +160,10 @@ public class FrameRegist extends JFrame implements Context{
 				Project pr;
 				//保存从数据库获取的图片的数组
 				BufferedImage[] bImages = null;
-				//临时保存单人图片的数组
-				BufferedImage[] tempForOneManBImages = null;
+//				//临时保存单人图片的数组
+//				BufferedImage[] tempForOneManBImages = null;
 				//用来PCA、LDA计算的数组
 				ImageIcon[] icon = null;// = new ImageIcon[2*5];//[peopleNum*photoNum]
-				
 				
 				Connection conn = null;
 				try
@@ -180,6 +182,13 @@ public class FrameRegist extends JFrame implements Context{
 						//(读取所有样本的投影Z 和 id)
 						//读取所有样本的图片
 						BufferedImage[] bimg = UserDao.doSelectAll(conn);
+						
+						for(int i=0; i<bimg.length; i++)
+						{
+							int[] le = ImageUtil.getPixes(bimg[i]);
+	
+							System.out.println("长度:" + le.length);
+						}
 //						ImageIcon[] tempImageIcons = new ImageIcon[bimg.length];
 //						for(int i=0; i<bimg.length; i++)
 //						{
@@ -190,9 +199,9 @@ public class FrameRegist extends JFrame implements Context{
 						//------------------------------peopleNum需要从数据库中获取---------------------------------------------
 						//获取peopleNum
 						peopleNum = bimg.length / 5;
-						peopleNum++;
+						peopleNum++;//因为注册多了一个人，所以peopleN+1
 						//实例化bImages图片数组
-						bImages = new BufferedImage[peopleNum * photoNum];//因为注册多了一个人，所以peopleN+1
+						bImages = new BufferedImage[peopleNum * photoNum];
 //						icon = new ImageIcon[peopleNum * photoNum];
 						
 						for(int i=0; i<bimg.length; i++)
@@ -217,26 +226,27 @@ public class FrameRegist extends JFrame implements Context{
 //						icon = new ImageIcon[peopleNum * photoNum];//[2 * 5]
 						//实例化bImages图片数组
 						bImages = new BufferedImage[peopleNum * photoNum];
-						tempForOneManBImages = new BufferedImage[photoNum];
+//						tempForOneManBImages = new BufferedImage[photoNum];
 						
-						//读取Pictures文件夹里面的"酱油"的图片，并赋值给bImages[0-4];
-//						String source = "Pictures/none/";
-//						for(int i=0; i<5; i++)
-//						{
-//							String source2 = "after37-" + (i+1) + ".jpg";
-//							ImageIcon imageIcon = new ImageIcon(source + source2);
-//							//将“酱油”的图片扩大
-//							imageIcon = ImageHandle(imageIcon, 128, 128);
-//							Image img = imageIcon.getImage();
-//							bImages[i] = ImageUtil.ImageToBufferedImage(img);
-//						}
-						
-						//将自己的图片赋值给bImages[5-9];
+//						读取Pictures文件夹里面的"酱油"的图片，并赋值给bImages[0-4];
+						String source = "Pictures/none/";
 						for(int i=0; i<5; i++)
 						{
+							String source2 = "after37-" + (i+1) + ".jpg";
+							ImageIcon imageIcon = new ImageIcon(source + source2);
+							//将“酱油”的图片扩大
+//							imageIcon = ImageHandle(imageIcon, 128, 128);
+							Image img = imageIcon.getImage();
+							bImages[i] = ImageUtil.ImageToBufferedImage(img);
+							soyBufferedImages[i] = ImageUtil.ImageToBufferedImage(img);
+						}
+						
+						//将自己的图片赋值给bImages[5-9];
+						for(int i=5; i<10; i++)
+						{
 //							icon[i] = imageIcons[i-5];
-							Image img = imageIcons[i].getImage();
-							tempForOneManBImages[i] = ImageUtil.ImageToBufferedImage(img);
+							Image img = imageIcons[i-5].getImage();
+							bImages[i] = ImageUtil.ImageToBufferedImage(img);
 //							bImages[i] = ImageUtil.ImageToBufferedImage(img);
 						}
 						
@@ -258,30 +268,30 @@ public class FrameRegist extends JFrame implements Context{
 				BufferedImage[] waveBImages;
 				//若数据库中无人，加入了“酱油”，则只对新加的人进行小波变换
 				//变换完后，需要将“已经过小波变换的酱油的图片”加入数组中
-				if(haveSoy)
-				{
-					BufferedImage[] tempForOneManWaveBImages = Wavelet.Wavelet(tempForOneManBImages);
-					waveBImages = new BufferedImage[10];
-					//酱油放在[0-4]
-					for(int i=0; i<5; i++)
-					{
-						String source = "Pictures/none/";
-						String source2 = "after37-" + (i+1) + ".jpg";
-						ImageIcon imageIcon = new ImageIcon(source + source2);
-//						//将“酱油”的图片扩大
-//						imageIcon = ImageHandle(imageIcon, 128, 128);
-						Image img = imageIcon.getImage();
-						waveBImages[i] = ImageUtil.ImageToBufferedImage(img);
-					}
-					//新加的人放在[5-9]
-					for(int i=5; i<10; i++)
-					{
-						waveBImages[i] = tempForOneManWaveBImages[i-5];
-					}
-					
-				}
-				//若数据库中有人，则直接进行小波变换
-				else
+//				if(haveSoy)
+//				{
+//					BufferedImage[] tempForOneManWaveBImages = Wavelet.Wavelet(tempForOneManBImages);
+//					waveBImages = new BufferedImage[10];
+//					//酱油放在[0-4]
+//					for(int i=0; i<5; i++)
+//					{
+//						String source = "Pictures/none/";
+//						String source2 = "after37-" + (i+1) + ".jpg";
+//						ImageIcon imageIcon = new ImageIcon(source + source2);
+////						//将“酱油”的图片扩大
+////						imageIcon = ImageHandle(imageIcon, 128, 128);
+//						Image img = imageIcon.getImage();
+//						waveBImages[i] = ImageUtil.ImageToBufferedImage(img);
+//					}
+//					//新加的人放在[5-9]
+//					for(int i=5; i<10; i++)
+//					{
+//						waveBImages[i] = tempForOneManWaveBImages[i-5];
+//					}
+//					
+//				}
+//				//若数据库中有人，则直接进行小波变换
+//				else
 				{
 					waveBImages = Wavelet.Wavelet(bImages);
 				}
@@ -400,9 +410,38 @@ public class FrameRegist extends JFrame implements Context{
 						//第二次,增加进度条
 						ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
 						
-						//将5张用户的图片封装进Imageinfo
+						//将插入数据库的图片,封装进inputStream
 						Imageinfo imageInfo = new Imageinfo();
 						InputStream[] inputStream = new InputStream[5];
+						
+						int[] userIds;
+						
+						//如果数据库中没人,先插酱油的
+						if (haveSoy)
+						{
+							//把酱油封装进User
+							User userSoy = new User();
+							userSoy.setUsername("none");
+							userSoy.setPassword("123456");
+							
+							//将ImageIcon转成InpustStream
+							for(int i=0; i<5; i++)
+							{
+								//inputStream[i] = imageIcons[i];
+//								Image img = imageIcons[i].getImage();
+//								BufferedImage tempBImg = ImageUtil.ImageToBufferedImage(img);
+								ByteArrayOutputStream os = new ByteArrayOutputStream();   
+								ImageIO.write(soyBufferedImages[i], "jpg", os);   
+								int[] le2 = ImageUtil.getPixes(soyBufferedImages[i]);
+								System.out.println("酱油图片的长度:" + le2.length);
+								inputStream[i] = new ByteArrayInputStream(os.toByteArray());  
+							}
+							imageInfo.setInputstream(inputStream);
+							
+							//插入账户、密码和图片（返回插入的id）
+							userIds = UserDao.doInsert(userSoy, conn, imageInfo);
+						}
+
 						
 						//将ImageIcon转成InpustStream
 						for(int i=0; i<5; i++)
@@ -416,8 +455,9 @@ public class FrameRegist extends JFrame implements Context{
 						}
 						imageInfo.setInputstream(inputStream);
 						
-						//插入账户、密码和图片（返回插入的id）
-						int[] userIds = UserDao.doInsert(user, conn, imageInfo);
+						//插入用户的账户、密码和图片（返回插入的id）
+						userIds = UserDao.doInsert(user, conn, imageInfo);
+						
 						
 						//将每个图像的差值图像[像素][n] 转置成 [n][像素]
 						double[][] mAveDeviation = LdaFeatures.getInstance().getAveDeviationDouble();
@@ -436,25 +476,25 @@ public class FrameRegist extends JFrame implements Context{
 						//第三次,增加进度条
 						ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
 						
-						//若有“酱油”，则将“酱油”的投影移除
-						double[][] insertModelP = new double[modelP.length-5][modelP[0].length];
-						if( haveSoy == true)
-						{
-							int cloneLength = modelP.length-5;
-							for(int i=0; i<cloneLength; i++)
-							{
-								insertModelP[i] = modelP[i+5];
-							}
-						}
+//						//若有“酱油”，则将“酱油”的投影移除
+//						double[][] insertModelP = new double[modelP.length-5][modelP[0].length];
+//						if( haveSoy == true)
+//						{
+//							int cloneLength = modelP.length-5;
+//							for(int i=0; i<cloneLength; i++)
+//							{
+//								insertModelP[i] = modelP[i+5];
+//							}
+//						}
 						
 						//封装用户Id和投影Z 进 Project
 						Project project = new Project();
 						project.setId(userIds);
-						if(haveSoy == true)
-						{
-							project.setProject(insertModelP);
-						}
-						else
+//						if(haveSoy == true)
+//						{
+////							project.setProject(insertModelP);
+//						}
+//						else
 						{
 							project.setProject(modelP);
 						}
@@ -715,7 +755,7 @@ public class FrameRegist extends JFrame implements Context{
 		switch (result) {
 		case VideoStreamTask.OPEN_CAMERA_SUCCESS:
 			Component component = (Component) objects[1];
-			component.setBounds(0, 0, 314, 229);
+//			component.setBounds(0, 0, 314, 229);
 			panelCamera.add(component);
 			while(true) {
 				Image image = cif.getHandledPictrue();

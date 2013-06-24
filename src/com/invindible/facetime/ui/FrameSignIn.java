@@ -18,13 +18,15 @@ import javax.swing.JButton;
 
 import com.invindible.facetime.algorithm.LDA;
 import com.invindible.facetime.algorithm.Mark;
+import com.invindible.facetime.algorithm.feature.Features;
 import com.invindible.facetime.database.ApplicationConfig;
 import com.invindible.facetime.database.Oracle_Connect;
 import com.invindible.facetime.database.ProjectDao;
-import com.invindible.facetime.feature.Features;
+import com.invindible.facetime.database.UserDao;
 import com.invindible.facetime.model.FaceImage;
 import com.invindible.facetime.model.LdaFeatures;
 import com.invindible.facetime.model.Project;
+import com.invindible.facetime.model.User;
 import com.invindible.facetime.service.implement.CameraInterfaceImpl;
 import com.invindible.facetime.service.implement.FindFaceForCameraInterfaceImpl;
 import com.invindible.facetime.service.interfaces.CameraInterface;
@@ -43,11 +45,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.border.MatteBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.SwingConstants;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
 
 public class FrameSignIn extends JFrame implements Context{
 
@@ -64,8 +69,9 @@ public class FrameSignIn extends JFrame implements Context{
 	private JButton buttonCapture2;
 	
 	private CameraInterface cif;
-	private FindFaceInterface findTask;
+	static FindFaceInterface findTask;
 	
+	private ImageIcon[] userImageIcons;
 	private ImageIcon[] imageIconCaptures;//保存摄像头捕获的头像
 	private ImageIcon imageIconResult;//保存识别的头像
 	private boolean[] isImageIconSelected;//第i个照片是否要更换的标志
@@ -74,8 +80,12 @@ public class FrameSignIn extends JFrame implements Context{
 	private Connection conn = null;
 	private JButton buttonStart;
 	
-	private String userId;
+	private int userIdForSign;
 	private ImageIcon[] imageFind;
+	private JTextField txtUserId;
+	
+	private String userAccount;
+	private JPasswordField passwordField;
 
 	/**
 	 * Launch the application.
@@ -97,12 +107,14 @@ public class FrameSignIn extends JFrame implements Context{
 	 * Create the frame.
 	 */
 	public FrameSignIn() {
+		setTitle("2.登陆签到-识别/登陆");
 //		try {
 //			ApplicationConfig.setupLink();
 //		} catch (IOException e2) {
 //			// TODO Auto-generated catch block
 //			e2.printStackTrace();
 //		}
+		userImageIcons = new ImageIcon[5];
 		imageIconCaptures = new ImageIcon[2];
 		imageIconResult = new ImageIcon();
 		isImageIconSelected = new boolean[2];
@@ -116,7 +128,7 @@ public class FrameSignIn extends JFrame implements Context{
 		}
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 793, 466);
+		setBounds(100, 100, 790, 534);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -129,7 +141,7 @@ public class FrameSignIn extends JFrame implements Context{
 		panelCamera.setLayout(null);
 		
 		JLabel label_1 = new JLabel("文字说明区");
-		label_1.setBounds(189, 311, 232, 85);
+		label_1.setBounds(189, 293, 232, 85);
 		contentPane.add(label_1);
 		
 		JPanel panel_1 = new JPanel();
@@ -234,10 +246,13 @@ public class FrameSignIn extends JFrame implements Context{
 				
 				//将 5张照片 和 用户名 当做参数，传递给下一个窗口
 				
-				frameSignIn.setVisible(false);
 				
-				FrameSignInConfirm.frameSignInConfirm = new FrameSignInConfirm();
+				//(点击“签到”后，将5张照片当做参数，传递给下一个窗口。)
+				frameSignIn.setVisible(false);
+				FrameSignInConfirm.frameSignInConfirm = 
+						new FrameSignInConfirm(userImageIcons,userAccount, userIdForSign);
 				FrameSignInConfirm.frameSignInConfirm.setVisible(true);
+				
 				
 			}
 		});
@@ -251,10 +266,13 @@ public class FrameSignIn extends JFrame implements Context{
 		buttonStart.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+				labelResult.setIcon(null);
+				
 				//若图片尚未截取,则提示请先等待拍照
+				System.out.println("requestNum:" + requestNum);
 				if(requestNum != 0)
 				{
-					JOptionPane.showMessageDialog(null, "图片尚未截取,请先站在摄像头前,等待截取面部信息。", "提示", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(null, "图片尚未截取完毕,等待摄像头截取面部信息。", "提示", JOptionPane.INFORMATION_MESSAGE);
 					return;
 				}
 				
@@ -263,6 +281,9 @@ public class FrameSignIn extends JFrame implements Context{
 				try
 				{
 					conn = Oracle_Connect.getInstance().getConn();
+					
+					//设置每人的图片数量
+					LdaFeatures.getInstance().setNum(5);
 					
 					//从数据库获取WoptT
 					double[][] Wopt = ProjectDao.doselectWopt(conn);
@@ -277,7 +298,14 @@ public class FrameSignIn extends JFrame implements Context{
 					//用户id
 					int[] userIds = project.getId();
 					
+					for(int i=0; i<userIds.length; i++)
+					{
+						System.out.println("第 "+ i + " 个userId:" + userIds[i]);
+					}
+					
 					int peopleNum = userIds.length;
+					//将peopleNum保存进单例中
+					LdaFeatures.getInstance().setPeopleNum(peopleNum);
 					
 					//所有训练样例的投影Z
 					double[][] modelP = project.getProject();
@@ -289,9 +317,18 @@ public class FrameSignIn extends JFrame implements Context{
 //					4.<2>的均值（从<2>处理）
 					double[] testZMean = new double[testZ[0].length];
 //					5.（投影Z的）N个人的，类内均值（每个人都有一个均值)
-					double[][] modelMean=new double[peopleNum][peopleNum-1];
+					int modelMeanSize;
+					if( peopleNum == 1)
+					{
+						modelMeanSize = 1;
+					}
+					else
+					{
+						modelMeanSize = peopleNum - 1;
+					}
+					double[][] modelMean=new double[peopleNum][modelMeanSize];
 //					6.（投影Z的）总体均值
-					double[] allMean=new double[peopleNum-1];
+					double[] allMean=new double[modelMeanSize];
 					
 					//2张照片的投影（将拍到的图片，通过Wopt投影后,转成double[][]）
 					BufferedImage[] tempForTestBImages = new BufferedImage[2];
@@ -316,7 +353,7 @@ public class FrameSignIn extends JFrame implements Context{
 					}
 					
 					//4.<2>的均值（从<2>处理）
-					for(int i=0; i<(peopleNum-1); i++)
+					for(int i=0; i<(modelMeanSize); i++)
 					{
 						for(int j=0; j<2; j++)
 						{
@@ -329,7 +366,7 @@ public class FrameSignIn extends JFrame implements Context{
 					//5.（投影Z的）N个人的，类内均值（每个人都有一个均值)
 					//6.（投影Z的）总体均值
 					for(int i=0;i<peopleNum;i++){
-						for(int k=0;k<peopleNum-1;k++){
+						for(int k=0;k<modelMeanSize;k++){
 							for(int j=0;j<photoNum;j++){
 								modelMean[i][k]+=modelP[photoNum*i+j][k];
 							}
@@ -338,8 +375,10 @@ public class FrameSignIn extends JFrame implements Context{
 						}			
 					}
 					
-					for(int i=0;i<peopleNum-1;i++)
+					for(int i=0;i<modelMeanSize;i++)
 						allMean[i]/=peopleNum*photoNum;
+					
+					System.out.println("modelP[0][0]" + modelP[0][0]);
 					
 					//从数据库中获取"x(m)的转置"，再经过转置，变成"x"(每个图像的差值图像[像素][n])
 					double[][] xAveDeviationTrans = ProjectDao.doselectPeoplemean(conn);//
@@ -370,12 +409,16 @@ public class FrameSignIn extends JFrame implements Context{
 					//将mi保存进单例中，以供马氏距离计算使用。
 					LdaFeatures.getInstance().setAveDeviationEach(mi);
 					
+
+					
 					//验证（尝试识别，识别失败则需要重新获取图片）
 					int idFind = Mark.identify(testZ, modelP, testZMean, modelMean, allMean);
-					System.out.println("idFind" + idFind);
-					System.out.println("userIds[]:" + userIds[idFind-1]);
+					
+//					System.out.println("idFind" + idFind);
+//					System.out.println("userIds[]:" + userIds[idFind-1]);
+//					System.out.println("idFind:" + idFind);
 					//若没找到
-					if( idFind == -1)
+					if( idFind == -1 || idFind == 1)
 					{
 						JOptionPane.showMessageDialog(null, "识别失败!点击确定后,系统将重新截图。", "提示", JOptionPane.INFORMATION_MESSAGE);
 						
@@ -383,23 +426,45 @@ public class FrameSignIn extends JFrame implements Context{
 						{
 							isImageIconSelected[i] = true;
 						}
+						requestNum = 2;
 						changePhoto = true;
 					}
 					else
 					{
+						System.out.println("根据识别，用户ID：" + userIds[idFind-1]);
+						
+						userIdForSign = userIds[idFind-1];
+						
 						JOptionPane.showMessageDialog(null, "识别成功", "提示", JOptionPane.INFORMATION_MESSAGE);
 						
-						//获取识别对象的5张照片
+						//根据ID,找出该人的5张照片
+						BufferedImage[] findImages = 
+								UserDao.selectImageById(userIds[idFind-1],conn);
+						
+						//根据ID,找出用户名
+						User findUser = UserDao.doLoginByImage(userIds[idFind-1], conn);
+						userAccount = findUser.getUsername();
+						
+						//将BufferedImage[] 转成 ImageIcon[]
+						userImageIcons = new ImageIcon[5];
+						for(int i=0; i<5; i++)
+						{
+							int[] iconsPix = ImageUtil.getPixes(findImages[i]);
+							
+							Image temp = ImageUtil.getImgByPixels(128, 128, iconsPix); 
+							
+							userImageIcons[i] = new ImageIcon(temp);
+						}
 						
 						
 						//将5张照片中的第1张图片显示在labelResult中
-//						labelResult.setIcon(icon);
+						labelResult.setIcon(userImageIcons[0]);
 						
 
 						
 						//设置“签到按钮”可以点击
-//						btnSignIn.setEnabled(true);
-						//(点击“签到”后，将5张照片当做参数，传递给下一个窗口。)
+						btnSignIn.setEnabled(true);
+						
 					}
 
 				}
@@ -431,6 +496,98 @@ public class FrameSignIn extends JFrame implements Context{
 		buttonStart.setFont(new Font("宋体", Font.PLAIN, 16));
 		buttonStart.setBounds(175, 33, 105, 27);
 		panelResultBox.add(buttonStart);
+		
+		JPanel panel = new JPanel();
+		panel.setBorder(new LineBorder(new Color(0, 0, 0)));
+		panel.setBounds(27, 386, 372, 85);
+		contentPane.add(panel);
+		panel.setLayout(null);
+		
+		JLabel labelUserId = new JLabel("用户名：");
+		labelUserId.setFont(new Font("华文行楷", Font.PLAIN, 16));
+		labelUserId.setBounds(10, 13, 70, 18);
+		panel.add(labelUserId);
+		
+		txtUserId = new JTextField();
+		txtUserId.setFont(new Font("宋体", Font.PLAIN, 16));
+		txtUserId.setColumns(10);
+		txtUserId.setBounds(90, 10, 102, 21);
+		panel.add(txtUserId);
+		
+		JLabel labelUserPwd = new JLabel("密码：");
+		labelUserPwd.setFont(new Font("华文行楷", Font.PLAIN, 16));
+		labelUserPwd.setBounds(10, 54, 60, 21);
+		panel.add(labelUserPwd);
+		
+		JButton buttonLoginByIdPwd = new JButton("登陆");
+		buttonLoginByIdPwd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				//获取用户名和密码
+				String userId = txtUserId.getText();
+//				String userPwd = txtUserPwd.getText();
+				String userPwd = passwordField.getText();
+				
+				User user = new User();
+				user.setUsername(userId);
+				user.setPassword(userPwd);
+				
+				try {
+					conn = Oracle_Connect.getInstance().getConn();
+					int userIdInDb = UserDao.doLogin(user, conn);
+					
+					System.out.println("根据登陆，用户ID:" + userIdInDb);
+					
+					//若查找成功
+					if( userIdInDb != -1)
+					{
+						userIdForSign = userIdInDb;
+						
+						BufferedImage[] findImages = UserDao.selectImageById(userIdInDb, conn);
+						 
+						//将BufferedImage[] 转成 ImageIcon[]
+						userImageIcons = new ImageIcon[5];
+						for(int i=0; i<5; i++)
+						{
+							int[] iconsPix = ImageUtil.getPixes(findImages[i]);
+							
+							Image temp = ImageUtil.getImgByPixels(128, 128, iconsPix); 
+							
+							userImageIcons[i] = new ImageIcon(temp);
+						}
+							
+							
+						//将5张照片中的第1张图片显示在labelResult中
+						labelResult.setIcon(userImageIcons[0]);
+							
+						//设置“签到按钮”可以点击
+						btnSignIn.setEnabled(true);
+						
+						userAccount = userId;
+					}
+					else
+					{
+						return;
+					}
+					
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		});
+		buttonLoginByIdPwd.setBounds(218, 4, 110, 35);
+		panel.add(buttonLoginByIdPwd);
+		
+		JLabel lblNewLabel = new JLabel("根据用户名和密码登陆");
+		lblNewLabel.setFont(new Font("宋体", Font.PLAIN, 14));
+		lblNewLabel.setBounds(202, 54, 140, 19);
+		panel.add(lblNewLabel);
+		
+		passwordField = new JPasswordField();
+		passwordField.setBounds(90, 53, 102, 21);
+		panel.add(passwordField);
 		
 		//首先，检验一下数据库中有没有人
 		//即检验一下数据库中是否有WpotT参数

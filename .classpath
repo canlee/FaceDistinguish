@@ -12,5 +12,6 @@
 	<classpathentry kind="lib" path="libs/ojdbc6.jar"/>
 	<classpathentry kind="lib" path="libs/ojdbc6dms_g.jar"/>
 	<classpathentry kind="lib" path="libs/ojdbc6dms.jar"/>
+	<classpathentry kind="src" path="/FaceTime"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -29,7 +29,7 @@ public class SignDao {
 	
 	public static ArrayList<Sign> doselect(String datetime,Connection conn) throws SQLException, IOException{
 		ArrayList<Sign> sign=new ArrayList<Sign>();
-		PreparedStatement pst=conn.prepareStatement("select * from sign where signdate like '"+datetime+"%'");
+		PreparedStatement pst=conn.prepareStatement("select * from sign where signdate like '"+datetime+"%' order by id asc ");
 		ResultSet rs=pst.executeQuery();
 		ResultSet rstmp;
 		int id;
@@ -49,6 +49,8 @@ public class SignDao {
 				si.setUsername(rstmp.getString("username"));
 			sign.add(si);
 		}
+		pst.close();
+		rs.close();
 		return sign;
 	}
 }
