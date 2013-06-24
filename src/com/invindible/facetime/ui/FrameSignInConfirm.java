@@ -54,6 +54,7 @@ public class FrameSignInConfirm extends JFrame {
 	 * Create the frame.
 	 */
 	public FrameSignInConfirm(ImageIcon[] userImages,String userAccount,final int userIdForSign) {
+		setTitle("2.登陆签到-登陆确认");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 673, 482);
 		contentPane = new JPanel();

@@ -238,6 +238,7 @@ public class FrameManagerMainUI extends JFrame {
 	 * Create the frame.
 	 */
 	public FrameManagerMainUI() {
+		setTitle("3.管理员管理-主界面");
 		dateChooser = new DateChooser(this);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -90,6 +90,7 @@ public class FrameRegist extends JFrame implements Context{
 	 * Create the frame.
 	 */
 	public FrameRegist(final String userId, final String passWord, final User user) {
+		setTitle("1.用户注册-照相识别");
 		testIcons = new ImageIcon[2];
 		imageIcons = new ImageIcon[5];
 		soyBufferedImages= new BufferedImage[5];

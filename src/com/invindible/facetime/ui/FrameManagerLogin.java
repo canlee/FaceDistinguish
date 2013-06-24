@@ -13,13 +13,14 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JPasswordField;
 
 public class FrameManagerLogin extends JFrame {
 
 	static FrameManagerLogin frameManagerLogin;
 	private JPanel contentPane;
 	private JTextField txtId;
-	private JTextField txtPwd;
+	private JPasswordField passwordField;
 
 	/**
 	 * Launch the application.
@@ -41,8 +42,9 @@ public class FrameManagerLogin extends JFrame {
 	 * Create the frame.
 	 */
 	public FrameManagerLogin() {
+		setTitle("3.管理员管理-登陆");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 350, 253);
+		setBounds(100, 100, 350, 254);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -69,11 +71,9 @@ public class FrameManagerLogin extends JFrame {
 		labelPwd.setBounds(44, 54, 60, 21);
 		panel.add(labelPwd);
 		
-		txtPwd = new JTextField();
-		txtPwd.setFont(new Font("宋体", Font.PLAIN, 16));
-		txtPwd.setColumns(10);
-		txtPwd.setBounds(124, 53, 102, 21);
-		panel.add(txtPwd);
+		passwordField = new JPasswordField();
+		passwordField.setBounds(124, 53, 102, 21);
+		panel.add(passwordField);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setLayout(null);
@@ -86,7 +86,8 @@ public class FrameManagerLogin extends JFrame {
 				
 				//获取账号和密码
 				String id = txtId.getText();
-				String pwd = txtPwd.getText();
+//				String pwd = txtPwd.getText();
+				String pwd = passwordField.getText();
 				
 				//若账号和密码正确，则进入管理员主界面
 				if( id.equals("admin") && pwd.equals("administrator"))

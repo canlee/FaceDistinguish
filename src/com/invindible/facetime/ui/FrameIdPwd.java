@@ -22,13 +22,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.sql.Connection;
 import java.sql.SQLException;
+import javax.swing.JPasswordField;
 
 public class FrameIdPwd extends JFrame {
 
 	static FrameIdPwd frameIdPwd;
 	private JPanel contentPane;
 	private JTextField txtUserId;
-	private JTextField txtPassWd;
+	private JPasswordField passwordField;
 
 	/**
 	 * Launch the application.
@@ -50,8 +51,9 @@ public class FrameIdPwd extends JFrame {
 	 * Create the frame.
 	 */
 	public FrameIdPwd() {
+		setTitle("1.用户注册");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 341, 269);
+		setBounds(100, 100, 341, 257);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -73,8 +75,10 @@ public class FrameIdPwd extends JFrame {
 					return;
 				}
 				
+				
 				//判断密码是否为空
-				if(txtPassWd.getText().equals(""))
+//				if(txtPassWd.getText().equals(""))
+				if(passwordField.getText().equals(""))
 				{
 					JOptionPane.showMessageDialog(null, "密码不能为空！", "警告", JOptionPane.WARNING_MESSAGE);
 					return;
@@ -82,7 +86,8 @@ public class FrameIdPwd extends JFrame {
 				
 				//获取用户名和密码
 				String userId = txtUserId.getText();
-				String passWord = txtPassWd.getText();
+//				String passWord = txtPassWd.getText();
+				String passWord = passwordField.getText();
 				
 				//酱油的账号，不能注册
 				if(userId.equals("none"))
@@ -157,10 +162,8 @@ public class FrameIdPwd extends JFrame {
 		label_1.setBounds(44, 54, 60, 21);
 		panel_1.add(label_1);
 		
-		txtPassWd = new JTextField();
-		txtPassWd.setFont(new Font("宋体", Font.PLAIN, 16));
-		txtPassWd.setColumns(10);
-		txtPassWd.setBounds(124, 53, 102, 21);
-		panel_1.add(txtPassWd);
+		passwordField = new JPasswordField();
+		passwordField.setBounds(124, 53, 102, 21);
+		panel_1.add(passwordField);
 	}
 }
