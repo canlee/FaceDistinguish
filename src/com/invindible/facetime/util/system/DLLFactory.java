@@ -67,7 +67,6 @@ public class DLLFactory {
 		loadDLL(cls, "/dll/jmf/jmh263enc.dll");
 		loadDLL(cls, "/dll/jmf/jmgsm.dll");
 		loadDLL(cls, "/dll/jmf/jmddraw.dll");
-		loadDLL(cls, "/dll/jmf/jmvfw.dll");
 		loadDLL(cls, "/dll/jmf/jmvcm.dll");
 		loadDLL(cls, "/dll/jmf/jmmpa.dll");
 		loadDLL(cls, "/dll/jmf/jmdaudc.dll");
@@ -76,6 +75,7 @@ public class DLLFactory {
 		loadDLL(cls, "/dll/jmf/jmcvid.dll");
 		loadDLL(cls, "/dll/jmf/jmg723.dll");
 		loadDLL(cls, "/dll/jmf/jmh261.dll");
+		loadDLL(cls, "/dll/jmf/jmvfw.dll");
 //		try {
 //			URI uri = cls.getClass().getResource("/dll/jmf").toURI();
 //			File jmfPath = new File(uri);
