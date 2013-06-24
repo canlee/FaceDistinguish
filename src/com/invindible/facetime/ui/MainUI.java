@@ -32,7 +32,7 @@ import java.io.IOException;
 
 public class MainUI extends JFrame{
 	static JPanel contentPane;
-	static MainUI frameMainUI;
+	public static MainUI frameMainUI;
 	private boolean isFirstTime = true;
 	
 	/**
