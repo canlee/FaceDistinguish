@@ -12,6 +12,8 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.invindible.facetime.database.Oracle_Connect;
 import com.invindible.facetime.database.UserDao;
@@ -51,6 +53,15 @@ public class FrameIdPwd extends JFrame {
 	 * Create the frame.
 	 */
 	public FrameIdPwd() {
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		setTitle("1.用户注册");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 341, 257);

@@ -11,6 +11,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -92,6 +93,15 @@ public class FrameRegist extends JFrame implements Context{
 	 * Create the frame.
 	 */
 	public FrameRegist(final String userId, final String passWord, final User user) {
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		setTitle("1.用户注册-照相识别");
 		testIcons = new ImageIcon[2];
 		imageIcons = new ImageIcon[5];

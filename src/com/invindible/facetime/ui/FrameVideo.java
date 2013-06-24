@@ -122,6 +122,16 @@ public class FrameVideo extends JFrame implements Context {
 	 * Create the frame.
 	 */
 	public FrameVideo() {
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
 		setTitle("4.视频监视");
 		
 		pageIndex = 1;
@@ -479,12 +489,12 @@ public class FrameVideo extends JFrame implements Context {
 				}
 				catch(Exception e1)
 				{
-					frameVideo.dispose();
-					
-					MainUI.frameMainUI = new MainUI();
-					MainUI.frameMainUI.setVisible(true);
+					e1.printStackTrace();
 				}
+				frameVideo.dispose();
 				
+				MainUI.frameMainUI = new MainUI();
+				MainUI.frameMainUI.setVisible(true);
 			}
 		});
 		btnReturn.setBounds(25, 422, 110, 35);

@@ -54,6 +54,14 @@ public class ShowSatisfiedPicture extends JFrame {
 	public ShowSatisfiedPicture(int objectsSatisfiedCount,final BufferedImage[] buffImgObjectsSatisfied,boolean[] isObjectsSatisfied,final String[] timeFound,final BufferedImage[] objectsToFind) {
 		setTitle("4.视频监视-结果显示");
 		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		pageNum = 1;
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

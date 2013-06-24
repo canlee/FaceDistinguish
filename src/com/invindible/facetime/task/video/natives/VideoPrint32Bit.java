@@ -1,10 +1,12 @@
 package com.invindible.facetime.task.video.natives;
 
+import com.invindible.facetime.util.system.DLLFactory;
+
 public class VideoPrint32Bit extends VideoPrintJNI {
 	
-	static {
-		System.loadLibrary("video_printer32");
-	}
+//	static {
+//		System.loadLibrary("video_printer32");
+//	}
 	
 	private String videoFile;
 	private VideoPrintListener listener;
@@ -12,6 +14,7 @@ public class VideoPrint32Bit extends VideoPrintJNI {
 	public VideoPrint32Bit(String videoFile) {
 		super();
 		this.videoFile = videoFile;
+		DLLFactory.loadVideo32DLL(VideoPrint32Bit.class);
 	}
 	
 	@Override

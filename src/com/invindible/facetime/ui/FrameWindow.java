@@ -84,6 +84,16 @@ public class FrameWindow extends JFrame implements Context{
 	 * Create the frame.
 	 */
 	public FrameWindow() {
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 798, 498);
 		contentPane = new JPanel();
