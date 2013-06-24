@@ -6,9 +6,13 @@ public class Mark {
 		System.out.println("target "+target);
 		
 		int[] record=mark(test,model,testMean,modelMean,allMean);
-		if(record[0]==target&&record[1]==target&&record[2]==target)
-			return true;
-		else if((record[0]==target||record[1]==target)&&record[2]==target)
+		int sum=0;
+		for(int i=0;i<record.length;i++){
+			if(record[i]==target)
+				sum++;
+		}
+		System.out.println("sum:"+sum);
+		if(sum>=2)
 			return true;
 		else
 			return false;
@@ -16,8 +20,8 @@ public class Mark {
 	}
 	
 	public static int[] mark(double[][] test,double[][] model,double[] testMean,double[][] modelMean,double[] allMean){
-		double value=L2Form.value(modelMean,allMean);		//l2 domain 
-		double l1value=L1Form.l1value(modelMean,allMean);   //l1 domain			
+		double value=L2Form.value(model,allMean);		//l2 domain 
+		double l1value=L1Form.l1value(model,allMean);   //l1 domain			
 		double[] madis=MixedMahalnobisDistance.calMixedMahalnobisDistance(testMean,modelMean);	 //ma distance	
 		double[] mindis=MixedMahalnobisDistance.calMinDistance(testMean, modelMean);  //min distance
 		int matmp=Identify.mark(Double.MAX_VALUE,madis);	//ma domain
@@ -26,32 +30,35 @@ public class Mark {
 		double[] facedis;  //l2 distance
 		double[] l1dis;   //l1 distance
 		int[] record=new int[3];
+		
+		System.out.println("l1+l2 value:"+value+" "+l1value);
+		
 		for(int i=0;i<=test.length;i++){
 			boolean l2,l1;
 			int[] identify=new int [6];
 			int error1=0,error2=0; //error2--l2  error1--l1
 			if(i==test.length){
-				l2=L2Form.inL2(testMean, allMean, value);
-				l1=L1Form.inL1(testMean, allMean, l1value);	//whether in or not
-				if(!l1||!l2)
-				{
-					record[i]=-1;
-					System.out.println("不在范围内");
-					continue;
-				}
+//				l2=L2Form.inL2(testMean, allMean, value);
+//				l1=L1Form.inL1(testMean, allMean, l1value);	//whether in or not
+//				if(!l1||!l2)
+//				{
+//					record[i]=-1;
+//					System.out.println("不在范围内");
+//					continue;
+//				}
 				facedis=L2Form.L2Form(model, testMean);  //calculate l2 distance
 				l1dis=L1Form.L1Form(model, testMean);   //calculate l1 distance
 			}
 			else
 			{
-				l2=L2Form.inL2(test[i], allMean, value);
-				l1=L1Form.inL1(test[i], allMean, l1value);
-				if(!l1||!l2)
-				{
-					record[i]=-1;
-					System.out.println("不在范围内");
-					continue;
-				}
+//				l2=L2Form.inL2(test[i], allMean, value);
+//				l1=L1Form.inL1(test[i], allMean, l1value);
+//				if(!l1||!l2) 
+//				{
+//					record[i]=-1;
+//					System.out.println("不在范围内");
+//					continue;
+//				}
 				facedis=L2Form.L2Form(model, test[i]);  //calculate l2 distance
 				l1dis=L1Form.L1Form(model, test[i]);   //calculate l1 distance
 			}			
@@ -189,12 +196,26 @@ public class Mark {
 	public static int identify(double[][] test,double[][] model,double[] testMean,double[][] modelMean,double[] allMean){	
 		
 		int[] record=mark(test,model,testMean,modelMean,allMean);	
-		if(record[0]==record[1]&&record[1]==record[2]&&record[1]!=-1)
-				return record[1];
-			else if((record[0]==record[2]||record[1]==record[2])&&record[2]!=-1)
-				return record[2];
-			else
-				return -1;
+		int[] tmp=new int[modelMean.length];
+		for(int i=0;i<record.length;i++){
+			if(record[i]!=-1)
+			tmp[record[i]-1]++;
+//			System.out.println("tmp"+tmp[record[i]-1]);
+		}
+		
+		int max=tmp[0];
+		int index=0;
+		for(int i=1;i<tmp.length;i++){
+			if(max<tmp[i]){
+				index=i;
+				max=tmp[i];
+			}
+		}
+		System.out.println("index+max:"+index+" "+max);
+		if(max>=2)
+			return index+1;
+		else
+			return -1;
 	}
 	
 		private static int second(int min,double[] dis){

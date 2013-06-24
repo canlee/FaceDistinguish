@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import javax.swing.ImageIcon;
 
 
-import com.invindible.facetime.feature.Features;
-import com.invindible.facetime.feature.GetFeatureMatrix;
+import com.invindible.facetime.algorithm.feature.Features;
+import com.invindible.facetime.algorithm.feature.GetFeatureMatrix;
 import com.invindible.facetime.model.LdaFeatures;
 import com.invindible.facetime.util.image.ImageUtil;
 

@@ -18,6 +18,7 @@ import javax.swing.JButton;
 
 import com.invindible.facetime.algorithm.LDA;
 import com.invindible.facetime.algorithm.Mark;
+import com.invindible.facetime.algorithm.UiAlgorithm.UiImageHandle;
 import com.invindible.facetime.algorithm.feature.Features;
 import com.invindible.facetime.database.ApplicationConfig;
 import com.invindible.facetime.database.Oracle_Connect;
@@ -136,7 +137,7 @@ public class FrameSignIn extends JFrame implements Context{
 		
 		panelCamera = new JPanel();
 		panelCamera.setBorder(new LineBorder(new Color(0, 0, 0)));
-		panelCamera.setBounds(27, 24, 399, 259);
+		panelCamera.setBounds(27, 24, 400, 260);
 		contentPane.add(panelCamera);
 		panelCamera.setLayout(null);
 		
@@ -567,6 +568,7 @@ public class FrameSignIn extends JFrame implements Context{
 					}
 					else
 					{
+						JOptionPane.showMessageDialog(null, "账号或密码错误！", "提示", JOptionPane.INFORMATION_MESSAGE);
 						return;
 					}
 					
@@ -629,7 +631,8 @@ public class FrameSignIn extends JFrame implements Context{
 				switch (result) {
 				case VideoStreamTask.OPEN_CAMERA_SUCCESS:
 					Component component = (Component) objects[1];
-					component.setBounds(0, 0, 314, 229);
+					component.setBounds(0, 0, 387, 260);
+					component.setLocation(7, 0);
 					panelCamera.add(component);
 					while(true) {
 						Image image = cif.getHandledPictrue();
@@ -647,7 +650,7 @@ public class FrameSignIn extends JFrame implements Context{
 //						Icon icon = (Icon) img;
 //						Image image = img;
 						ImageIcon imgIcon = new ImageIcon(img);
-						imgIcon = FrameRegist.ImageHandle(imgIcon, 128, 128);
+						imgIcon = UiImageHandle.ImageHandle(imgIcon, 128, 128);
 						
 						if(changePhoto == true)
 						{
@@ -721,29 +724,29 @@ public class FrameSignIn extends JFrame implements Context{
 	}	
 	
 	//为按钮打钩
-		public void drawNikeOnObject(JButton btn, int objectIndex)
+	public void drawNikeOnObject(JButton btn, int objectIndex)
+	{
+		//判断是否已经打钩
+		//若未打钩
+		try
 		{
-			//判断是否已经打钩
-			//若未打钩
-			try
+			if(isImageIconSelected[objectIndex] == false)
 			{
-				if(isImageIconSelected[objectIndex] == false)
-				{
-					btn.setIcon(FrameWindow.drawNike(imageIconCaptures[objectIndex]));
-					isImageIconSelected[objectIndex] = true;
-					requestNum++;
-				}
-				//若已打钩
-				else
-				{
-					btn.setIcon(imageIconCaptures[objectIndex]);
-					isImageIconSelected[objectIndex] = false;
-					requestNum--;
-				}
+				btn.setIcon(FrameWindow.drawNike(imageIconCaptures[objectIndex]));
+				isImageIconSelected[objectIndex] = true;
+				requestNum++;
 			}
-			catch(Exception ex)
+			//若已打钩
+			else
 			{
-				;
+				btn.setIcon(imageIconCaptures[objectIndex]);
+				isImageIconSelected[objectIndex] = false;
+				requestNum--;
 			}
 		}
+		catch(Exception ex)
+		{
+			;
+		}
+	}
 }

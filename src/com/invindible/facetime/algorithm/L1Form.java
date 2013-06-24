@@ -31,7 +31,7 @@ public class L1Form {
 			{
 				tmp+=Math.abs(testMean[i]-projectMean[i]);
 			}
-//			System.out.println("tmp value"+tmp+" "+value);
+			System.out.println("l1:tmp value"+tmp+" "+value);
 			if (tmp<value)
 				return true;
 			else

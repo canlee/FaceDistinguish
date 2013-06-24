@@ -2,7 +2,7 @@ package com.invindible.facetime.model;
 
 import java.util.ArrayList;
 
-import com.invindible.facetime.feature.Features;
+import com.invindible.facetime.algorithm.feature.Features;
 
 public class LdaFeatures {
 	private static LdaFeatures ldaFeatures= null;
