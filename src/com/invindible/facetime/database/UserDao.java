@@ -90,7 +90,7 @@ public class UserDao {
 		// TODO Auto-generated method stub
 		BufferedImage[] bf=null;
 		try {
-			PreparedStatement pst=conn.prepareStatement("select image from imageinfo",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+			PreparedStatement pst=conn.prepareStatement("select id,image from imageinfo order by id asc",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
 			ResultSet rs=pst.executeQuery();
 			rs.last();
 			InputStream[] fos=new InputStream[rs.getRow()];
@@ -121,6 +121,8 @@ public class UserDao {
 			if(rs.getString("username").equals(username))
 				return false;
 		}
+		pst.close();
+		rs.close();
 		return true;
 	}
 	
@@ -145,6 +147,8 @@ public class UserDao {
 			id=rs.getInt("id");
 		else
 			id=-1;
+		pst.close();
+		rs.close();
 		return id;
 	}
 	
@@ -163,6 +167,8 @@ public class UserDao {
 		User u=new User();
 		u.setUsername(rs.getString("username"));
 		u.setPassword(rs.getString("password"));
+		pst.close();
+		rs.close();
 		return u;		
 	}
 	
@@ -187,7 +193,7 @@ public class UserDao {
 	
 	public static ArrayList<UserDeleteModel> selectUser(Connection conn,String username) throws SQLException, IOException{
 		ArrayList<UserDeleteModel> user=new ArrayList<UserDeleteModel>();
-		PreparedStatement pst=conn.prepareStatement("select id,username from userinfo where username like'%"+username+"%'");
+		PreparedStatement pst=conn.prepareStatement("select id,username from userinfo where username like'%"+username+"%' order by id asc");
 		ResultSet rs=pst.executeQuery();
 		int id;
 		String name;
@@ -207,7 +213,34 @@ public class UserDao {
 			userdeletemodel.setUsername(name);
 			userdeletemodel.setBfi(bf[0]);
 			user.add(userdeletemodel);
-		}
+		}  
+		pst.close();
+		rs.close();
 		return user;
+	}
+	
+	public static int userRemaining(Connection conn) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("select id from userinfo",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+		ResultSet rs=pst.executeQuery();
+		rs.last();
+		int remaining=rs.getRow();
+		rs.close();
+		pst.close();
+		return remaining;
+	}
+	
+	public static int[] selectAllIds(Connection conn) throws SQLException{
+		PreparedStatement pst=conn.prepareStatement("select id from userinfo order by id asc",ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
+		ResultSet rs=pst.executeQuery();
+		rs.last();
+		int[] allIds=new int[rs.getRow()];
+		rs.beforeFirst();
+		int index=0;
+		while(rs.next()){
+			allIds[index++]=rs.getInt("id");
+		}
+		rs.close();
+		pst.close();
+		return allIds;
 	}
 }

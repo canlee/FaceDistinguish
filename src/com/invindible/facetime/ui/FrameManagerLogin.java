@@ -13,13 +13,14 @@ import javax.swing.JLabel;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JPasswordField;
 
 public class FrameManagerLogin extends JFrame {
 
 	static FrameManagerLogin frameManagerLogin;
 	private JPanel contentPane;
 	private JTextField txtId;
-	private JTextField txtPwd;
+	private JPasswordField passwordField;
 
 	/**
 	 * Launch the application.
@@ -41,8 +42,9 @@ public class FrameManagerLogin extends JFrame {
 	 * Create the frame.
 	 */
 	public FrameManagerLogin() {
+		setTitle("3.管理员管理-登陆");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 350, 254);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -50,7 +52,7 @@ public class FrameManagerLogin extends JFrame {
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(null);
-		panel.setBounds(31, 31, 293, 96);
+		panel.setBounds(12, 21, 293, 96);
 		contentPane.add(panel);
 		
 		txtId = new JTextField();
@@ -59,9 +61,9 @@ public class FrameManagerLogin extends JFrame {
 		txtId.setBounds(124, 10, 102, 21);
 		panel.add(txtId);
 		
-		JLabel labelId = new JLabel("账号：");
+		JLabel labelId = new JLabel("管理员账号：");
 		labelId.setFont(new Font("华文行楷", Font.PLAIN, 16));
-		labelId.setBounds(44, 13, 70, 18);
+		labelId.setBounds(10, 13, 104, 18);
 		panel.add(labelId);
 		
 		JLabel labelPwd = new JLabel("密码：");
@@ -69,15 +71,13 @@ public class FrameManagerLogin extends JFrame {
 		labelPwd.setBounds(44, 54, 60, 21);
 		panel.add(labelPwd);
 		
-		txtPwd = new JTextField();
-		txtPwd.setFont(new Font("宋体", Font.PLAIN, 16));
-		txtPwd.setColumns(10);
-		txtPwd.setBounds(124, 53, 102, 21);
-		panel.add(txtPwd);
+		passwordField = new JPasswordField();
+		passwordField.setBounds(124, 53, 102, 21);
+		panel.add(passwordField);
 		
 		JPanel panel_1 = new JPanel();
 		panel_1.setLayout(null);
-		panel_1.setBounds(41, 137, 281, 78);
+		panel_1.setBounds(22, 127, 281, 78);
 		contentPane.add(panel_1);
 		
 		JButton buttonEnter = new JButton("确认");
@@ -86,10 +86,11 @@ public class FrameManagerLogin extends JFrame {
 				
 				//获取账号和密码
 				String id = txtId.getText();
-				String pwd = txtPwd.getText();
+//				String pwd = txtPwd.getText();
+				String pwd = passwordField.getText();
 				
 				//若账号和密码正确，则进入管理员主界面
-				if( id.equals("administrator") && pwd.equals("admin"))
+				if( id.equals("admin") && pwd.equals("administrator"))
 				{
 					frameManagerLogin.dispose();
 					
@@ -103,11 +104,11 @@ public class FrameManagerLogin extends JFrame {
 					{
 						JOptionPane.showMessageDialog(null, "账号或密码不能为空！", "警告", JOptionPane.WARNING_MESSAGE);
 					}
-					else if( !id.equals("administrator") )
+					else if( !id.equals("admin") )
 					{
 						JOptionPane.showMessageDialog(null, "账号错误！", "警告", JOptionPane.WARNING_MESSAGE);
 					}
-					else if( !pwd.equals("admin") )
+					else if( !pwd.equals("administrator") )
 					{
 						JOptionPane.showMessageDialog(null, "密码错误！", "警告", JOptionPane.WARNING_MESSAGE);
 					}
@@ -123,6 +124,14 @@ public class FrameManagerLogin extends JFrame {
 		panel_1.add(buttonEnter);
 		
 		JButton buttonReturn = new JButton("返回");
+		buttonReturn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				frameManagerLogin.dispose();
+				MainUI.frameMainUI = new MainUI();
+				MainUI.frameMainUI.setVisible(true);
+				
+			}
+		});
 		buttonReturn.setBounds(170, 25, 110, 35);
 		panel_1.add(buttonReturn);
 	}

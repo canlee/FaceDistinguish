@@ -26,6 +26,7 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.IOException;
 
 public class MainUI extends JFrame{
@@ -69,7 +70,6 @@ public class MainUI extends JFrame{
 		JPanel panelPic = new JPanel();
 		panelPic.setBounds(0, 0, 564, 345);
 		
-		
 		contentPane.add(panelPic);
 		panelPic.setLayout(null);
 		
@@ -84,7 +84,7 @@ public class MainUI extends JFrame{
 		panelMessage.add(label);
 		
 		JPanel panelButton = new JPanel();
-		panelButton.setBounds(39, 238, 476, 62);
+		panelButton.setBounds(40, 216, 499, 97);
 		panelButton.setOpaque(false);
 		panelPic.add(panelButton);
 		panelButton.setLayout(null);
@@ -93,7 +93,7 @@ public class MainUI extends JFrame{
 		OnAndOff.getInstance().Start();
 		
 		
-		JButton btnRegist = new JButton("注册");
+		JButton btnRegist = new JButton("1.注册");
 		btnRegist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frameMainUI.dispose();
@@ -110,7 +110,7 @@ public class MainUI extends JFrame{
 		btnRegist.setBounds(56, 15, 115, 32);
 		panelButton.add(btnRegist);
 		
-		final JButton btnEnter = new JButton("登陆签到");
+		final JButton btnEnter = new JButton("2.登陆签到");
 		btnEnter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frameMainUI.dispose();
@@ -119,18 +119,35 @@ public class MainUI extends JFrame{
 				FrameSignIn.frameSignIn.setVisible(true);
 			}
 		});
-		btnEnter.setBounds(193, 15, 115, 32);
+		btnEnter.setBounds(276, 15, 115, 32);
 		panelButton.add(btnEnter);
 		
-		JButton btnVideo = new JButton("视频监视");
+		JButton btnVideo = new JButton("4.视频监视");
 		btnVideo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frameMainUI.dispose();
 				
+				FrameVideo.frameVideo = new FrameVideo();
+				FrameVideo.frameVideo.setVisible(true);
 			}
 		});
-		btnVideo.setBounds(325, 15, 115, 32);
+		btnVideo.setBounds(276, 57, 115, 32);
 		panelButton.add(btnVideo);
+		
+		JButton buttonManage = new JButton("3.管理员管理");
+		buttonManage.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				frameMainUI.dispose();
+				
+				//打开管理员登陆界面
+				FrameManagerLogin.frameManagerLogin = new FrameManagerLogin();
+				FrameManagerLogin.frameManagerLogin.setVisible(true);
+				
+			}
+		});
+		buttonManage.setBounds(56, 57, 115, 32);
+		panelButton.add(buttonManage);
 		
 		JLabel lblWallPaper = new JLabel("New label");
 		lblWallPaper.setBounds(0, 0, 564, 345);
@@ -154,39 +171,44 @@ public class MainUI extends JFrame{
 		
 		
 		//查看是否是第一次运行
-		try {
-			if (ApplicationConfig.first() == true)
-			{
-				String port = JOptionPane.showInputDialog(null, "请输入Oracle数据库端口（默认：1521）", "程序初始化配置-1",  JOptionPane.INFORMATION_MESSAGE);
-//				
-				String dbName = JOptionPane.showInputDialog(null, "请输入Oracle数据库名称（默认：orcl）", "程序初始化配置-2",  JOptionPane.INFORMATION_MESSAGE);
-				
-				String managerId = JOptionPane.showInputDialog(null, "请输入Oracle数据库管理员用户名（默认：system）", "程序初始化配置-3",  JOptionPane.INFORMATION_MESSAGE);
-				
-				String managerPwd = JOptionPane.showInputDialog(null, "请输入Oracle数据库管理员密码", "程序初始化配置-4",  JOptionPane.INFORMATION_MESSAGE);
-				
-				//开始配置数据库
-				ApplicationConfig.setupConfig(port, dbName);
-				
-				//建立连接
-				ApplicationConfig.setupLink();
-				
-				//用管理员建立ai_face数据库用户
-				OracleConfig.config(managerId, managerPwd);
-				
-				//为ai_face建立 数据库的表
-				OracleConfig.configtable();
-				
+		while( true)
+		{
+			try {
+				if (ApplicationConfig.first() == true)
+				{
+					String port = JOptionPane.showInputDialog(null, "请输入Oracle数据库端口（默认：1521）", "程序初始化配置-1",  JOptionPane.INFORMATION_MESSAGE);
+	//				
+					String dbName = JOptionPane.showInputDialog(null, "请输入Oracle数据库名称（默认：orcl）", "程序初始化配置-2",  JOptionPane.INFORMATION_MESSAGE);
+					
+					String managerId = JOptionPane.showInputDialog(null, "请输入Oracle数据库管理员用户名（默认：system）", "程序初始化配置-3",  JOptionPane.INFORMATION_MESSAGE);
+					
+					String managerPwd = JOptionPane.showInputDialog(null, "请输入Oracle数据库管理员密码", "程序初始化配置-4",  JOptionPane.INFORMATION_MESSAGE);
+					
+					//开始配置数据库
+					ApplicationConfig.setupConfig(port, dbName);
+					
+					//建立连接
+					ApplicationConfig.setupLink();
+					
+					//用管理员建立ai_face数据库用户
+					OracleConfig.config(managerId, managerPwd);
+					
+					//为ai_face建立 数据库的表
+					OracleConfig.configtable();
+					break;
+				}
+				else
+				{
+					//建立数据库连接
+					ApplicationConfig.setupLink();
+					System.out.println("walk u");
+					break;
+				}
+			} catch (Exception e1) {
+				File f=new File("oracle\\config");
+				f.delete();
+				JOptionPane.showMessageDialog(null, "数据库配置错误，无法连接数据库，请重新输入配置数据。", "警告", JOptionPane.WARNING_MESSAGE);
 			}
-			else
-			{
-				//建立数据库连接
-				ApplicationConfig.setupLink();
-				System.out.println("walk u");
-			}
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
 		}
 	
 	

@@ -1,4 +1,4 @@
-package com.invindible.facetime.feature;
+package com.invindible.facetime.algorithm.feature;
 
 import com.invindible.facetime.util.image.*;
 import java.awt.Image;

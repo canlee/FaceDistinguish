@@ -20,8 +20,16 @@ public class ApplicationConfig {
 			f.createNewFile();
 			return true;
 		}
-		else 
-			return false;
+		else
+			{
+			BufferedReader br=new BufferedReader(new FileReader(f));
+			String tmp=br.readLine();
+			System.out.println(tmp);
+			if(tmp==null||tmp.equals(""))
+				return true;
+			else
+				return false;
+			}
 	}
 	
 	/**
