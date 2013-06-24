@@ -58,15 +58,15 @@ public class TestUi extends JFrame implements Context {
 			component.setBounds(0, 0, 500, 300);
 			add(component);
 			setVisible(true);
-			while(true) {
-				Image image = cif.getHandledPictrue();
-				if(image != null) {
-					findTask.findFace(image);
-					break;
-				}
-			}
+//			while(true) {
+//				Image image = cif.getHandledPictrue();
+//				if(image != null) {
+//					findTask.findFace(image);
+//					break;
+//				}
+//			}
 			break;
-			
+			 
 		case FindFaceInterface.FIND_FACE_SUCCESS:
 			FaceImage fi = (FaceImage) objects[1];
 			if(fi.getFacesRgb().size() > 0) {
