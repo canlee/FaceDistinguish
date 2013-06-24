@@ -21,7 +21,7 @@ import org.omg.CORBA.Environment;
 
 import com.invindible.facetime.algorithm.LDA;
 import com.invindible.facetime.algorithm.VideoMark;
-import com.invindible.facetime.feature.GetPcaLda;
+import com.invindible.facetime.algorithm.feature.GetPcaLda;
 import com.invindible.facetime.model.FaceImage;
 import com.invindible.facetime.model.VideoMarkModel;
 import com.invindible.facetime.service.implement.FindFaceInterfaceImpl;
@@ -460,12 +460,18 @@ public class FrameVideo extends JFrame implements Context {
 			public void actionPerformed(ActionEvent e) {
 				//要考虑线程暂停问题
 				//应该给出用户提示
-				findTask.stop();
-				fvfi.stop();
-				frameVideo.dispose();
-				
-				MainUI.frameMainUI = new MainUI();
-				MainUI.frameMainUI.setVisible(true);
+				try
+				{
+					findTask.stop();
+					fvfi.stop();
+				}
+				catch(Exception e1)
+				{
+					frameVideo.dispose();
+					
+					MainUI.frameMainUI = new MainUI();
+					MainUI.frameMainUI.setVisible(true);
+				}
 				
 			}
 		});

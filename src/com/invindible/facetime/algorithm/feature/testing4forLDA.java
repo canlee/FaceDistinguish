@@ -1,4 +1,4 @@
-package com.invindible.facetime.feature;
+package com.invindible.facetime.algorithm.feature;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -10,9 +10,9 @@ import javax.swing.ImageIcon;
 
 import com.invindible.facetime.algorithm.LDA;
 import com.invindible.facetime.algorithm.MixedMahalnobisDistance;
+import com.invindible.facetime.algorithm.feature.Features;
 import com.invindible.facetime.model.LdaFeatures;
 
-import com.invindible.facetime.feature.Features;
 
 public class testing4forLDA {
 

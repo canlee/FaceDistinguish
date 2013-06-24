@@ -17,12 +17,12 @@ import javax.swing.JLabel;
 
 import com.invindible.facetime.algorithm.LDA;
 import com.invindible.facetime.algorithm.Mark;
+import com.invindible.facetime.algorithm.feature.Features;
+import com.invindible.facetime.algorithm.feature.GetFeatureMatrix;
+import com.invindible.facetime.algorithm.feature.GetPcaLda;
 import com.invindible.facetime.database.Oracle_Connect;
 import com.invindible.facetime.database.ProjectDao;
 import com.invindible.facetime.database.UserDao;
-import com.invindible.facetime.feature.Features;
-import com.invindible.facetime.feature.GetFeatureMatrix;
-import com.invindible.facetime.feature.GetPcaLda;
 import com.invindible.facetime.model.FaceImage;
 import com.invindible.facetime.model.Imageinfo;
 import com.invindible.facetime.model.LdaFeatures;
@@ -755,7 +755,7 @@ public class FrameRegist extends JFrame implements Context{
 		switch (result) {
 		case VideoStreamTask.OPEN_CAMERA_SUCCESS:
 			Component component = (Component) objects[1];
-			component.setBounds(0, 0, 314, 229);
+//			component.setBounds(0, 0, 314, 229);
 			panelCamera.add(component);
 			while(true) {
 				Image image = cif.getHandledPictrue();

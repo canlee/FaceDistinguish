@@ -19,12 +19,12 @@ import javax.swing.JTextField;
 import javax.swing.JButton;
 
 import com.invindible.facetime.algorithm.LDA;
+import com.invindible.facetime.algorithm.feature.Features;
+import com.invindible.facetime.algorithm.feature.GetPcaLda;
 import com.invindible.facetime.database.Oracle_Connect;
 import com.invindible.facetime.database.ProjectDao;
 import com.invindible.facetime.database.SignDao;
 import com.invindible.facetime.database.UserDao;
-import com.invindible.facetime.feature.Features;
-import com.invindible.facetime.feature.GetPcaLda;
 import com.invindible.facetime.model.LdaFeatures;
 import com.invindible.facetime.model.Project;
 import com.invindible.facetime.model.Sign;

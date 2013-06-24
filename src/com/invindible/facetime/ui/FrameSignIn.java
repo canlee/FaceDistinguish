@@ -18,11 +18,11 @@ import javax.swing.JButton;
 
 import com.invindible.facetime.algorithm.LDA;
 import com.invindible.facetime.algorithm.Mark;
+import com.invindible.facetime.algorithm.feature.Features;
 import com.invindible.facetime.database.ApplicationConfig;
 import com.invindible.facetime.database.Oracle_Connect;
 import com.invindible.facetime.database.ProjectDao;
 import com.invindible.facetime.database.UserDao;
-import com.invindible.facetime.feature.Features;
 import com.invindible.facetime.model.FaceImage;
 import com.invindible.facetime.model.LdaFeatures;
 import com.invindible.facetime.model.Project;
