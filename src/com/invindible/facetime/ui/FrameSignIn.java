@@ -568,6 +568,7 @@ public class FrameSignIn extends JFrame implements Context{
 					}
 					else
 					{
+						JOptionPane.showMessageDialog(null, "账号或密码错误！", "提示", JOptionPane.INFORMATION_MESSAGE);
 						return;
 					}
 					
