@@ -62,6 +62,7 @@ public class FrameVideo extends JFrame implements Context {
 	private BufferedImage buffImgNoObject;//无对象的图片
 	private int objectsSatisfiedCount;//用户满意的对象数量
 	private BufferedImage[] buffImgObjectsSatisfied;//用户满意的对象图片
+	private String[] timeFound;//用户满意的对象图片在视频中的出现时间
 	
 	private static double[][] modelP;//训练样本的投影Z
 	private static double[] allMean;
@@ -136,6 +137,7 @@ public class FrameVideo extends JFrame implements Context {
 		isObjectsSelected = new boolean[9];
 		isObjectsSatisfied = new boolean[9];
 		buffImgObjectsSatisfied = new BufferedImage[9];
+		timeFound = new String[9];
 		
 //		//初始化arrVideoMarkModel
 //		VideoMarkModel vmmTemp = new VideoMarkModel();
@@ -433,6 +435,8 @@ public class FrameVideo extends JFrame implements Context {
 						objectsSatisfiedCount = 0;
 						//用户满意对象图片清空
 						buffImgObjectsSatisfied = new BufferedImage[9];
+						//清空满意图时间
+						timeFound = new String[9];
 					
 						//根据选择的路径
 						//开始在视频中 查找人脸
@@ -753,7 +757,8 @@ public class FrameVideo extends JFrame implements Context {
 					long hour = fi.getTime() / 1000 / 60 / 60 % 60;
 					long minute = fi.getTime() / 1000 / 60 %60;
 					long second = fi.getTime() / 1000 % 60;
-					lblUserFindTime.setText( "[ " + hour + "时 "+ minute + "分  " + second + "秒 ]");
+					String timeFound = "[ " + hour + "时 "+ minute + "分  " + second + "秒 ]";
+					lblUserFindTime.setText( timeFound);
 					//用户提供的查找对象的原图显示
 					panelFaceOriginalInObjects.setBufferImage(objectsToFind[vmm.getMark()-2]);//vmm.getMark()最小为1,1为酱油，故-2才是所找目标
 					
@@ -785,7 +790,22 @@ public class FrameVideo extends JFrame implements Context {
 						buffImgObjectsSatisfied[objectIndex] = waveBeforeBuffImgs[i];
 						
 						
+						//若已满意对象数 等于 要找的对象数量，则停止搜索
+						if( objectsSatisfiedCount == objectsSelectedCount)
+						{
+							//寻找线程暂停
+							findTask.stop();
+							fvfi.stop();
+							
+							//给出提示
+							JOptionPane.showMessageDialog(null, "全部对象已找到！", "提示", JOptionPane.INFORMATION_MESSAGE);
 						
+							//将所有找到的对象，显示在新窗口上
+							//满意的对象数，满意图，满意标志，找到的时间，原图
+//							showSatisfiedPictures(objectsSatisfiedCount, buffImgObjectsSatisfied, isObjectsSatisfied,timeFound,objectsToFind);
+//							显示
+						
+						}
 					}
 					
 				}
@@ -1245,6 +1265,15 @@ public class FrameVideo extends JFrame implements Context {
 			default:
 				break;
 		}
+		
+	}
+	
+	/**
+	 * 调用新窗口
+	 * 显示所有已找到的，用户满意的图片
+	 */
+	private void showSatisfiedPictures(int objectsSatisfiedCount,BufferedImage[] buffImgObjectsSatisfied,boolean[] isObjectsSatisfied,String[] timeFound,BufferedImage[] objectsToFind)
+	{
 		
 	}
 	
