@@ -17,12 +17,13 @@ import javax.swing.JLabel;
 
 import com.invindible.facetime.algorithm.LDA;
 import com.invindible.facetime.algorithm.Mark;
+import com.invindible.facetime.algorithm.UiAlgorithm.UiImageHandle;
+import com.invindible.facetime.algorithm.feature.Features;
+import com.invindible.facetime.algorithm.feature.GetFeatureMatrix;
+import com.invindible.facetime.algorithm.feature.GetPcaLda;
 import com.invindible.facetime.database.Oracle_Connect;
 import com.invindible.facetime.database.ProjectDao;
 import com.invindible.facetime.database.UserDao;
-import com.invindible.facetime.feature.Features;
-import com.invindible.facetime.feature.GetFeatureMatrix;
-import com.invindible.facetime.feature.GetPcaLda;
 import com.invindible.facetime.model.FaceImage;
 import com.invindible.facetime.model.Imageinfo;
 import com.invindible.facetime.model.LdaFeatures;
@@ -113,7 +114,7 @@ public class FrameRegist extends JFrame implements Context{
 		
 		panelCamera = new JPanel();
 		panelCamera.setBorder(new LineBorder(new Color(0, 0, 0)));
-		panelCamera.setBounds(19, 41, 399, 259);
+		panelCamera.setBounds(19, 41, 400, 260);
 		contentPane.add(panelCamera);
 		panelCamera.setLayout(null);
 		
@@ -739,14 +740,6 @@ public class FrameRegist extends JFrame implements Context{
 		btn7.setBounds(0, 0, 128, 128);
 		panel_7.add(btn7);
 	}
-	
-	//图片等比例处理方法,width和height为宽度和高度
-	public static ImageIcon ImageHandle(ImageIcon imageicon,int width,int height){
-		Image image = imageicon.getImage();
-		Image smallimage = image.getScaledInstance(width, height, image.SCALE_FAST);
-		ImageIcon smallicon = new ImageIcon(smallimage);
-		return smallicon;
-	}
 
 	@Override
 	public void onRefresh(Object... objects) {
@@ -755,7 +748,11 @@ public class FrameRegist extends JFrame implements Context{
 		switch (result) {
 		case VideoStreamTask.OPEN_CAMERA_SUCCESS:
 			Component component = (Component) objects[1];
-			component.setBounds(0, 0, 314, 229);
+			System.out.println("====width:" + component.getSize().width);
+			System.out.println("====height:" + component.getSize().height);
+//			component.setBounds(0, 0, 314, 229);
+			component.setBounds(0, 0, 387, 260);
+			component.setLocation(7, 0);
 			panelCamera.add(component);
 			while(true) {
 				Image image = cif.getHandledPictrue();
@@ -773,7 +770,7 @@ public class FrameRegist extends JFrame implements Context{
 //				Icon icon = (Icon) img;
 //				Image image = img;
 				ImageIcon imgIcon = new ImageIcon(img);
-				imgIcon = ImageHandle(imgIcon, 128, 128);
+				imgIcon = UiImageHandle.ImageHandle(imgIcon, 128, 128);
 				
 				if(startChangeSelectedIcon == true)
 				{
