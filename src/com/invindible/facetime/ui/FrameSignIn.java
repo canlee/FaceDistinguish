@@ -9,6 +9,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -108,6 +109,15 @@ public class FrameSignIn extends JFrame implements Context{
 	 * Create the frame.
 	 */
 	public FrameSignIn() {
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		setTitle("2.登陆签到-识别/登陆");
 //		try {
 //			ApplicationConfig.setupLink();
@@ -141,7 +151,7 @@ public class FrameSignIn extends JFrame implements Context{
 		contentPane.add(panelCamera);
 		panelCamera.setLayout(null);
 		
-		JLabel label_1 = new JLabel("文字说明区");
+		JLabel label_1 = new JLabel("可用 人脸识别/账户密码 登陆");
 		label_1.setBounds(189, 293, 232, 85);
 		contentPane.add(label_1);
 		

@@ -10,6 +10,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import java.awt.GridLayout;
@@ -29,6 +31,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
+import java.awt.Font;
 
 public class MainUI extends JFrame{
 	static JPanel contentPane;
@@ -36,7 +39,7 @@ public class MainUI extends JFrame{
 	private boolean isFirstTime = true;
 	
 	/**
-	 * Launch the application.
+	 * Launch the application. 
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -55,6 +58,14 @@ public class MainUI extends JFrame{
 	 * Create the frame.
 	 */
 	public MainUI() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
 		
 		setTitle("\u4EBA\u8138\u8BC6\u522B\u7A0B\u5E8F");
 		//setUndecorated(true);
@@ -80,8 +91,9 @@ public class MainUI extends JFrame{
 		panelPic.add(panelMessage);
 		panelMessage.setLayout(null);
 		
-		JLabel label = new JLabel("\u6587\u5B57\u8BF4\u660E\u533A");
-		label.setBounds(149, 31, 60, 15);
+		JLabel label = new JLabel("请选择一个功能");
+		label.setFont(label.getFont().deriveFont(label.getFont().getStyle() | Font.BOLD));
+		label.setBounds(10, 57, 167, 35);
 		panelMessage.add(label);
 		
 		JPanel panelButton = new JPanel();

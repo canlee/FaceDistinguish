@@ -62,7 +62,7 @@ public class FrameVideo extends JFrame implements Context {
 	private BufferedImage buffImgNoObject;//无对象的图片
 	private int objectsSatisfiedCount;//用户满意的对象数量
 	private BufferedImage[] buffImgObjectsSatisfied;//用户满意的对象图片
-	private String[] timeFound;//用户满意的对象图片在视频中的出现时间
+	private String[] timeFoundSatisfied;//用户满意的对象图片在视频中的出现时间
 	
 	private static double[][] modelP;//训练样本的投影Z
 	private static double[] allMean;
@@ -122,6 +122,16 @@ public class FrameVideo extends JFrame implements Context {
 	 * Create the frame.
 	 */
 	public FrameVideo() {
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		
 		setTitle("4.视频监视");
 		
 		pageIndex = 1;
@@ -137,7 +147,7 @@ public class FrameVideo extends JFrame implements Context {
 		isObjectsSelected = new boolean[9];
 		isObjectsSatisfied = new boolean[9];
 		buffImgObjectsSatisfied = new BufferedImage[9];
-		timeFound = new String[9];
+		timeFoundSatisfied = new String[9];
 		
 //		//初始化arrVideoMarkModel
 //		VideoMarkModel vmmTemp = new VideoMarkModel();
@@ -436,7 +446,12 @@ public class FrameVideo extends JFrame implements Context {
 						//用户满意对象图片清空
 						buffImgObjectsSatisfied = new BufferedImage[9];
 						//清空满意图时间
-						timeFound = new String[9];
+						timeFoundSatisfied = new String[9];
+						for(int i=0; i<9; i++)
+						{
+							buffImgObjectsSatisfied[i] = buffImgNoObject;
+							timeFoundSatisfied[i] = "无该对象";
+						}
 					
 						//根据选择的路径
 						//开始在视频中 查找人脸
@@ -474,12 +489,12 @@ public class FrameVideo extends JFrame implements Context {
 				}
 				catch(Exception e1)
 				{
-					frameVideo.dispose();
-					
-					MainUI.frameMainUI = new MainUI();
-					MainUI.frameMainUI.setVisible(true);
+					e1.printStackTrace();
 				}
+				frameVideo.dispose();
 				
+				MainUI.frameMainUI = new MainUI();
+				MainUI.frameMainUI.setVisible(true);
 			}
 		});
 		btnReturn.setBounds(25, 422, 110, 35);
@@ -575,6 +590,21 @@ public class FrameVideo extends JFrame implements Context {
 						}
 						JOptionPane.showMessageDialog(null, "已暂停视频检测！", "视频提示", JOptionPane.INFORMATION_MESSAGE);
 						
+						//若已寻找的满意对象>0
+						if( objectsSatisfiedCount > 0)
+						{
+							//询问用户是否要查看满意的检测结果
+							if( JOptionPane.YES_OPTION == 
+									JOptionPane.showConfirmDialog(null, "是否要查看已检测的满意结果？",
+											"检测结果提示", JOptionPane.YES_NO_CANCEL_OPTION))
+							{
+								ShowSatisfiedPicture.frameShowSatisfiedPicture 
+									= new ShowSatisfiedPicture(objectsSatisfiedCount, buffImgObjectsSatisfied, isObjectsSatisfied, timeFoundSatisfied, objectsToFind);
+								ShowSatisfiedPicture.frameShowSatisfiedPicture.setVisible(true);
+							
+							}
+						
+						}
 					}
 					catch(Exception e1)
 					{
@@ -788,6 +818,8 @@ public class FrameVideo extends JFrame implements Context {
 						objectsSatisfiedCount++;
 						//获取满意的对象图片
 						buffImgObjectsSatisfied[objectIndex] = waveBeforeBuffImgs[i];
+						//获取对象截图时间
+						timeFoundSatisfied[objectIndex] = timeFound;
 						
 						
 						//若已满意对象数 等于 要找的对象数量，则停止搜索
@@ -804,7 +836,10 @@ public class FrameVideo extends JFrame implements Context {
 							//满意的对象数，满意图，满意标志，找到的时间，原图
 //							showSatisfiedPictures(objectsSatisfiedCount, buffImgObjectsSatisfied, isObjectsSatisfied,timeFound,objectsToFind);
 //							显示
-						
+							ShowSatisfiedPicture.frameShowSatisfiedPicture 
+								= new ShowSatisfiedPicture(objectsSatisfiedCount,buffImgObjectsSatisfied,isObjectsSatisfied,timeFoundSatisfied,objectsToFind);
+							ShowSatisfiedPicture.frameShowSatisfiedPicture.setVisible(true);
+							
 						}
 					}
 					

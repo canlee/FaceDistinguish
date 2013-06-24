@@ -6,6 +6,7 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextField;
 import java.awt.Font;
@@ -14,6 +15,8 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class FrameManagerLogin extends JFrame {
 
@@ -21,6 +24,7 @@ public class FrameManagerLogin extends JFrame {
 	private JPanel contentPane;
 	private JTextField txtId;
 	private JPasswordField passwordField;
+	private JButton buttonEnter;
 
 	/**
 	 * Launch the application.
@@ -42,6 +46,15 @@ public class FrameManagerLogin extends JFrame {
 	 * Create the frame.
 	 */
 	public FrameManagerLogin() {
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}
+		catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
 		setTitle("3.管理员管理-登陆");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 350, 254);
@@ -56,6 +69,17 @@ public class FrameManagerLogin extends JFrame {
 		contentPane.add(panel);
 		
 		txtId = new JTextField();
+		txtId.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					buttonEnter.doClick();
+				}
+				
+			}
+		});
 		txtId.setFont(new Font("宋体", Font.PLAIN, 16));
 		txtId.setColumns(10);
 		txtId.setBounds(124, 10, 102, 21);
@@ -72,6 +96,17 @@ public class FrameManagerLogin extends JFrame {
 		panel.add(labelPwd);
 		
 		passwordField = new JPasswordField();
+		passwordField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				
+				if(e.getKeyCode() == KeyEvent.VK_ENTER)
+				{
+					buttonEnter.doClick();
+				}
+				
+			}
+		});
 		passwordField.setBounds(124, 53, 102, 21);
 		panel.add(passwordField);
 		
@@ -80,7 +115,7 @@ public class FrameManagerLogin extends JFrame {
 		panel_1.setBounds(22, 127, 281, 78);
 		contentPane.add(panel_1);
 		
-		JButton buttonEnter = new JButton("确认");
+		buttonEnter = new JButton("确认");
 		buttonEnter.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
