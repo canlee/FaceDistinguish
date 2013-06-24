@@ -6,9 +6,16 @@ public class Mark {
 		System.out.println("target "+target);
 		
 		int[] record=mark(test,model,testMean,modelMean,allMean);
-		if(record[0]==target&&record[1]==target&&record[2]==target)
-			return true;
-		else if((record[0]==target||record[1]==target)&&record[2]==target)
+		int[] tmp=new int[record.length];
+		for(int i=0;i<record.length;i++){
+			tmp[record[i]-1]++;
+		}
+		
+		int max=tmp[0];
+		for(int i=1;i<tmp.length;i++){
+			max=max<tmp[i]?max:tmp[i];
+		}
+		if(max>=2)
 			return true;
 		else
 			return false;
@@ -192,12 +199,23 @@ public class Mark {
 	public static int identify(double[][] test,double[][] model,double[] testMean,double[][] modelMean,double[] allMean){	
 		
 		int[] record=mark(test,model,testMean,modelMean,allMean);	
-		if(record[0]==record[1]&&record[1]==record[2]&&record[1]!=-1)
-				return record[1];
-			else if((record[0]==record[2]||record[1]==record[2])&&record[2]!=-1)
-				return record[2];
-			else
-				return -1;
+		int[] tmp=new int[record.length];
+		for(int i=0;i<record.length;i++){
+			tmp[record[i]-1]++;
+		}
+		
+		int max=tmp[0];
+		int index=0;
+		for(int i=1;i<tmp.length;i++){
+			if(max<tmp[i]){
+				index=i;
+				max=tmp[i];
+			}
+		}
+		if(max>=2)
+			return record[index];
+		else
+			return -1;
 	}
 	
 		private static int second(int min,double[] dis){
