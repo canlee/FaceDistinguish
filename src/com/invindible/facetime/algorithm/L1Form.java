@@ -1,7 +1,7 @@
 package com.invindible.facetime.algorithm;
 
 public class L1Form {
-	 static double l1value(double[][] modelMean,double[] Mean){
+	  static double l1value(double[][] modelMean,double[] Mean){
 		double c=0;
 		double tmp;
 		for(int i=0;i<modelMean.length;i++){

@@ -29,8 +29,8 @@ public class GetFeatureMatrix {
 	//ArrayList<double[]> arr = new ArrayList<double[]>();
 	double[] v1 = new double[100];
 	private static int nOld;
-	private static int height = 128;//等比例图片处理时的高
-	private static int width = 128;//等比例图片处理时的宽
+	private static int height = 64;//等比例图片处理时的高
+	private static int width = 64;//等比例图片处理时的宽
 	/**
 	 * 将int[]转化成double[]
 	 */
@@ -193,6 +193,7 @@ public class GetFeatureMatrix {
 	/**
 	 * 计算协方差矩阵
 	 * 	传入形参为 <方法：计算每张图片的均差> 的返回值
+	 * (其实这并不是协方差矩阵，若需要协方差矩阵，再用该矩阵除以N即可)
 	 */
 	public static double[][] calCovarianceMatrix(double[][] vec) {
 		int length = vec.length;//length指向量的维数，X={1,2,3,...,length}
@@ -218,6 +219,7 @@ public class GetFeatureMatrix {
 		
 		covArr = cov.getArray();
 		
+		//由于最终计算并不需要协方差矩阵，仅仅要的是一部分，所以不用除以N
 		//除以N
 //		for(int i=0; i<n; i++)
 //		{
@@ -226,6 +228,8 @@ public class GetFeatureMatrix {
 //				covArr[i][j] = covArr[i][j] / n;
 //			}
 //		}
+		
+		Features.getInstance().setCovarianceMatrix(covArr);
 		
 		return covArr;
 	}
@@ -240,7 +244,9 @@ public class GetFeatureMatrix {
 		SingularValueDecomposition s = vecMat.svd();
 		Matrix svalues = new Matrix(s.getSingularValues(), 1);
 		
-		return svalues.getRowPackedCopy();
+		double[] result = svalues.getRowPackedCopy();
+		Features.getInstance().setEigenValue(result);
+		return result;
 	}
 	
 	/**
@@ -250,7 +256,10 @@ public class GetFeatureMatrix {
 	public static double[][] calFeatureVector(double[][] vec) {
 		Matrix vecMat = new Matrix(vec);
 		SingularValueDecomposition s = vecMat.svd();
-		return s.getV().getArray();
+		
+		double[][] featureVector = s.getV().getArray();
+		Features.getInstance().setFeatureVector(featureVector);
+		return featureVector;
 	}
 	
 	/**
@@ -264,6 +273,8 @@ public class GetFeatureMatrix {
 		double[] eigenValue = Features.getInstance().getEigenValue();//特征值
 		double[][] featureVec = Features.getInstance().getFeatureVector();//特征向量
 		
+//		System.out.println("width*height:" + width*height);//4096
+//		System.out.println("featureVec[0].length" + featureVec[0].length);//10
 		double[][] resultFeatureVector = new double[width*height][featureVec[0].length]; 
 		
 		for(int i=0; i<featureVec[0].length; i++)
@@ -278,9 +289,9 @@ public class GetFeatureMatrix {
 			Matrix xOld = new Matrix(AveDeviation);
 			Matrix featureVecOfOneObject = new Matrix(temp);
 //			System.out.println("[" + xOld.getRowDimension() + "]" +
-//					"[" + xOld.getColumnDimension() +"]");
+//					"[" + xOld.getColumnDimension() +"]");//[16384][10]
 //			System.out.println("[" + featureVecOfOneObject.getRowDimension() + "]" +
-//					"[" + featureVecOfOneObject.getColumnDimension() +"]");
+//					"[" + featureVecOfOneObject.getColumnDimension() +"]");//[10][1]
 			
 			Matrix resultMatrix = xOld.times(featureVecOfOneObject);
 //			System.out.println("[" + resultMatrix.getRowDimension() + "]" +
@@ -292,6 +303,8 @@ public class GetFeatureMatrix {
 			double[][] temp2 = new double[1][1];
 			temp2 = resultMatrix.getArray();
 			
+//			System.out.println("temp2.length:" + temp2.length);//16384-------------
+//			System.out.println("temp2[0].length:" + temp2[0].length);//1
 			//将构成的[N][1] 复制到[N][i]中
 			for(int j=0; j<temp2.length; j++)
 			{
@@ -364,11 +377,11 @@ public class GetFeatureMatrix {
 		
 		//通过SVD定理，计算矩阵的特征值  
 		double[] eigenValue = calEigenValue(covMat);
-		Features.getInstance().setEigenValue(eigenValue);
+//		Features.getInstance().setEigenValue(eigenValue);
 		
 		//通过SVD定理，计算矩阵的特征向量
 		double[][] featureVector = calFeatureVector(covMat);
-		Features.getInstance().setFeatureVector(featureVector);
+//		Features.getInstance().setFeatureVector(featureVector);
 	
 		//通过公式变换，求取真正的特征向量
 		changeFeatureVector();

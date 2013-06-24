@@ -6,9 +6,9 @@ public class testing {
 
 	public static void main(String[] args)
 	{
-		double a = 9.4;
-		int a2 = Integer.parseInt(new java.text.DecimalFormat("0").format(a));
-		System.out.println(a2);
+//		double a = 9.4;
+//		int a2 = Integer.parseInt(new java.text.DecimalFormat("0").format(a));
+//		System.out.println(a2);
 //		Matrix a =Matrix.random(1, 128*128);
 //		double[][] temp = new double[1][1];
 //		temp = a.getArray();
@@ -30,10 +30,11 @@ public class testing {
 //		System.out.println("计算结果是：______________________");
 //		c.print(6, 2);
 		
-//		double[][] a = {{3,6,9} ,{6,9,12}};
-//		Matrix ma = new Matrix(a);
-//		ma.print(4, 2);
+		double[][] a = {{3,6,9} ,{6,9,12}};
+		Matrix ma = new Matrix(a);
+		ma.print(4, 2);
 //		ma = ma.times(10);
-//		ma.print(4, 2);
+		ma = ma.transpose();
+		ma.print(4, 2);
 	}
 }

@@ -74,7 +74,7 @@ public class TestUi extends JFrame implements Context {
 				imagePanel.setBufferImage(img);
 				Debug.print(img.getWidth() + ", " + img.getHeight());
 				Calendar c = Calendar.getInstance();
-				ImageUtil.saveImage(img, "E:/" + c.getTimeInMillis() + ".jpg");
+//				ImageUtil.saveImage(img, "E:/" + c.getTimeInMillis() + ".jpg");
 			}
 //			imagePanel.setBounds(originPanel.getWidth() + 10, 0, img.getWidth(), img.getHeight());
 			findTask.findFace(cif.getHandledPictrue());
