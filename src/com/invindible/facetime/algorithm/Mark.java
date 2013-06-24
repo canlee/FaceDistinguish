@@ -6,16 +6,13 @@ public class Mark {
 		System.out.println("target "+target);
 		
 		int[] record=mark(test,model,testMean,modelMean,allMean);
-		int[] tmp=new int[record.length];
+		int sum=0;
 		for(int i=0;i<record.length;i++){
-			tmp[record[i]-1]++;
+			if(record[i]==target)
+				sum++;
 		}
-		
-		int max=tmp[0];
-		for(int i=1;i<tmp.length;i++){
-			max=max<tmp[i]?max:tmp[i];
-		}
-		if(max>=2)
+		System.out.println("sum:"+sum);
+		if(sum>=2)
 			return true;
 		else
 			return false;
@@ -199,9 +196,10 @@ public class Mark {
 	public static int identify(double[][] test,double[][] model,double[] testMean,double[][] modelMean,double[] allMean){	
 		
 		int[] record=mark(test,model,testMean,modelMean,allMean);	
-		int[] tmp=new int[record.length];
+		int[] tmp=new int[modelMean.length];
 		for(int i=0;i<record.length;i++){
 			tmp[record[i]-1]++;
+			System.out.println("tmp"+tmp[record[i]-1]);
 		}
 		
 		int max=tmp[0];
@@ -212,8 +210,9 @@ public class Mark {
 				max=tmp[i];
 			}
 		}
+		System.out.println("index+max:"+index+" "+max);
 		if(max>=2)
-			return record[index];
+			return index+1;
 		else
 			return -1;
 	}
