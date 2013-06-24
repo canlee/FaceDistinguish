@@ -21,6 +21,8 @@ public class ShowSatisfiedPicture extends JFrame {
 	private int pageNum;
 	private JButton btnPageUp;
 	private JButton btnPageDown;
+	private ImagePanel ipObjectOriginal;
+	private ImagePanel ipObjectFound;
 
 	/**
 	 * Launch the application.
@@ -59,11 +61,11 @@ public class ShowSatisfiedPicture extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		ImagePanel ipObjectOriginal = new ImagePanel();
+		ipObjectOriginal = new ImagePanel();
 		ipObjectOriginal.setBounds(45, 75, 128, 128);
 		panel.add(ipObjectOriginal);
 		
-		ImagePanel ipObjectFound = new ImagePanel();
+		ipObjectFound = new ImagePanel();
 		ipObjectFound.setBounds(257, 75, 128, 128);
 		panel.add(ipObjectFound);
 		
@@ -113,6 +115,7 @@ public class ShowSatisfiedPicture extends JFrame {
 				{
 					btnPageDown.setEnabled(false);
 				}
+				RefreshUi();
 			}
 		});
 		btnPageUp.setFont(new Font("宋体", Font.PLAIN, 14));
@@ -125,7 +128,6 @@ public class ShowSatisfiedPicture extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				
 				pageNum--;
-
 				btnPageUp.setEnabled(true);
 				
 				if(pageNum == 1)
@@ -138,5 +140,36 @@ public class ShowSatisfiedPicture extends JFrame {
 		btnPageDown.setFont(new Font("宋体", Font.PLAIN, 14));
 		btnPageDown.setBounds(25, 82, 83, 28);
 		panel_1.add(btnPageDown);
+	}
+	
+	/**
+	 * 根据页数，刷新界面，显示对象
+	 */
+	private void RefreshUi()
+	{
+		switch(pageNum)
+		{
+			case 1:
+				break;
+				ipObjectOriginal.setBufferImage(bufferImage);
+			case 2:
+				break;
+			case 3:
+				break;
+			case 4:
+				break;
+			case 5:
+				break;
+			case 6:
+				break;
+			case 7:
+				break;
+			case 8:
+				break;
+			case 9:
+				break;
+			default :
+				break;
+		}
 	}
 }
