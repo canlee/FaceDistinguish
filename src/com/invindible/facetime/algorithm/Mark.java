@@ -200,7 +200,7 @@ public class Mark {
 		for(int i=0;i<record.length;i++){
 			if(record[i]!=-1)
 			tmp[record[i]-1]++;
-			System.out.println("tmp"+tmp[record[i]-1]);
+			//System.out.println("tmp"+tmp[record[i]-1]);
 		}
 		
 		int max=tmp[0];
