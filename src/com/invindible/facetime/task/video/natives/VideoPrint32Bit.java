@@ -14,7 +14,7 @@ public class VideoPrint32Bit extends VideoPrintJNI {
 	public VideoPrint32Bit(String videoFile) {
 		super();
 		this.videoFile = videoFile;
-		DLLFactory.loadDLL(VideoPrint32Bit.class, "/dll/video32/video_printer32.dll");
+		DLLFactory.loadVideo32DLL(VideoPrint32Bit.class);
 	}
 	
 	@Override

@@ -14,7 +14,7 @@ public class VideoPrint64bit extends VideoPrintJNI {
 	public VideoPrint64bit(String videoFile) {
 		super();
 		this.videoFile = videoFile;
-		DLLFactory.loadDLL(VideoPrint64bit.class, "/dll/video64/video_printer64.dll");
+		DLLFactory.loadVideo64DLL(VideoPrint64bit.class);
 	}
 	
 	@Override
