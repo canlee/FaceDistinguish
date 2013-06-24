@@ -66,7 +66,7 @@ public class TestUi extends JFrame implements Context {
 				}
 			}
 			break;
-			
+			 
 		case FindFaceInterface.FIND_FACE_SUCCESS:
 			FaceImage fi = (FaceImage) objects[1];
 			if(fi.getFacesRgb().size() > 0) {
