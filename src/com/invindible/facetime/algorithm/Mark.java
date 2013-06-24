@@ -198,6 +198,7 @@ public class Mark {
 		int[] record=mark(test,model,testMean,modelMean,allMean);	
 		int[] tmp=new int[modelMean.length];
 		for(int i=0;i<record.length;i++){
+			if(record[i]!=-1)
 			tmp[record[i]-1]++;
 			System.out.println("tmp"+tmp[record[i]-1]);
 		}
