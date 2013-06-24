@@ -16,7 +16,6 @@ import java.awt.GridLayout;
 import javax.swing.JSplitPane;
 import javax.swing.JButton;
 
-import com.invindible.facetime.algorithm.UiAlgorithm.UiImageHandle;
 import com.invindible.facetime.database.ApplicationConfig;
 import com.invindible.facetime.database.OnAndOff;
 import com.invindible.facetime.database.OracleConfig;
@@ -32,7 +31,7 @@ import java.io.IOException;
 
 public class MainUI extends JFrame{
 	static JPanel contentPane;
-	public static MainUI frameMainUI;
+	static MainUI frameMainUI;
 	private boolean isFirstTime = true;
 	
 	/**
@@ -161,9 +160,9 @@ public class MainUI extends JFrame{
 		
 		JLabel lblProgramIcon = new JLabel("");
 		lblProgramIcon.setBounds(0, 0, 159, 121);
-		lblProgramIcon.setIcon(UiImageHandle.ImageHandle(new ImageIcon("Pictures/facetime.jpg"), 159, 121));
+		lblProgramIcon.setIcon(ImageHandle(new ImageIcon("Pictures/facetime.jpg"), 159, 121));
 		panelProgramIcon.add(lblProgramIcon);
-		lblWallPaper.setIcon(UiImageHandle.ImageHandle(new ImageIcon("Pictures/wallpaper/" + num + ".jpg"), 564, 345));
+		lblWallPaper.setIcon(ImageHandle(new ImageIcon("Pictures/wallpaper/" + num + ".jpg"), 564, 345));
 		panelPic.add(lblWallPaper);
 		contentPane.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{panelMessage, panelPic, btnRegist, btnEnter, panelButton}));
 		panelPic.setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{panelMessage}));
@@ -215,11 +214,11 @@ public class MainUI extends JFrame{
 	
 	}
 	
-//	//图片等比例处理方法,width和height为宽度和高度
-//	public ImageIcon ImageHandle(ImageIcon imageicon,int width,int height){
-//		Image image = imageicon.getImage();
-//		Image smallimage = image.getScaledInstance(width, height, image.SCALE_FAST);
-//		ImageIcon smallicon = new ImageIcon(smallimage);
-//		return smallicon;
-//	}
+	//图片等比例处理方法,width和height为宽度和高度
+	public ImageIcon ImageHandle(ImageIcon imageicon,int width,int height){
+		Image image = imageicon.getImage();
+		Image smallimage = image.getScaledInstance(width, height, image.SCALE_FAST);
+		ImageIcon smallicon = new ImageIcon(smallimage);
+		return smallicon;
+	}
 }

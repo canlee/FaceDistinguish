@@ -17,8 +17,6 @@ import javax.swing.JLabel;
 
 import com.invindible.facetime.algorithm.LDA;
 import com.invindible.facetime.algorithm.Mark;
-import com.invindible.facetime.algorithm.UiAlgorithm.RegistAlgorithm;
-import com.invindible.facetime.algorithm.UiAlgorithm.UiImageHandle;
 import com.invindible.facetime.algorithm.feature.Features;
 import com.invindible.facetime.algorithm.feature.GetFeatureMatrix;
 import com.invindible.facetime.algorithm.feature.GetPcaLda;
@@ -60,7 +58,7 @@ import javax.swing.border.TitledBorder;
 
 public class FrameRegist extends JFrame implements Context{
 
-	public static FrameRegist frameRegist;
+	static FrameRegist frameRegist;
 	private JPanel contentPane;
 	private JPanel panelCamera;
 
@@ -73,20 +71,20 @@ public class FrameRegist extends JFrame implements Context{
 	private JButton btn7;
 	
 	private CameraInterface cif;
-	public static FindFaceInterface findTask;
+	private FindFaceInterface findTask;
 	
 //	private int photoIndex = 1;
 	private ImageIcon[] imageIcons;// = new ImageIcon[5];//5张照片
 	private ImageIcon[] testIcons;//测试用照片，2张
-//	private BufferedImage[] soyBufferedImages;
+	private BufferedImage[] soyBufferedImages;
 	private boolean[] isImageIconSelected;// = new boolean[7];//第i个照片是否要更换的标志
 //	private int[] changeIndex = {1,2,3,4,5};
 	private boolean startChangeSelectedIcon;// = true;//是否要更换照片的标志
 	private int requestNum;// = 7;//剩余的需要更换的照片数量
-//	private int testNum = 2;//测试样例的数量(默认为2)
-//	private int photoNum = 5;//每个人的照片数量(默认为5)
+	private int testNum = 2;//测试样例的数量(默认为2)
+	private int photoNum = 5;//每个人的照片数量(默认为5)
 	
-//	private boolean haveSoy = false;//是否有加入“酱油”进投影Z中的标志
+	private boolean haveSoy = false;//是否有加入“酱油”进投影Z中的标志
 
 	/**
 	 * Create the frame.
@@ -95,7 +93,7 @@ public class FrameRegist extends JFrame implements Context{
 		setTitle("1.用户注册-照相识别");
 		testIcons = new ImageIcon[2];
 		imageIcons = new ImageIcon[5];
-//		soyBufferedImages= new BufferedImage[5];
+		soyBufferedImages= new BufferedImage[5];
 		isImageIconSelected = new boolean[7];
 		startChangeSelectedIcon = true;
 		requestNum = 7;
@@ -115,7 +113,7 @@ public class FrameRegist extends JFrame implements Context{
 		
 		panelCamera = new JPanel();
 		panelCamera.setBorder(new LineBorder(new Color(0, 0, 0)));
-		panelCamera.setBounds(19, 41, 400, 260);
+		panelCamera.setBounds(19, 41, 399, 259);
 		contentPane.add(panelCamera);
 		panelCamera.setLayout(null);
 		
@@ -144,8 +142,421 @@ public class FrameRegist extends JFrame implements Context{
 		JButton btnRegist = new JButton("确认注册");
 		btnRegist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//此处加入注册处理，例如将注册者的图片保存进数据库之类的操作
 				
-				RegistAlgorithm.startDistinguish(user, imageIcons,testIcons,requestNum,isImageIconSelected,startChangeSelectedIcon);
+				
+				//设置User的用户名、密码和5张照片。
+				//用户名 userId
+				//密码 passWord
+				//5张照片 imageIcons
+				
+				//设置人数，和每人的照片数（此处默认每人5张）
+				int peopleNum = 2;//2是暂定的，需要根据数据库进行修改
+				int photoNum = 5;
+				
+				//WoptT矩阵
+				double[][] WoptT;
+				//Project数据
+				Project pr;
+				//保存从数据库获取的图片的数组
+				BufferedImage[] bImages = null;
+//				//临时保存单人图片的数组
+//				BufferedImage[] tempForOneManBImages = null;
+				//用来PCA、LDA计算的数组
+				ImageIcon[] icon = null;// = new ImageIcon[2*5];//[peopleNum*photoNum]
+				
+				Connection conn = null;
+				try
+				{
+					conn = Oracle_Connect.getInstance().getConn();
+					//1.首先判断数据库中是否已有WoptT矩阵的数据（即看是否已经有样本数据）
+					
+					//若存在WoptT
+					if( ProjectDao.firstORnot(conn) == false)
+					{
+						//读取所有样本数据，以便对所有样本和自己进行训练
+						
+//						//读取WoptT矩阵
+//						WoptT = ProjectDao.doselectWopt(conn);
+						
+						//(读取所有样本的投影Z 和 id)
+						//读取所有样本的图片
+						BufferedImage[] bimg = UserDao.doSelectAll(conn);
+						
+						for(int i=0; i<bimg.length; i++)
+						{
+							int[] le = ImageUtil.getPixes(bimg[i]);
+	
+							System.out.println("长度:" + le.length);
+						}
+//						ImageIcon[] tempImageIcons = new ImageIcon[bimg.length];
+//						for(int i=0; i<bimg.length; i++)
+//						{
+//							tempImageIcons
+//						}
+//						pr = ProjectDao.doselectProject(conn);
+						
+						//------------------------------peopleNum需要从数据库中获取---------------------------------------------
+						//获取peopleNum
+						peopleNum = bimg.length / 5;
+						peopleNum++;//因为注册多了一个人，所以peopleN+1
+						//实例化bImages图片数组
+						bImages = new BufferedImage[peopleNum * photoNum];
+//						icon = new ImageIcon[peopleNum * photoNum];
+						
+						for(int i=0; i<bimg.length; i++)
+						{
+							bImages[i] = bimg[i];
+						}
+						for(int i=0; i<5; i++)
+						{
+//							icon[bimg.length + i] = imageIcons[i];
+							Image img = imageIcons[i].getImage();
+							bImages[bimg.length + i] = ImageUtil.ImageToBufferedImage(img);
+						}
+						
+					}
+					//若不存在，则直接对自己的数据进行训练
+					else
+					{
+						haveSoy = true;
+						//设置peopleNum为2（酱油&自己)
+						peopleNum = 2;
+//						//实例化icon图片数组
+//						icon = new ImageIcon[peopleNum * photoNum];//[2 * 5]
+						//实例化bImages图片数组
+						bImages = new BufferedImage[peopleNum * photoNum];
+//						tempForOneManBImages = new BufferedImage[photoNum];
+						
+//						读取Pictures文件夹里面的"酱油"的图片，并赋值给bImages[0-4];
+						String source = "Pictures/none/";
+						for(int i=0; i<5; i++)
+						{
+							String source2 = "after37-" + (i+1) + ".jpg";
+							ImageIcon imageIcon = new ImageIcon(source + source2);
+							//将“酱油”的图片扩大
+//							imageIcon = ImageHandle(imageIcon, 128, 128);
+							Image img = imageIcon.getImage();
+							bImages[i] = ImageUtil.ImageToBufferedImage(img);
+							soyBufferedImages[i] = ImageUtil.ImageToBufferedImage(img);
+						}
+						
+						//将自己的图片赋值给bImages[5-9];
+						for(int i=5; i<10; i++)
+						{
+//							icon[i] = imageIcons[i-5];
+							Image img = imageIcons[i-5].getImage();
+							bImages[i] = ImageUtil.ImageToBufferedImage(img);
+//							bImages[i] = ImageUtil.ImageToBufferedImage(img);
+						}
+						
+					}
+					
+					
+				}
+				catch(Exception e1)
+				{
+					e1.printStackTrace();
+				}
+				
+//				//16348维，128*128
+//				int[] vector1 = GetFeatureMatrix.getPixes(bImages[0]);
+//				System.out.println("维数：" + vector1.length);
+				
+				
+				//对bImages[]的图片进行小波变换
+				BufferedImage[] waveBImages;
+				//若数据库中无人，加入了“酱油”，则只对新加的人进行小波变换
+				//变换完后，需要将“已经过小波变换的酱油的图片”加入数组中
+//				if(haveSoy)
+//				{
+//					BufferedImage[] tempForOneManWaveBImages = Wavelet.Wavelet(tempForOneManBImages);
+//					waveBImages = new BufferedImage[10];
+//					//酱油放在[0-4]
+//					for(int i=0; i<5; i++)
+//					{
+//						String source = "Pictures/none/";
+//						String source2 = "after37-" + (i+1) + ".jpg";
+//						ImageIcon imageIcon = new ImageIcon(source + source2);
+////						//将“酱油”的图片扩大
+////						imageIcon = ImageHandle(imageIcon, 128, 128);
+//						Image img = imageIcon.getImage();
+//						waveBImages[i] = ImageUtil.ImageToBufferedImage(img);
+//					}
+//					//新加的人放在[5-9]
+//					for(int i=5; i<10; i++)
+//					{
+//						waveBImages[i] = tempForOneManWaveBImages[i-5];
+//					}
+//					
+//				}
+//				//若数据库中有人，则直接进行小波变换
+//				else
+				{
+					waveBImages = Wavelet.Wavelet(bImages);
+				}
+				
+				
+				//2.训练（将 本人的5张照片 和 数据库中的所有照片（每人5张） 投影到WoptT上)
+				GetPcaLda.getResult(waveBImages);
+				
+				//1024维，32*32
+				int[] vector = GetFeatureMatrix.getPixes(waveBImages[0]);
+				System.out.println("维数：" + vector.length);
+				
+				double[][] modelP=new double[peopleNum*photoNum][peopleNum-1];
+				for(int i=0;i<peopleNum*photoNum;i++){
+					modelP[i]=LDA.getInstance().calZ(waveBImages[i]);//投影
+				}
+				
+//				验证需要5个数据，前3个都是double[][]
+//				1.(为了计算<2>所用)WoptT（从单例中获取）
+				//double[] WoptT
+//				2.2张照片的投影（将拍到的图片，通过Wopt投影后,转成double[][]）
+				double[][] testZ = new double[testNum][peopleNum-1];//[测试用例数量][C-1]
+//				3.训练样例的投影（上面的modelP）
+				//double[][] modelP
+//				4.<2>的均值（从<2>处理）
+				double[] testZMean = new double[peopleNum-1];
+//				5.（投影Z的）N个人的，类内均值（每个人都有一个均值)
+				double[][] modelMean=new double[peopleNum][peopleNum-1];
+//				6.（投影Z的）总体均值
+				double[] allMean=new double[peopleNum-1];
+				
+				//1.WoptT（从单例中获取）
+				WoptT = LdaFeatures.getInstance().getLastProjectionT();
+				
+				//2.2张照片的投影（将拍到的图片，通过Wopt投影后,转成double[][]）
+				//首先，将ImageIcon[2] testIcons转换成BufferedImage[2]
+				BufferedImage[] tempForTestBImages = new BufferedImage[testNum];
+				for(int i=0; i<testNum; i++)
+				{
+					Image img = testIcons[i].getImage();
+					tempForTestBImages[i] = ImageUtil.ImageToBufferedImage(img);
+				}
+				
+				//然后，对tempForTestBImages进行小波变换，转成BufferedImage[2]
+				BufferedImage[] waveTestBImages = Wavelet.Wavelet(tempForTestBImages);
+				
+				//计算2张经小波变换的测试图waveTestBImages的投影Z
+				for(int i=0; i<testNum; i++)
+				{
+					testZ[i]=LDA.getInstance().calZ(waveTestBImages[i]);
+				}
+				
+				//4.<2>的均值（从<2>处理）
+				for(int i=0; i<(peopleNum-1); i++)
+				{
+					for(int j=0; j<testNum; j++)
+					{
+						testZMean[i] += testZ[j][i];
+					}
+					testZMean[i] /= testNum;
+				}
+				
+				//5.（投影Z的）N个人的，类内均值（每个人都有一个均值)
+				//6.（投影Z的）总体均值
+				for(int i=0;i<peopleNum;i++){
+					for(int k=0;k<peopleNum-1;k++){
+						for(int j=0;j<photoNum;j++){
+							modelMean[i][k]+=modelP[photoNum*i+j][k];
+						}
+						allMean[k]+=modelMean[i][k];
+						modelMean[i][k]/=photoNum;
+					}			
+				}
+				
+				for(int i=0;i<peopleNum-1;i++)
+					allMean[i]/=peopleNum*photoNum;
+				
+				
+				//验证（尝试识别，识别失败则需要重新获取图片）
+				if( Mark.domark(testZ, modelP, testZMean, modelMean, allMean) == false)
+				{
+					JOptionPane.showMessageDialog(null, "照片样例识别失败！正在重新获取所有图片", "提示", JOptionPane.INFORMATION_MESSAGE);
+					//将数据初始化，以开始重新获取图片
+					requestNum = 7;
+					for(int i=0; i<7;i++)
+					{
+						isImageIconSelected[i] = true;
+					}
+					startChangeSelectedIcon = true;
+				}
+				//若可以，则注册成功，将用户名、密码、5张照片存入数据库
+				else{
+//					JOptionPane.showMessageDialog(null, "注册成功！正在将数据存入数据库中。", "注册成功", JOptionPane.INFORMATION_MESSAGE);
+					ProgressBarSignIn.frameProgressBarSignIn = new ProgressBarSignIn();
+					ProgressBarSignIn.frameProgressBarSignIn.setVisible(true);
+					
+					try
+					{
+						conn = Oracle_Connect.getInstance().getConn();
+						//封装double[][] Wopt 进 Wopt wopt
+						Wopt wopt = new Wopt();
+						wopt.setWopt(WoptT);
+						
+						
+						//将Wopt插入数据库中
+						ProjectDao.doinsertWopt(conn, wopt);
+						
+						//第一次,增加进度条
+						ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+						
+						//将总体均值m插入数据库中
+						double[] m = LdaFeatures.getInstance().getAveVector();
+						ProjectDao.doinsertmean(conn, m);
+
+						
+						//第二次,增加进度条
+						ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+						
+						//将插入数据库的图片,封装进inputStream
+						Imageinfo imageInfo = new Imageinfo();
+						InputStream[] inputStream = new InputStream[5];
+						
+						int[] userIds;
+						
+						//如果数据库中没人,先插酱油的
+						if (haveSoy)
+						{
+							//把酱油封装进User
+							User userSoy = new User();
+							userSoy.setUsername("none");
+							userSoy.setPassword("123456");
+							
+							//将ImageIcon转成InpustStream
+							for(int i=0; i<5; i++)
+							{
+								//inputStream[i] = imageIcons[i];
+//								Image img = imageIcons[i].getImage();
+//								BufferedImage tempBImg = ImageUtil.ImageToBufferedImage(img);
+								ByteArrayOutputStream os = new ByteArrayOutputStream();   
+								ImageIO.write(soyBufferedImages[i], "jpg", os);   
+								int[] le2 = ImageUtil.getPixes(soyBufferedImages[i]);
+								System.out.println("酱油图片的长度:" + le2.length);
+								inputStream[i] = new ByteArrayInputStream(os.toByteArray());  
+							}
+							imageInfo.setInputstream(inputStream);
+							
+							//插入账户、密码和图片（返回插入的id）
+							userIds = UserDao.doInsert(userSoy, conn, imageInfo);
+						}
+
+						
+						//将ImageIcon转成InpustStream
+						for(int i=0; i<5; i++)
+						{
+							//inputStream[i] = imageIcons[i];
+							Image img = imageIcons[i].getImage();
+							BufferedImage tempBImg = ImageUtil.ImageToBufferedImage(img);
+							ByteArrayOutputStream os = new ByteArrayOutputStream();   
+							ImageIO.write(tempBImg, "jpg", os);   
+							inputStream[i] = new ByteArrayInputStream(os.toByteArray());  
+						}
+						imageInfo.setInputstream(inputStream);
+						
+						//插入用户的账户、密码和图片（返回插入的id）
+						userIds = UserDao.doInsert(user, conn, imageInfo);
+						
+						
+						//将每个图像的差值图像[像素][n] 转置成 [n][像素]
+						double[][] mAveDeviation = LdaFeatures.getInstance().getAveDeviationDouble();
+						double[][] mAveDeviationTrans = Features.matrixTrans(mAveDeviation);
+						//将转置后的每个图像的差值图像存进数据库中
+						ProjectDao.doinsertPeoplemean(conn, mAveDeviationTrans, userIds);
+						
+						
+						//将每类的差值图像 [像素][n/num] 转置成 [n/num][像素]
+						double[][] mi = LdaFeatures.getInstance().getAveDeviationEach();
+						double[][] miTrans = Features.matrixTrans(mi);
+						//将转置后的mi存进数据库中
+						ProjectDao.doinsertclassmean(conn, miTrans, userIds);
+						
+						
+						//第三次,增加进度条
+						ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+						
+//						//若有“酱油”，则将“酱油”的投影移除
+//						double[][] insertModelP = new double[modelP.length-5][modelP[0].length];
+//						if( haveSoy == true)
+//						{
+//							int cloneLength = modelP.length-5;
+//							for(int i=0; i<cloneLength; i++)
+//							{
+//								insertModelP[i] = modelP[i+5];
+//							}
+//						}
+						
+						//封装用户Id和投影Z 进 Project
+						Project project = new Project();
+						project.setId(userIds);
+//						if(haveSoy == true)
+//						{
+////							project.setProject(insertModelP);
+//						}
+//						else
+						{
+							project.setProject(modelP);
+						}
+						//插入所有投影
+						ProjectDao.doinsertProject(conn, project);
+						
+						//第四次,增加进度条
+						ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
+						
+					}
+					catch(Exception e1)
+					{
+						e1.printStackTrace();
+					}
+					
+					//提示数据库操作成功
+					JOptionPane.showMessageDialog(null, "数据已插入数据库中！", "操作成功", JOptionPane.INFORMATION_MESSAGE);
+					
+					//关闭进度条窗口
+					ProgressBarSignIn.frameProgressBarSignIn.dispose();
+					
+					frameRegist.dispose();
+					MainUI.frameMainUI = new MainUI();
+					MainUI.frameMainUI.setVisible(true);
+					
+					//最终注册成功后，将寻找人脸的方法暂停
+					findTask.stop();
+				}
+				
+				
+				
+				//----------------------------------------------
+					//摄像头启动成功的话，将img保存至本地，然后再传递过去
+				//InputStream inputPic = this.getClass().getResourceAsStream("Pictures/facetime.jpg");
+					//测试，将来将照片保存至本地，然后再传递给这个参数即可。
+				
+//				User user = new User();
+//				user.setUsername(userId);
+//				user.setPassword(passWord);
+//				user.setB(inputPic);
+//				
+//				//将user信息保存进数据库
+//				UserDao ud = new UserDao();
+//				try {
+//					ud.doInsert(user, Oracle_Connect.getInstance().getConn());
+//				} catch (InstantiationException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				} catch (IllegalAccessException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				} catch (ClassNotFoundException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				} catch (SQLException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				} catch (IOException e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+				
 				
 			}
 		});
@@ -328,6 +739,14 @@ public class FrameRegist extends JFrame implements Context{
 		btn7.setBounds(0, 0, 128, 128);
 		panel_7.add(btn7);
 	}
+	
+	//图片等比例处理方法,width和height为宽度和高度
+	public static ImageIcon ImageHandle(ImageIcon imageicon,int width,int height){
+		Image image = imageicon.getImage();
+		Image smallimage = image.getScaledInstance(width, height, image.SCALE_FAST);
+		ImageIcon smallicon = new ImageIcon(smallimage);
+		return smallicon;
+	}
 
 	@Override
 	public void onRefresh(Object... objects) {
@@ -336,11 +755,7 @@ public class FrameRegist extends JFrame implements Context{
 		switch (result) {
 		case VideoStreamTask.OPEN_CAMERA_SUCCESS:
 			Component component = (Component) objects[1];
-			System.out.println("====width:" + component.getSize().width);
-			System.out.println("====height:" + component.getSize().height);
 //			component.setBounds(0, 0, 314, 229);
-			component.setBounds(0, 0, 387, 260);
-			component.setLocation(7, 0);
 			panelCamera.add(component);
 			while(true) {
 				Image image = cif.getHandledPictrue();
@@ -358,7 +773,7 @@ public class FrameRegist extends JFrame implements Context{
 //				Icon icon = (Icon) img;
 //				Image image = img;
 				ImageIcon imgIcon = new ImageIcon(img);
-				imgIcon = UiImageHandle.ImageHandle(imgIcon, 128, 128);
+				imgIcon = ImageHandle(imgIcon, 128, 128);
 				
 				if(startChangeSelectedIcon == true)
 				{
@@ -482,370 +897,5 @@ public class FrameRegist extends JFrame implements Context{
 			;
 		}
 	}
-	
-//	/**
-//	 * 点击注册后
-//	 * 尝试用2张测试样例识别5张用户照片
-//	 * 若识别成功，则将数据存入数据库中
-//	 * 不成功，则给出提示
-//	 */
-//	private void startDistinguish(User user)
-//	{
-//		//此处加入注册处理，例如将注册者的图片保存进数据库之类的操作
-//		
-//		
-//		//设置User的用户名、密码和5张照片。
-//		//用户名 userId
-//		//密码 passWord
-//		//5张照片 imageIcons
-//		
-//		//设置人数，和每人的照片数（此处默认每人5张）
-//		int peopleNum = 2;//2是暂定的，需要根据数据库进行修改
-//		int photoNum = 5;
-//		
-//		//WoptT矩阵
-//		double[][] WoptT;
-//		//Project数据
-//		Project pr;
-//		//保存从数据库获取的图片的数组
-//		BufferedImage[] bImages = null;
-////		//临时保存单人图片的数组
-////		BufferedImage[] tempForOneManBImages = null;
-//		//用来PCA、LDA计算的数组
-//		ImageIcon[] icon = null;// = new ImageIcon[2*5];//[peopleNum*photoNum]
-//		
-//		Connection conn = null;
-//		try
-//		{
-//			conn = Oracle_Connect.getInstance().getConn();
-//			//1.首先判断数据库中是否已有WoptT矩阵的数据（即看是否已经有样本数据）
-//			
-//			//若存在WoptT
-//			if( ProjectDao.firstORnot(conn) == false)
-//			{
-//				//读取所有样本数据，以便对所有样本和自己进行训练
-//				
-////				//读取WoptT矩阵
-////				WoptT = ProjectDao.doselectWopt(conn);
-//				
-//				//(读取所有样本的投影Z 和 id)
-//				//读取所有样本的图片
-//				BufferedImage[] bimg = UserDao.doSelectAll(conn);
-//				
-//				for(int i=0; i<bimg.length; i++)
-//				{
-//					int[] le = ImageUtil.getPixes(bimg[i]);
-//
-//					System.out.println("长度:" + le.length);
-//				}
-////				ImageIcon[] tempImageIcons = new ImageIcon[bimg.length];
-////				for(int i=0; i<bimg.length; i++)
-////				{
-////					tempImageIcons
-////				}
-////				pr = ProjectDao.doselectProject(conn);
-//				
-//				//------------------------------peopleNum需要从数据库中获取---------------------------------------------
-//				//获取peopleNum
-//				peopleNum = bimg.length / 5;
-//				peopleNum++;//因为注册多了一个人，所以peopleN+1
-//				//实例化bImages图片数组
-//				bImages = new BufferedImage[peopleNum * photoNum];
-////				icon = new ImageIcon[peopleNum * photoNum];
-//				
-//				for(int i=0; i<bimg.length; i++)
-//				{
-//					bImages[i] = bimg[i];
-//				}
-//				for(int i=0; i<5; i++)
-//				{
-////					icon[bimg.length + i] = imageIcons[i];
-//					Image img = imageIcons[i].getImage();
-//					bImages[bimg.length + i] = ImageUtil.ImageToBufferedImage(img);
-//				}
-//				
-//			}
-//			//若不存在，则直接对自己的数据进行训练
-//			else
-//			{
-//				haveSoy = true;
-//				//设置peopleNum为2（酱油&自己)
-//				peopleNum = 2;
-////				//实例化icon图片数组
-////				icon = new ImageIcon[peopleNum * photoNum];//[2 * 5]
-//				//实例化bImages图片数组
-//				bImages = new BufferedImage[peopleNum * photoNum];
-////				tempForOneManBImages = new BufferedImage[photoNum];
-//				
-////				读取Pictures文件夹里面的"酱油"的图片，并赋值给bImages[0-4];
-//				String source = "Pictures/none/";
-//				for(int i=0; i<5; i++)
-//				{
-//					String source2 = "after37-" + (i+1) + ".jpg";
-//					ImageIcon imageIcon = new ImageIcon(source + source2);
-//					//将“酱油”的图片扩大
-////					imageIcon = ImageHandle(imageIcon, 128, 128);
-//					Image img = imageIcon.getImage();
-//					bImages[i] = ImageUtil.ImageToBufferedImage(img);
-//					soyBufferedImages[i] = ImageUtil.ImageToBufferedImage(img);
-//				}
-//				
-//				//将自己的图片赋值给bImages[5-9];
-//				for(int i=5; i<10; i++)
-//				{
-////					icon[i] = imageIcons[i-5];
-//					Image img = imageIcons[i-5].getImage();
-//					bImages[i] = ImageUtil.ImageToBufferedImage(img);
-////					bImages[i] = ImageUtil.ImageToBufferedImage(img);
-//				}
-//				
-//			}
-//			
-//			
-//		}
-//		catch(Exception e1)
-//		{
-//			e1.printStackTrace();
-//		}
-//		
-////		//16348维，128*128
-////		int[] vector1 = GetFeatureMatrix.getPixes(bImages[0]);
-////		System.out.println("维数：" + vector1.length);
-//		
-//		//对bImages[]的图片进行小波变换
-//		BufferedImage[] waveBImages;
-//		waveBImages = Wavelet.Wavelet(bImages);
-//		
-//		//2.训练（将 本人的5张照片 和 数据库中的所有照片（每人5张） 投影到WoptT上)
-//		GetPcaLda.getResult(waveBImages);
-//		
-//		//1024维，32*32
-//		int[] vector = GetFeatureMatrix.getPixes(waveBImages[0]);
-//		System.out.println("维数：" + vector.length);
-//		
-//		double[][] modelP=new double[peopleNum*photoNum][peopleNum-1];
-//		for(int i=0;i<peopleNum*photoNum;i++){
-//			modelP[i]=LDA.getInstance().calZ(waveBImages[i]);//投影
-//		}
-//		
-////		验证需要5个数据，前3个都是double[][]
-////		1.(为了计算<2>所用)WoptT（从单例中获取）
-//		//double[] WoptT
-////		2.2张照片的投影（将拍到的图片，通过Wopt投影后,转成double[][]）
-//		double[][] testZ = new double[testNum][peopleNum-1];//[测试用例数量][C-1]
-////		3.训练样例的投影（上面的modelP）
-//		//double[][] modelP
-////		4.<2>的均值（从<2>处理）
-//		double[] testZMean = new double[peopleNum-1];
-////		5.（投影Z的）N个人的，类内均值（每个人都有一个均值)
-//		double[][] modelMean=new double[peopleNum][peopleNum-1];
-////		6.（投影Z的）总体均值
-//		double[] allMean=new double[peopleNum-1];
-//		
-//		//1.WoptT（从单例中获取）
-//		WoptT = LdaFeatures.getInstance().getLastProjectionT();
-//		
-//		//2.2张照片的投影（将拍到的图片，通过Wopt投影后,转成double[][]）
-//		//首先，将ImageIcon[2] testIcons转换成BufferedImage[2]
-//		BufferedImage[] tempForTestBImages = new BufferedImage[testNum];
-//		for(int i=0; i<testNum; i++)
-//		{
-//			Image img = testIcons[i].getImage();
-//			tempForTestBImages[i] = ImageUtil.ImageToBufferedImage(img);
-//		}
-//		
-//		//然后，对tempForTestBImages进行小波变换，转成BufferedImage[2]
-//		BufferedImage[] waveTestBImages = Wavelet.Wavelet(tempForTestBImages);
-//		
-//		//计算2张经小波变换的测试图waveTestBImages的投影Z
-//		for(int i=0; i<testNum; i++)
-//		{
-//			testZ[i]=LDA.getInstance().calZ(waveTestBImages[i]);
-//		}
-//		
-//		//4.<2>的均值（从<2>处理）
-//		for(int i=0; i<(peopleNum-1); i++)
-//		{
-//			for(int j=0; j<testNum; j++)
-//			{
-//				testZMean[i] += testZ[j][i];
-//			}
-//			testZMean[i] /= testNum;
-//		}
-//		
-//		//5.（投影Z的）N个人的，类内均值（每个人都有一个均值)
-//		//6.（投影Z的）总体均值
-//		for(int i=0;i<peopleNum;i++){
-//			for(int k=0;k<peopleNum-1;k++){
-//				for(int j=0;j<photoNum;j++){
-//					modelMean[i][k]+=modelP[photoNum*i+j][k];
-//				}
-//				allMean[k]+=modelMean[i][k];
-//				modelMean[i][k]/=photoNum;
-//			}			
-//		}
-//		
-//		for(int i=0;i<peopleNum-1;i++)
-//			allMean[i]/=peopleNum*photoNum;
-//		
-//		
-//		//验证（尝试识别，识别失败则需要重新获取图片）
-//		if( Mark.domark(testZ, modelP, testZMean, modelMean, allMean) == false)
-//		{
-//			JOptionPane.showMessageDialog(null, "照片样例识别失败！正在重新获取所有图片", "提示", JOptionPane.INFORMATION_MESSAGE);
-//			//将数据初始化，以开始重新获取图片
-//			requestNum = 7;
-//			for(int i=0; i<7;i++)
-//			{
-//				isImageIconSelected[i] = true;
-//			}
-//			startChangeSelectedIcon = true;
-//		}
-//		//若可以，则注册成功，将用户名、密码、5张照片存入数据库
-//		else{
-////			JOptionPane.showMessageDialog(null, "注册成功！正在将数据存入数据库中。", "注册成功", JOptionPane.INFORMATION_MESSAGE);
-//			ProgressBarSignIn.frameProgressBarSignIn = new ProgressBarSignIn();
-//			System.out.println("1!!!!!!!!!!!!!!!");
-//			ProgressBarSignIn.frameProgressBarSignIn.setVisible(true);
-//			System.out.println("1!2222222222222222!!");
-//			try
-//			{
-//				conn = Oracle_Connect.getInstance().getConn();
-//				//封装double[][] Wopt 进 Wopt wopt
-//				Wopt wopt = new Wopt();
-//				wopt.setWopt(WoptT);
-//				
-//				
-//				//将Wopt插入数据库中
-//				ProjectDao.doinsertWopt(conn, wopt);
-//				
-//				//第一次,增加进度条
-//				ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
-//				
-//				//将总体均值m插入数据库中
-//				double[] m = LdaFeatures.getInstance().getAveVector();
-//				ProjectDao.doinsertmean(conn, m);
-//
-//				
-//				//第二次,增加进度条
-//				ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
-//				
-//				//将插入数据库的图片,封装进inputStream
-//				Imageinfo imageInfo = new Imageinfo();
-//				InputStream[] inputStream = new InputStream[5];
-//				
-//				int[] userIds;
-//				
-//				//如果数据库中没人,先插酱油的
-//				if (haveSoy)
-//				{
-//					//把酱油封装进User
-//					User userSoy = new User();
-//					userSoy.setUsername("none");
-//					userSoy.setPassword("123456");
-//					
-//					//将ImageIcon转成InpustStream
-//					for(int i=0; i<5; i++)
-//					{
-//						//inputStream[i] = imageIcons[i];
-////						Image img = imageIcons[i].getImage();
-////						BufferedImage tempBImg = ImageUtil.ImageToBufferedImage(img);
-//						ByteArrayOutputStream os = new ByteArrayOutputStream();   
-//						ImageIO.write(soyBufferedImages[i], "jpg", os);   
-//						int[] le2 = ImageUtil.getPixes(soyBufferedImages[i]);
-//						System.out.println("酱油图片的长度:" + le2.length);
-//						inputStream[i] = new ByteArrayInputStream(os.toByteArray());  
-//					}
-//					imageInfo.setInputstream(inputStream);
-//					
-//					//插入账户、密码和图片（返回插入的id）
-//					userIds = UserDao.doInsert(userSoy, conn, imageInfo);
-//				}
-//
-//				
-//				//将ImageIcon转成InpustStream
-//				for(int i=0; i<5; i++)
-//				{
-//					//inputStream[i] = imageIcons[i];
-//					Image img = imageIcons[i].getImage();
-//					BufferedImage tempBImg = ImageUtil.ImageToBufferedImage(img);
-//					ByteArrayOutputStream os = new ByteArrayOutputStream();   
-//					ImageIO.write(tempBImg, "jpg", os);   
-//					inputStream[i] = new ByteArrayInputStream(os.toByteArray());  
-//				}
-//				imageInfo.setInputstream(inputStream);
-//				
-//				//插入用户的账户、密码和图片（返回插入的id）
-//				userIds = UserDao.doInsert(user, conn, imageInfo);
-//				
-//				
-//				//将每个图像的差值图像[像素][n] 转置成 [n][像素]
-//				double[][] mAveDeviation = LdaFeatures.getInstance().getAveDeviationDouble();
-//				double[][] mAveDeviationTrans = Features.matrixTrans(mAveDeviation);
-//				//将转置后的每个图像的差值图像存进数据库中
-//				ProjectDao.doinsertPeoplemean(conn, mAveDeviationTrans, userIds);
-//				
-//				
-//				//将每类的差值图像 [像素][n/num] 转置成 [n/num][像素]
-//				double[][] mi = LdaFeatures.getInstance().getAveDeviationEach();
-//				double[][] miTrans = Features.matrixTrans(mi);
-//				//将转置后的mi存进数据库中
-//				ProjectDao.doinsertclassmean(conn, miTrans, userIds);
-//				
-//				
-//				//第三次,增加进度条
-//				ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
-//				
-////				//若有“酱油”，则将“酱油”的投影移除
-////				double[][] insertModelP = new double[modelP.length-5][modelP[0].length];
-////				if( haveSoy == true)
-////				{
-////					int cloneLength = modelP.length-5;
-////					for(int i=0; i<cloneLength; i++)
-////					{
-////						insertModelP[i] = modelP[i+5];
-////					}
-////				}
-//				
-//				//封装用户Id和投影Z 进 Project
-//				Project project = new Project();
-//				project.setId(userIds);
-////				if(haveSoy == true)
-////				{
-//////					project.setProject(insertModelP);
-////				}
-////				else
-//				{
-//					project.setProject(modelP);
-//				}
-//				//插入所有投影
-//				ProjectDao.doinsertProject(conn, project);
-//				
-//				//第四次,增加进度条
-//				ProgressBarSignIn.frameProgressBarSignIn.startAddProgressBar();
-//				
-//			}
-//			catch(Exception e1)
-//			{
-//				e1.printStackTrace();
-//			}
-//			
-//			//提示数据库操作成功
-//			JOptionPane.showMessageDialog(null, "数据已插入数据库中！", "操作成功", JOptionPane.INFORMATION_MESSAGE);
-//			
-//			//关闭进度条窗口
-//			ProgressBarSignIn.frameProgressBarSignIn.dispose();
-//			
-//			frameRegist.dispose();
-//			MainUI.frameMainUI = new MainUI();
-//			MainUI.frameMainUI.setVisible(true);
-//			
-//			//最终注册成功后，将寻找人脸的方法暂停
-//			findTask.stop();
-//		}
-//		
-//		
-//		
-//	}
 		
 }

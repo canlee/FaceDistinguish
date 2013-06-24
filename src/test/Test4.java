@@ -30,7 +30,7 @@ public class Test4 extends JFrame implements Context {
 		add(imagePanel);
 		setVisible(true);
 		new HarrCascadeParserTask(this).start();
-		FindVideoFaceInterface fvfi = new FindVideoFaceImpl(this, "E:\\VideoTest\\testVideo.wmv", 0);
+		FindVideoFaceInterface fvfi = new FindVideoFaceImpl(this, "e:/test.wmv", 0);
 		fvfi.findFace();
 	}
 	

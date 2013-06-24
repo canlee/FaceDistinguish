@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import Jama.Matrix;
 
-import com.invindible.facetime.algorithm.feature.Features;
-import com.invindible.facetime.algorithm.feature.GetFeatureMatrix;
+import com.invindible.facetime.feature.Features;
+import com.invindible.facetime.feature.GetFeatureMatrix;
 import com.invindible.facetime.model.LdaFeatures;
 
 //混合马氏距离

@@ -57,12 +57,8 @@ public class FrameVideo extends JFrame implements Context {
 //	private ImageIcon[] 
 	private BufferedImage[] objectsToFind;//9个要在视频中查找的对象
 	private boolean[] isObjectsSelected;//对象是否被选中的标志
-	private boolean[] isObjectsSatisfied;//视频中找到的对象，用户是否满意的标志
 	private int objectsSelectedCount;//选中的对象的数量
 	private BufferedImage buffImgNoObject;//无对象的图片
-	private int objectsSatisfiedCount;//用户满意的对象数量
-	private BufferedImage[] buffImgObjectsSatisfied;//用户满意的对象图片
-	private String[] timeFound;//用户满意的对象图片在视频中的出现时间
 	
 	private static double[][] modelP;//训练样本的投影Z
 	private static double[] allMean;
@@ -97,6 +93,12 @@ public class FrameVideo extends JFrame implements Context {
 	private ImagePanel lblObject1;
 	private ImagePanel lblObject2;
 	private ImagePanel lblObject3;
+//	private ImagePanel lblObject4;
+//	private ImagePanel lblObject5;
+//	private ImagePanel lblObject6;
+//	private ImagePanel lblObject7;
+//	private ImagePanel lblObject8;
+//	private ImagePanel lblObject9;
 	
 	private String videoPath1 = "";
 	private String videoPath2;
@@ -135,9 +137,6 @@ public class FrameVideo extends JFrame implements Context {
 		ImageIcon imageNoObject = new ImageIcon("Pictures/noObject.jpg");
 		buffImgNoObject = ImageUtil.ImageToBufferedImage(imageNoObject.getImage());
 		isObjectsSelected = new boolean[9];
-		isObjectsSatisfied = new boolean[9];
-		buffImgObjectsSatisfied = new BufferedImage[9];
-		timeFound = new String[9];
 		
 //		//初始化arrVideoMarkModel
 //		VideoMarkModel vmmTemp = new VideoMarkModel();
@@ -431,12 +430,6 @@ public class FrameVideo extends JFrame implements Context {
 					//路径检测
 //					if( 路径正确 )
 					{
-						//用户满意对象计数器清零
-						objectsSatisfiedCount = 0;
-						//用户满意对象图片清空
-						buffImgObjectsSatisfied = new BufferedImage[9];
-						//清空满意图时间
-						timeFound = new String[9];
 					
 						//根据选择的路径
 						//开始在视频中 查找人脸
@@ -739,8 +732,7 @@ public class FrameVideo extends JFrame implements Context {
 				//根据识别结果的ID号，保存进ArrayList<VideoMarkModel>相应的位置中
 				//若 新识别的距离 < 原识别结果的距离，则替换原识别结果
 				//若找到的ID不是1，即不是酱油，则显示
-				//若用户对该对象不满意，则显示
-				if ( (vmm.getMark()!=1) && (!IsSatisFied(vmm)) && CompareDistance(vmm)  )
+				if ( (vmm.getMark()!=1) && CompareDistance(vmm)  )
 				{
 					
 					//暂时将图片显示在界面上
@@ -757,57 +749,18 @@ public class FrameVideo extends JFrame implements Context {
 					long hour = fi.getTime() / 1000 / 60 / 60 % 60;
 					long minute = fi.getTime() / 1000 / 60 %60;
 					long second = fi.getTime() / 1000 % 60;
-					String timeFound = "[ " + hour + "时 "+ minute + "分  " + second + "秒 ]";
-					lblUserFindTime.setText( timeFound);
+					lblUserFindTime.setText( "[ " + hour + "时 "+ minute + "分  " + second + "秒 ]");
 					//用户提供的查找对象的原图显示
 					panelFaceOriginalInObjects.setBufferImage(objectsToFind[vmm.getMark()-2]);//vmm.getMark()最小为1,1为酱油，故-2才是所找目标
 					
-					//将距离，保存进arrVideoMarkModel中
-//					int objectIndex = vmm.getMark();
-					int objectIndex = vmm.getMark()-2;
-					arrVideoMarkModel.get(objectIndex).setMark(objectIndex);
+					int objectIndex = vmm.getMark();
+					arrVideoMarkModel.get(objectIndex).setMark(vmm.getMark());
 					arrVideoMarkModel.get(objectIndex).setDis(vmm.getDis());
 					
 					System.out.println("-----------------------===成功找到一个人！===------------------------------");
-//					JOptionPane.showMessageDialog(null, "成功识别对象["+ (vmm.getMark()-1) +"]！\n\r" + "视频截取时间：" +
-//							"[ " + hour + "时 "+ minute + "分  " + second + "秒 ]"
-//							, "视频识别提示", JOptionPane.INFORMATION_MESSAGE);
-					
-					//询问用户是否满意
-					//若满意，则停止在视频中对该目标的查找
-					if( JOptionPane.YES_OPTION == 
-							JOptionPane.showConfirmDialog(null, "成功识别对象["+ (vmm.getMark()-1) +"]！\n\r" + "视频截取时间：" +
-							"[ " + hour + "时 "+ minute + "分  " + second + "秒 ]\n\r" +
-							"该结果是否满意？（是，视频将不再检测该对象）"
-							, "视频识别提示", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE))
-					{
-//						isObjectsSatisfied[vmm.getMark()-2] = true;
-						//标记用户对该对象已满意
-						isObjectsSatisfied[objectIndex] = true;
-						//用户满意计数器+1
-						objectsSatisfiedCount++;
-						//获取满意的对象图片
-						buffImgObjectsSatisfied[objectIndex] = waveBeforeBuffImgs[i];
-						
-						
-						//若已满意对象数 等于 要找的对象数量，则停止搜索
-						if( objectsSatisfiedCount == objectsSelectedCount)
-						{
-							//寻找线程暂停
-							findTask.stop();
-							fvfi.stop();
-							
-							//给出提示
-							JOptionPane.showMessageDialog(null, "全部对象已找到！", "提示", JOptionPane.INFORMATION_MESSAGE);
-						
-							//将所有找到的对象，显示在新窗口上
-							//满意的对象数，满意图，满意标志，找到的时间，原图
-//							showSatisfiedPictures(objectsSatisfiedCount, buffImgObjectsSatisfied, isObjectsSatisfied,timeFound,objectsToFind);
-//							显示
-						
-						}
-					}
-					
+					JOptionPane.showMessageDialog(null, "成功识别对象["+ (vmm.getMark()-1) +"]！\n\r" + "视频截取时间：" +
+							"[ " + hour + "时 "+ minute + "分  " + second + "秒 ]"
+							, "视频识别提示", JOptionPane.INFORMATION_MESSAGE);
 				}
 				//否则，若 ... > ...，则不替换结果
 				else
@@ -821,27 +774,6 @@ public class FrameVideo extends JFrame implements Context {
 	}
 
 	
-	/**
-	 * 查看验证的对象，是不是用户已经满意的对象
-	 * 若满意，则停止查找
-	 * @param vmm
-	 * @return
-	 */
-	private boolean IsSatisFied(VideoMarkModel vmm) {
-		// TODO Auto-generated method stub
-		
-		int objectIndex = vmm.getMark() - 2;
-		//若用户已满意，则返回true
-		if( isObjectsSatisfied[objectIndex] == true)
-		{
-			return true;
-		}
-		{
-			return false;
-		}
-		
-	}
-
 	/**
 	 * 根据传进来的临时识别ID
 	 * 去arrVideoMarkModel中查找第id个，并比较其距离
@@ -1001,6 +933,21 @@ public class FrameVideo extends JFrame implements Context {
 	private void GetFacesFromObjects()
 	{
 		//-------------------------------测试阶段，尝试对2张人脸进行搜索-（这一部分应由界面给出)------------------------------
+		//对2张测试图片进行赋值
+//		ImageIcon imgIcon0 = new ImageIcon("C:\\VideoTest\\test1.jpg");
+//		ImageIcon imgIcon1 = new ImageIcon("C:\\VideoTest\\test2.jpg");
+//		
+////		objectsToFind[0] = ImageUtil.ImageToBufferedImage(imgIcon0.getImage());
+////		objectsToFind[1] = ImageUtil.ImageToBufferedImage(imgIcon1.getImage());
+//		objectsToFind[0] = ImageUtil.ImageToBufferedImage(imgIcon0.getImage());
+//		objectsToFind[2] = ImageUtil.ImageToBufferedImage(imgIcon1.getImage());
+//		
+////		isObjectsSelected[0] = true;
+////		isObjectsSelected[1] = true;
+//		isObjectsSelected[0] = true;
+//		isObjectsSelected[2] = true;
+//		
+//		objectsSelectedCount = 2;
 		
 		if(objectsSelectedCount == 0)
 		{
@@ -1011,6 +958,11 @@ public class FrameVideo extends JFrame implements Context {
 		findTask = new FindFaceInterfaceImpl(this);
 		findTask.start();
 		
+//		for(int i=0; i<objectsSelectedCount; i++)
+//		{
+//			System.out.println("i:" + i);
+//			findTask.findFace(objectsToFind[i], i);
+//		}
 		
 		//将空余的位置顺位补齐
 		//比如：用户选择了对象2、4，则自动补齐成对象1、2.
@@ -1265,15 +1217,6 @@ public class FrameVideo extends JFrame implements Context {
 			default:
 				break;
 		}
-		
-	}
-	
-	/**
-	 * 调用新窗口
-	 * 显示所有已找到的，用户满意的图片
-	 */
-	private void showSatisfiedPictures(int objectsSatisfiedCount,BufferedImage[] buffImgObjectsSatisfied,boolean[] isObjectsSatisfied,String[] timeFound,BufferedImage[] objectsToFind)
-	{
 		
 	}
 	

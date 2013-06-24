@@ -20,7 +20,7 @@ import java.awt.Color;
 
 public class ProgressBarSignIn extends JFrame {
 
-	public static ProgressBarSignIn frameProgressBarSignIn;
+	static ProgressBarSignIn frameProgressBarSignIn;
 	private JPanel contentPane;
 	private JProgressBar progressBar;
 	private JLabel lblNewLabel;
@@ -71,8 +71,6 @@ public class ProgressBarSignIn extends JFrame {
 		label.setFont(new Font("华文行楷", Font.PLAIN, 20));
 		label.setBounds(73, 63, 275, 55);
 		contentPane.add(label);
-		
-
 	}
 	
 	public void startAddProgressBar()

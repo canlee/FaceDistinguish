@@ -7,7 +7,7 @@ public class L2Form {
 		{
 			tmp+=Math.pow(testMean[i]-projectMean[i], 2);
 		}
-		System.out.println("l2:tmp value"+tmp+" "+value);
+//		System.out.println("tmp value"+tmp+" "+value);
 		if (tmp<value)
 			return true;
 		else
