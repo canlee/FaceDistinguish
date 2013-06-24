@@ -255,9 +255,11 @@ public class RegistAlgorithm {
 		else{
 			
 			
-//			JOptionPane.showMessageDialog(null, "注册成功！正在将数据存入数据库中。", "注册成功", JOptionPane.INFORMATION_MESSAGE);
 			ProgressBarSignIn.frameProgressBarSignIn = new ProgressBarSignIn();
 			ProgressBarSignIn.frameProgressBarSignIn.setVisible(true);
+			
+			JOptionPane.showMessageDialog(null, "注册成功！点击确定后，数据将存入数据库中。", "注册成功", JOptionPane.INFORMATION_MESSAGE);
+
 			
 			SaveDataToDB(conn, WoptT, imageIcons,user,modelP);
 			
