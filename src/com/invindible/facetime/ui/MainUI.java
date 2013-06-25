@@ -224,8 +224,6 @@ public class MainUI extends JFrame implements Context{
 					//建立数据库连接
 					ApplicationConfig.setupLink();
 					
-					
-					
 					System.out.println("walk u");
 					break;
 				}
