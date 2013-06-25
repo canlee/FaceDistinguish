@@ -70,7 +70,7 @@ public class FrameSignIn extends JFrame implements Context{
 	private JButton buttonCapture1;
 	private JButton buttonCapture2;
 	
-	private CameraInterface cif;
+	static CameraInterface cif;
 	static FindFaceInterface findTask;
 	
 	private ImageIcon[] userImageIcons;
@@ -89,21 +89,21 @@ public class FrameSignIn extends JFrame implements Context{
 	private String userAccount;
 	private JPasswordField passwordField;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					FrameSignIn frame = new FrameSignIn();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	/**
+//	 * Launch the application.
+//	 */
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					FrameSignIn frame = new FrameSignIn();
+//					frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the frame.
@@ -433,11 +433,12 @@ public class FrameSignIn extends JFrame implements Context{
 					{
 						JOptionPane.showMessageDialog(null, "识别失败!点击确定后,系统将重新截图。", "提示", JOptionPane.INFORMATION_MESSAGE);
 						
-						for(int i=0; i<2; i++)
-						{
-							isImageIconSelected[i] = true;
-						}
-						requestNum = 2;
+//						for(int i=0; i<2; i++)
+//						{
+//							isImageIconSelected[i] = true;
+//						}
+						buttonCapture1.doClick();
+						buttonCapture2.doClick();
 						changePhoto = true;
 					}
 					else
@@ -483,24 +484,6 @@ public class FrameSignIn extends JFrame implements Context{
 				{
 					e1.printStackTrace();
 				}
-//				
-//				//开始识别
-//				
-////			//若识别成功
-//				if( 识别成功 == true)
-//				{
-					//设置“签到按钮”可以点击
-//					btnSignIn.setEnabled(true);
-//				}
-//				//若失败识别，则重新捕获2张照片。
-//				else
-//				{
-//					for(int i=0; i<2; i++)
-//					{
-//						isImageIconSelected[i] = true;
-//					}
-//					changePhoto = true;
-//				}
 				
 			}
 		});
@@ -625,7 +608,7 @@ public class FrameSignIn extends JFrame implements Context{
 		}
 		
 		//开启摄像头
-		new HarrCascadeParserTask(this).start();
+//		new HarrCascadeParserTask(this).start();
 		cif = new  CameraInterfaceImpl(this);
 		cif.getCamera();
 		findTask = new FindFaceForCameraInterfaceImpl(this);

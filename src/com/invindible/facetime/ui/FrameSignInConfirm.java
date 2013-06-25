@@ -102,6 +102,8 @@ public class FrameSignInConfirm extends JFrame {
 				FrameSignIn.frameSignIn.dispose();
 				FrameSignIn.findTask.stop();
 				
+//				FrameSignIn.cif.
+				
 				frameSignInConfirm.dispose();
 				MainUI.frameMainUI = new MainUI();
 				MainUI.frameMainUI.setVisible(true);
