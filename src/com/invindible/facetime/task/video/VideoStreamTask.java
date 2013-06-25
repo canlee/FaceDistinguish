@@ -23,6 +23,7 @@ import com.invindible.facetime.CommonData;
 import com.invindible.facetime.task.Task;
 import com.invindible.facetime.task.interfaces.Context;
 import com.invindible.facetime.util.image.ImageUtil;
+import com.invindible.facetime.util.system.DLLFactory;
 
 
 /**
@@ -55,6 +56,9 @@ public class VideoStreamTask extends Task {
 		if(CommonData.Camera.player != null) {
 			player = CommonData.Camera.player;
 		}
+//		else {
+//			DLLFactory.loadJmfDLL(VideoPrintScreenTask.class);
+//		}
 	}
 
 	/**

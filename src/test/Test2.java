@@ -14,7 +14,7 @@ import com.invindible.facetime.util.Debug;
 import com.invindible.facetime.util.image.ImageUtil;
 
 public class Test2 extends JFrame implements Context {
-
+ 
 	private ImagePanel imagePanel;
 	private ImagePanel originPanel;
 	
