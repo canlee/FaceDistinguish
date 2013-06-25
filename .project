@@ -14,4 +14,11 @@
 	<natures>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src/com/invindible/facetime/ui/datechooser/MANIFEST.MF</name>
+			<type>1</type>
+			<locationURI>PARENT-2-PROJECT_LOC/%E7%A8%8B%E5%BA%8F/PictureWatch/MANIFEST.MF</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
