@@ -535,7 +535,7 @@ public class FrameVideo extends JFrame implements Context {
 		panel_4.add(lblUserFindId);
 		
 		JPanel panel_2 = new JPanel();
-		panel_2.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u89C6\u9891\u4E2D\u622A\u53D6\u7684\u4EBA\u8138", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_2.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), "\u89C6\u9891\u4E2D\u622A\u53D6\u4FE1\u606F", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panel_2.setBounds(676, 33, 140, 152);
 		panel_4.add(panel_2);
 		panel_2.setLayout(null);

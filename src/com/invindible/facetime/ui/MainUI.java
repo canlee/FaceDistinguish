@@ -24,6 +24,7 @@ import com.invindible.facetime.database.OnAndOff;
 import com.invindible.facetime.database.OracleConfig;
 import com.invindible.facetime.org.eclipse.wb.swing.FocusTraversalOnArray;
 import com.invindible.facetime.service.implement.CameraInterfaceImpl;
+import com.invindible.facetime.task.init.CopyDllTask;
 import com.invindible.facetime.task.init.HarrCascadeParserTask;
 import com.invindible.facetime.task.interfaces.Context;
 import com.invindible.facetime.util.Debug;
@@ -212,8 +213,9 @@ public class MainUI extends JFrame implements Context{
 					//为ai_face建立 数据库的表
 					OracleConfig.configtable();
 					
-					//读取adaboost文件
-					new HarrCascadeParserTask(MainUI.this).start();
+					System.out.println("数据库配置成功");
+					//复制必要的.dll文件
+					new CopyDllTask(this).start();
 					
 					break;
 				}
@@ -222,20 +224,20 @@ public class MainUI extends JFrame implements Context{
 					//建立数据库连接
 					ApplicationConfig.setupLink();
 					
-					//读取adaboost文件
-					new HarrCascadeParserTask(MainUI.this).start();
-					
 					System.out.println("walk u");
 					break;
 				}
 			} catch (Exception e1) {
+				e1.printStackTrace();
+				
 				File f=new File("oracle\\config");
 				f.delete();
 				JOptionPane.showMessageDialog(null, "数据库配置错误，无法连接数据库，请重新输入配置数据。", "警告", JOptionPane.WARNING_MESSAGE);
 			}
 		}
 		
-		
+		//读取adaboost文件
+		new HarrCascadeParserTask(MainUI.this).start();
 	
 	
 	}
