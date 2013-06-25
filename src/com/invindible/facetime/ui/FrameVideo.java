@@ -102,21 +102,21 @@ public class FrameVideo extends JFrame implements Context {
 	private String videoPath2;
 	private String videoPath3;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					FrameVideo frame = new FrameVideo();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	/**
+//	 * Launch the application.
+//	 */
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					FrameVideo frame = new FrameVideo();
+//					frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the frame.
@@ -406,7 +406,7 @@ public class FrameVideo extends JFrame implements Context {
 		panelObjects.add(button);
 		
 		//视频查找人脸的线程
-		new HarrCascadeParserTask(this).start();
+//		new HarrCascadeParserTask(this).start();
 //		FindVideoFaceInterface fvfi = new FindVideoFaceImpl(this, "E:\\VideoTest\\testVideo.wmv", 0);
 		//------------------------------------问题，视频如何定位----------------------------------
 		

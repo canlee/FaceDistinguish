@@ -24,6 +24,9 @@ import com.invindible.facetime.database.OnAndOff;
 import com.invindible.facetime.database.OracleConfig;
 import com.invindible.facetime.org.eclipse.wb.swing.FocusTraversalOnArray;
 import com.invindible.facetime.service.implement.CameraInterfaceImpl;
+import com.invindible.facetime.task.init.HarrCascadeParserTask;
+import com.invindible.facetime.task.interfaces.Context;
+import com.invindible.facetime.util.Debug;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
@@ -33,7 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.awt.Font;
 
-public class MainUI extends JFrame{
+public class MainUI extends JFrame implements Context{
 	static JPanel contentPane;
 	public static MainUI frameMainUI;
 	private boolean isFirstTime = true;
@@ -112,8 +115,8 @@ public class MainUI extends JFrame{
 				frameMainUI.dispose();
 //				frameMainUI.setVisible(false);
 				try{
-				FrameIdPwd.frameIdPwd = new FrameIdPwd();
-				FrameIdPwd.frameIdPwd.setVisible(true);
+					FrameIdPwd.frameIdPwd = new FrameIdPwd();
+					FrameIdPwd.frameIdPwd.setVisible(true);
 				}
 				catch (Exception e2) {
 					e2.printStackTrace();
@@ -208,12 +211,20 @@ public class MainUI extends JFrame{
 					
 					//为ai_face建立 数据库的表
 					OracleConfig.configtable();
+					
+					//读取adaboost文件
+					new HarrCascadeParserTask(MainUI.this).start();
+					
 					break;
 				}
 				else
 				{
 					//建立数据库连接
 					ApplicationConfig.setupLink();
+					
+					//读取adaboost文件
+					new HarrCascadeParserTask(MainUI.this).start();
+					
 					System.out.println("walk u");
 					break;
 				}
@@ -223,8 +234,24 @@ public class MainUI extends JFrame{
 				JOptionPane.showMessageDialog(null, "数据库配置错误，无法连接数据库，请重新输入配置数据。", "警告", JOptionPane.WARNING_MESSAGE);
 			}
 		}
+		
+		
 	
 	
+	}
+
+	@Override
+	public void onRefresh(Object... objects) {
+		// TODO Auto-generated method stub
+		Integer result = (Integer) objects[0];
+		switch (result) {
+			case HarrCascadeParserTask.PARSER_SUCCESS:
+				Debug.print("读取adaboost文件成功！");
+				break;
+				
+			default:
+				break;
+		}
 	}
 	
 //	//图片等比例处理方法,width和height为宽度和高度

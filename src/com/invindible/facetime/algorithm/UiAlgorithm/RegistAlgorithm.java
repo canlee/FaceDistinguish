@@ -45,8 +45,9 @@ public class RegistAlgorithm {
 	 * 尝试用2张测试样例识别5张用户照片
 	 * 若识别成功，则将数据存入数据库中
 	 * 不成功，则给出提示
+	 * @return 
 	 */
-	public static void startDistinguish(User user, ImageIcon[] imageIcons, ImageIcon[] testIcons, int requestNum,boolean[] isImageIconSelected,boolean startChangeSelectedIcon)
+	public static boolean startDistinguish(User user, ImageIcon[] imageIcons, ImageIcon[] testIcons, int requestNum,boolean[] isImageIconSelected,boolean startChangeSelectedIcon)
 	{
 		haveSoy = false;
 		soyBufferedImages =  new BufferedImage[5];
@@ -243,13 +244,15 @@ public class RegistAlgorithm {
 		{
 			
 			JOptionPane.showMessageDialog(null, "照片样例识别失败！正在重新获取所有图片", "提示", JOptionPane.INFORMATION_MESSAGE);
-			//将数据初始化，以开始重新获取图片
-			requestNum = 7;
-			for(int i=0; i<7;i++)
-			{
-				isImageIconSelected[i] = true;
-			}
-			startChangeSelectedIcon = true;
+//			//将数据初始化，以开始重新获取图片
+//			requestNum = 7;
+//			for(int i=0; i<7;i++)
+//			{
+//				isImageIconSelected[i] = true;
+//			}
+//			startChangeSelectedIcon = true;
+			
+			return false;
 		}
 		//若可以，则注册成功，将用户名、密码、5张照片存入数据库
 		else{
@@ -263,15 +266,18 @@ public class RegistAlgorithm {
 			
 			SaveDataToDB(conn, WoptT, imageIcons,user,modelP);
 			
+			
 			//关闭进度条窗口
 			ProgressBarSignIn.frameProgressBarSignIn.dispose();
 			
-			FrameRegist.frameRegist.dispose();
-			MainUI.frameMainUI = new MainUI();
-			MainUI.frameMainUI.setVisible(true);
+			return true;
 			
-			//最终注册成功后，将寻找人脸的方法暂停
-			FrameRegist.findTask.stop();
+//			FrameRegist.frameRegist.dispose();
+//			MainUI.frameMainUI = new MainUI();
+//			MainUI.frameMainUI.setVisible(true);
+//			
+//			//最终注册成功后，将寻找人脸的方法暂停
+//			FrameRegist.findTask.stop();
 		}
 		
 	}

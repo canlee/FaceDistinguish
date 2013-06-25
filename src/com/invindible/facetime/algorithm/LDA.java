@@ -38,7 +38,7 @@ public class LDA {
 		//num应该从单例中或从形参中获取，提前规定好每个人有多少张图（N）
 		//int num = 3;//每个人N张图
 		int index = 0;//下标
-		double temp = 0;//临时数据
+		double temp = 0;//临时数据 
 		
 		int length = vec.length;//length指向量的维数，X={1,2,3,...,length}
 		int n = vec[0].length;//n指向量的个数，X1,X2,X3...Xn;

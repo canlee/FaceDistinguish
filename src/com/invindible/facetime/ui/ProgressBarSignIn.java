@@ -30,21 +30,21 @@ public class ProgressBarSignIn extends JFrame {
 	private int addTimes;//progressBar增加的次数，[0,addRange]次
 	private int addRange = 25;//每一次增加的幅度，即progressBar一次增加多少为止
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ProgressBarSignIn frame = new ProgressBarSignIn();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+//	/**
+//	 * Launch the application.
+//	 */
+//	public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					ProgressBarSignIn frame = new ProgressBarSignIn();
+//					frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the frame.

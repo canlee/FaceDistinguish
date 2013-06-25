@@ -131,7 +131,7 @@ public class FrameRegist extends JFrame implements Context{
 		
 
 		//开启摄像头
-		new HarrCascadeParserTask(this).start();
+//		new HarrCascadeParserTask(this).start();
 		cif = new  CameraInterfaceImpl(this);
 		cif.getCamera();
 		findTask = new FindFaceForCameraInterfaceImpl(this);
@@ -155,7 +155,36 @@ public class FrameRegist extends JFrame implements Context{
 		btnRegist.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				RegistAlgorithm.startDistinguish(user, imageIcons,testIcons,requestNum,isImageIconSelected,startChangeSelectedIcon);
+				//若识别成功，则在方法中保存数据进数据库，之后关闭此窗口
+				if (RegistAlgorithm.startDistinguish(user, imageIcons,testIcons,requestNum,isImageIconSelected,startChangeSelectedIcon)
+					== true	)
+				{
+					//最终注册成功后，将寻找人脸的方法暂停
+					findTask.stop();
+					
+					frameRegist.dispose();
+					MainUI.frameMainUI = new MainUI();
+					MainUI.frameMainUI.setVisible(true);
+					
+					
+				}
+				//若识别失败，则重新获取图片
+				else
+				{
+					
+					//为7张图片打√
+//					//将数据初始化，以开始重新获取图片
+//					requestNum = 7;
+					btn1.doClick();
+					btn2.doClick();
+					btn3.doClick();
+					btn4.doClick();
+					btn5.doClick();
+					btn6.doClick();
+					btn7.doClick();
+					
+					startChangeSelectedIcon = true;
+				}
 				
 			}
 		});
@@ -455,10 +484,11 @@ public class FrameRegist extends JFrame implements Context{
 	//为按钮打钩
 	public void drawNikeOnObject(JButton btn, int objectIndex)
 	{
-		//判断是否已经打钩
-		//若未打钩
+		
 		try
 		{
+			//判断是否已经打钩
+			//若未打钩
 			if(isImageIconSelected[objectIndex] == false)
 			{
 				if(objectIndex < 5)
