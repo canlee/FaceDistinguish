@@ -14,4 +14,12 @@ public class SystemUtil {
 		return Integer.parseInt(bitStr);
 	}
 	
+	/**
+	 * 获取当前系统的jdk安装路径
+	 * @return
+	 */
+	public static String getJavaHome() {
+		return System.getProperty("java.home");
+	}
+	
 }
