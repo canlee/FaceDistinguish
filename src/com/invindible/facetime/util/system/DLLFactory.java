@@ -24,15 +24,25 @@ public class DLLFactory {
 	 * @param cls
 	 */
 	public static void loadVideo32DLL(Class<?> cls) {
-		loadDLL(cls, "/dll/video32/avutil-52.dll");
-		loadDLL(cls, "/dll/video32/avcodec-55.dll");
-		loadDLL(cls, "/dll/video32/avformat-55.dll");
-		loadDLL(cls, "/dll/video32/postproc-52.dll");
-		loadDLL(cls, "/dll/video32/swresample-0.dll");
-		loadDLL(cls, "/dll/video32/swscale-2.dll");
-		loadDLL(cls, "/dll/video32/avfilter-3.dll");
-		loadDLL(cls, "/dll/video32/avdevice-55.dll");
-		loadDLL(cls, "/dll/video32/video_printer32.dll");
+//		loadDLL(cls, "/dll/video32/avutil-52.dll");
+//		loadDLL(cls, "/dll/video32/avcodec-55.dll");
+//		loadDLL(cls, "/dll/video32/avformat-55.dll");
+//		loadDLL(cls, "/dll/video32/postproc-52.dll");
+//		loadDLL(cls, "/dll/video32/swresample-0.dll");
+//		loadDLL(cls, "/dll/video32/swscale-2.dll");
+//		loadDLL(cls, "/dll/video32/avfilter-3.dll");
+//		loadDLL(cls, "/dll/video32/avdevice-55.dll");
+//		loadDLL(cls, "/dll/video32/video_printer32.dll");
+		String path = SystemUtil.getCurrentPath() + "/dll/video32/";
+		System.load(path + "avutil-52.dll");
+		System.load(path + "avcodec-55.dll");
+		System.load(path + "avformat-55.dll");
+		System.load(path + "postproc-52.dll");
+		System.load(path + "swresample-0.dll");
+		System.load(path + "swscale-2.dll");
+		System.load(path + "avfilter-3.dll");
+		System.load(path + "avdevice-55.dll");
+		System.load(path + "video_printer32.dll");
 	}
 	
 	/**
@@ -40,15 +50,25 @@ public class DLLFactory {
 	 * @param cls
 	 */
 	public static void loadVideo64DLL(Class<?> cls) {
-		loadDLL(cls, "/dll/video64/avutil-52.dll");
-		loadDLL(cls, "/dll/video64/avcodec-55.dll");
-		loadDLL(cls, "/dll/video64/avformat-55.dll");
-		loadDLL(cls, "/dll/video64/postproc-52.dll");
-		loadDLL(cls, "/dll/video64/swresample-0.dll");
-		loadDLL(cls, "/dll/video64/swscale-2.dll");
-		loadDLL(cls, "/dll/video64/avfilter-3.dll");
-		loadDLL(cls, "/dll/video64/avdevice-55.dll");
-		loadDLL(cls, "/dll/video64/video_printer64.dll");
+//		loadDLL(cls, "/dll/video64/avutil-52.dll");
+//		loadDLL(cls, "/dll/video64/avcodec-55.dll");
+//		loadDLL(cls, "/dll/video64/avformat-55.dll");
+//		loadDLL(cls, "/dll/video64/postproc-52.dll");
+//		loadDLL(cls, "/dll/video64/swresample-0.dll");
+//		loadDLL(cls, "/dll/video64/swscale-2.dll");
+//		loadDLL(cls, "/dll/video64/avfilter-3.dll");
+//		loadDLL(cls, "/dll/video64/avdevice-55.dll");
+//		loadDLL(cls, "/dll/video64/video_printer64.dll");
+		String path = SystemUtil.getCurrentPath() + "/dll/video64/";
+		System.load(path + "avutil-52.dll");
+		System.load(path + "avcodec-55.dll");
+		System.load(path + "avformat-55.dll");
+		System.load(path + "postproc-52.dll");
+		System.load(path + "swresample-0.dll");
+		System.load(path + "swscale-2.dll");
+		System.load(path + "avfilter-3.dll");
+		System.load(path + "avdevice-55.dll");
+		System.load(path + "video_printer64.dll");
 	}
 	
 	/**

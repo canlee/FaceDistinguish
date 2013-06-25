@@ -22,4 +22,12 @@ public class SystemUtil {
 		return System.getProperty("java.home");
 	}
 	
+	/**
+	 * 获取当前的运行文件的路径
+	 * @return
+	 */
+	public static String getCurrentPath() {
+		return System.getProperty("user.dir");
+	}
+	
 }
