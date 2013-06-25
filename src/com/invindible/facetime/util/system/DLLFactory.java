@@ -57,25 +57,25 @@ public class DLLFactory {
 	 */
 	public static void loadJmfDLL(Class<?> cls) {
 		loadDLL(cls, "/dll/jmf/jmutil.dll");
-		loadDLL(cls, "/dll/jmf/jmjpeg.dll");
-		loadDLL(cls, "/dll/jmf/jmmci.dll");
-		loadDLL(cls, "/dll/jmf/jmfjawt.dll");
-		loadDLL(cls, "/dll/jmf/jmmpegv.dll");
-		loadDLL(cls, "/dll/jmf/jmacm.dll");
-		loadDLL(cls, "/dll/jmf/jmam.dll");
-		loadDLL(cls, "/dll/jmf/jmvh263.dll");
-		loadDLL(cls, "/dll/jmf/jmh263enc.dll");
-		loadDLL(cls, "/dll/jmf/jmgsm.dll");
-		loadDLL(cls, "/dll/jmf/jmddraw.dll");
 		loadDLL(cls, "/dll/jmf/jmvcm.dll");
-		loadDLL(cls, "/dll/jmf/jmmpa.dll");
-		loadDLL(cls, "/dll/jmf/jmdaudc.dll");
-		loadDLL(cls, "/dll/jmf/jmdaud.dll");
-		loadDLL(cls, "/dll/jmf/jmgdi.dll");
-		loadDLL(cls, "/dll/jmf/jmcvid.dll");
-		loadDLL(cls, "/dll/jmf/jmg723.dll");
-		loadDLL(cls, "/dll/jmf/jmh261.dll");
+		loadDLL(cls, "/dll/jmf/jmjpeg.dll");
+//		loadDLL(cls, "/dll/jmf/jmmci.dll");
+		loadDLL(cls, "/dll/jmf/jmmpegv.dll");
+//		loadDLL(cls, "/dll/jmf/jmacm.dll");
+//		loadDLL(cls, "/dll/jmf/jmam.dll");
+//		loadDLL(cls, "/dll/jmf/jmh263enc.dll");
+//		loadDLL(cls, "/dll/jmf/jmgsm.dll");
+//		loadDLL(cls, "/dll/jmf/jmddraw.dll");
+//		loadDLL(cls, "/dll/jmf/jmmpa.dll");
+//		loadDLL(cls, "/dll/jmf/jmcvid.dll");
+//		loadDLL(cls, "/dll/jmf/jmdaudc.dll");
+//		loadDLL(cls, "/dll/jmf/jmdaud.dll");
+//		loadDLL(cls, "/dll/jmf/jmgdi.dll");
+//		loadDLL(cls, "/dll/jmf/jmg723.dll");
+//		loadDLL(cls, "/dll/jmf/jmh261.dll");
 		loadDLL(cls, "/dll/jmf/jmvfw.dll");
+//		loadDLL(cls, "/dll/jmf/jmfjawt.dll");
+		loadDLL(cls, "/dll/jmf/jmvh263.dll");
 //		try {
 //			URI uri = cls.getClass().getResource("/dll/jmf").toURI();
 //			File jmfPath = new File(uri);
